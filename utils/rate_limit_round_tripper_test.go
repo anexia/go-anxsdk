@@ -51,6 +51,7 @@ func TestRateLimitRoundTripper_RetriesOn429(t *testing.T) {
 	}
 
 	req, err := http.NewRequest(http.MethodGet, ts.URL, nil)
+	assert.NoError(err)
 
 	// act
 	resp, err := client.Do(req)
@@ -58,6 +59,7 @@ func TestRateLimitRoundTripper_RetriesOn429(t *testing.T) {
 	// assert
 	require.NoError(err)
 	require.NotNil(resp)
+	defer resp.Body.Close()
 
 	assert.Equal(http.StatusOK, resp.StatusCode)
 	assert.Equal(2, requests)
@@ -91,6 +93,7 @@ func TestRateLimitRoundTripper_MaxRetries(t *testing.T) {
 	// assert
 	require.NoError(err)
 	require.NotNil(resp)
+	defer resp.Body.Close()
 
 	assert.Equal(http.StatusTooManyRequests, resp.StatusCode)
 	assert.Equal(3, requests) // initial request + 2 retries
@@ -122,6 +125,7 @@ func TestRateLimitRoundTripper_DoesNotRetryNon429(t *testing.T) {
 	// assert
 	require.NoError(err)
 	require.NotNil(resp)
+	_ = resp.Body.Close()
 
 	assert.Equal(http.StatusInternalServerError, resp.StatusCode)
 	assert.Equal(1, requests)
@@ -155,6 +159,7 @@ func TestRateLimitRoundTripper_MaxRetryDuration(t *testing.T) {
 	// assert
 	require.NoError(err)
 	require.NotNil(resp)
+	_ = resp.Body.Close()
 
 	assert.Equal(http.StatusTooManyRequests, resp.StatusCode)
 	assert.Equal(1, requests)
@@ -202,6 +207,7 @@ func TestRateLimitRoundTripper_RetriesRequestBody(t *testing.T) {
 	// assert
 	require.NoError(err)
 	require.NotNil(resp)
+	_ = resp.Body.Close()
 
 	assert.Equal(http.StatusOK, resp.StatusCode)
 	assert.Equal(2, requests)

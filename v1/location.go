@@ -9,8 +9,6 @@ import (
 
 // LocationListParams defines the available parameters for the location list endpoint.
 type LocationListParams struct {
-	Page   int    `url:"page,omitempty"`
-	Limit  int    `url:"limit,omitempty"`
 	Search string `url:"search,omitempty"`
 }
 
@@ -25,7 +23,7 @@ type LocationListItem struct {
 	Lon        *string `json:"lon"`
 }
 
-// GetID returns the id of the location.
+// GetID returns the Identifier of the [LocationListItem].
 func (l LocationListItem) GetID() string {
 	return l.Identifier
 }
@@ -43,17 +41,15 @@ func NewLocationsClient(transport *internal.Transport) *LocationsClient {
 }
 
 // List returns a list of paged locations.
-func (v *LocationsClient) List(ctx context.Context, params LocationListParams) (paging.PagedResponse[LocationListItem], error) {
+func (v *LocationsClient) List(ctx context.Context, pagingParams paging.Params, params LocationListParams) (paging.PagedResponse[LocationListItem], error) {
 	resp := internal.RequestWrapper[paging.PagedResponse[LocationListItem]]{}
-	err := v.transport.Get(ctx, "/api/core/v1/location.json", &resp, params)
+	err := v.transport.Get(ctx, "/api/core/v1/location.json", &resp, pagingParams, params)
 	return resp.Data, mapTransportError(err)
 }
 
 // ListPageFetcher returns a paging.PageFetcher for locations.
 func (v *LocationsClient) ListPageFetcher(params LocationListParams) paging.PageFetcher[LocationListItem] {
-	return func(ctx context.Context, page int, limit int) (paging.PagedResponse[LocationListItem], error) {
-		params.Page = page
-		params.Limit = limit
-		return v.List(ctx, params)
+	return func(ctx context.Context, pageParams paging.Params) (paging.PagedResponse[LocationListItem], error) {
+		return v.List(ctx, pageParams, params)
 	}
 }

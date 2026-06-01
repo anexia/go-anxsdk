@@ -2,6 +2,7 @@ package paging
 
 import (
 	"context"
+	"fmt"
 	"iter"
 )
 
@@ -19,11 +20,46 @@ type PagedResponse[T any] struct {
 	Data       []T `json:"data"`
 }
 
+// Params represents the pagination params for the anexia engine.
+type Params struct {
+	Page  int
+	Limit int
+}
+
+// ParamsError represents an error in the params.
+type ParamsError struct {
+	Page int
+}
+
+func (p *ParamsError) Error() string {
+	return fmt.Sprintf("page must be at least %d, got: %d", EngineFirstPage, p.Page)
+}
+
+// Validate validates if the [Params] are valid.
+func (p Params) Validate() error {
+	if p.Page < EngineFirstPage {
+		return &ParamsError{p.Page}
+	}
+	return nil
+}
+
+// DefaultParams creates a new instance with default values.
+func DefaultParams() Params {
+	return NewParams(EngineFirstPage, EngineMaxPageLimit)
+}
+
+// NewParams creates a new instance of the [Params].
+func NewParams(page, limit int) Params {
+	return Params{
+		Page:  page,
+		Limit: limit,
+	}
+}
+
 // PageFetcher is a function that fetches the desired page from the api.
 type PageFetcher[T any] func(
 	ctx context.Context,
-	page int,
-	limit int,
+	pageParams Params,
 ) (PagedResponse[T], error)
 
 // ItemFetcher is a function that fetches a single resource from the api via its id.
@@ -32,7 +68,12 @@ type ItemFetcher[T any] func(
 	id string,
 ) (T, error)
 
-const engineMaxPageLimit = 100
+const (
+	// EngineFirstPage is the first page the anexia engine provides.
+	EngineFirstPage = 1
+	// EngineMaxPageLimit is the maximum paging limit for most of the anexia engine endpoints.
+	EngineMaxPageLimit = 100
+)
 
 // Paginate iterates all resources from a paged endpoint using the provided PageFetcher.
 func Paginate[T any]( //revive:disable:cognitive-complexity
@@ -41,7 +82,7 @@ func Paginate[T any]( //revive:disable:cognitive-complexity
 ) iter.Seq2[T, error] {
 	return func(yield func(T, error) bool) {
 		var zero T
-		page := 1
+		page := EngineFirstPage
 
 		for {
 			err := ctx.Err()
@@ -50,7 +91,7 @@ func Paginate[T any]( //revive:disable:cognitive-complexity
 				return
 			}
 
-			resp, err := fetchPage(ctx, page, engineMaxPageLimit)
+			resp, err := fetchPage(ctx, NewParams(page, EngineMaxPageLimit))
 			if err != nil {
 				yield(zero, err)
 				return

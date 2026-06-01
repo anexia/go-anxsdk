@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/kkostial/go-anx-sdk/paging"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -34,7 +35,7 @@ func TestTransport_Get_Success(t *testing.T) {
 		assert.Equal(http.MethodGet, r.Method)
 		assert.Equal("/v1/test", r.URL.Path)
 		assert.Equal("Token test-key", r.Header.Get("Authorization"))
-		assert.Equal("2", r.URL.Query().Get("page"))
+		assert.Equal("2", r.URL.Query().Get("foo"))
 
 		w.WriteHeader(http.StatusOK)
 		_ = json.NewEncoder(w).Encode(map[string]any{
@@ -54,13 +55,13 @@ func TestTransport_Get_Success(t *testing.T) {
 	}
 
 	params := struct {
-		Page int `url:"page"`
+		Foo int `url:"foo"`
 	}{
-		Page: 2,
+		Foo: 2,
 	}
 
 	// act
-	err := tr.Get(context.Background(), "/v1/test", &out, params)
+	err := tr.Get(context.Background(), "/v1/test", &out, paging.DefaultParams(), params)
 
 	// assert
 	require.NoError(err)
@@ -128,7 +129,7 @@ func TestTransport_Do_APIError(t *testing.T) {
 	var out map[string]any
 
 	// act
-	err := tr.Get(context.Background(), "/v1/error", &out, nil)
+	err := tr.Get(context.Background(), "/v1/error", &out, paging.DefaultParams(), nil)
 
 	// assert
 	require.Error(err)
@@ -140,22 +141,35 @@ func TestTransport_Do_APIError(t *testing.T) {
 	assert.Equal("bad request", apiErr.Body)
 }
 
-func TestTransport_BuildRequestUrl(t *testing.T) {
+func TestTransport_BuildRequestUrlWithPaging(t *testing.T) {
 	// arrange
 	require := require.New(t)
 
 	tr := NewTransport("https://api.example.com", "", nil)
 
-	params := struct {
-		Page int `url:"page"`
-	}{
-		Page: 3,
-	}
-
 	// act
-	url, err := tr.buildRequestURL("/v1/test", params)
+	url, err := tr.buildRequestURL("/v1/test", &paging.Params{
+		Page:  3,
+		Limit: 77,
+	}, nil)
 
 	// assert
 	require.NoError(err)
-	assert.Equal(t, "https://api.example.com/v1/test?page=3", url)
+	assert.Equal(t, "https://api.example.com/v1/test?limit=77&page=3", url)
+}
+
+func TestTransport_BuildRequestUrl_PageError(t *testing.T) {
+	// arrange
+	require := require.New(t)
+
+	tr := NewTransport("https://api.example.com", "", nil)
+
+	// act
+	_, err := tr.buildRequestURL("/v1/test", &paging.Params{
+		Page:  0,
+		Limit: 77,
+	}, nil)
+
+	// assert
+	require.Error(err)
 }

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -14,6 +15,7 @@ type RateLimitRoundTripper struct {
 	maxRetries       int
 }
 
+// NewRateLimitRoundTripper creates a new RateLimitRoundTripper instance.
 func NewRateLimitRoundTripper(
 	next http.RoundTripper,
 	maxRetryDuration time.Duration,
@@ -30,15 +32,18 @@ func NewRateLimitRoundTripper(
 	}
 }
 
+// ErrNoRewindableBody is returned during retry if the body cannot be read again.
+var ErrNoRewindableBody = errors.New("cannot retry request with non-rewindable body")
+
 // RoundTrip implements the http.RoundTripper interface for RateLimitRoundTripper.
-func (t *RateLimitRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+func (t *RateLimitRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) { //nolint:revive // it's not that hard
 	start := time.Now()
 	retries := 0
 
 	for {
 		resp, err := t.Next.RoundTrip(req)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("calling next: %w", err)
 		}
 
 		if resp.StatusCode != http.StatusTooManyRequests {
@@ -73,12 +78,12 @@ func (t *RateLimitRoundTripper) RoundTrip(req *http.Request) (*http.Response, er
 
 		if req.Body != nil {
 			if req.GetBody == nil {
-				return nil, fmt.Errorf("cannot retry request with non-rewindable body")
+				return nil, ErrNoRewindableBody
 			}
 
 			body, err := req.GetBody()
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("reading body again: %w", err)
 			}
 
 			req = req.Clone(req.Context())

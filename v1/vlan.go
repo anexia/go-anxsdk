@@ -60,15 +60,11 @@ type VlanUpdateResponse struct {
 
 // VlanListParams defines the available parameters for the vlan list endpoint.
 type VlanListParams struct {
-	Page   int    `url:"page,omitempty"`
-	Limit  int    `url:"limit,omitempty"`
 	Search string `url:"search,omitempty"`
 }
 
 // VlanFilteredParams defines the available parameters for the vlan filter endpoint.
 type VlanFilteredParams struct {
-	Page                   int    `url:"page,omitempty"`
-	Limit                  int    `url:"limit,omitempty"`
 	Search                 string `url:"search,omitempty"`
 	OrganizationIdentifier string `url:"organization_identifier,omitempty"`
 	RoleText               string `url:"role_text,omitempty"`
@@ -83,7 +79,7 @@ type VlanListItem struct {
 	DescriptionCustomer string `json:"description_customer"`
 }
 
-// GetID returns the id of the vlan.
+// GetID returns the Identifier of the [VlanListItem].
 func (v VlanListItem) GetID() string {
 	return v.Identifier
 }
@@ -110,7 +106,7 @@ func (v *VlansClient) Create(ctx context.Context, request VlanCreateRequest) (Vl
 // Get returns a vlan by identifier.
 func (v *VlansClient) Get(ctx context.Context, identifier string) (VlanGetResponse, error) {
 	resp := VlanGetResponse{}
-	err := v.transport.Get(ctx, fmt.Sprintf("api/vlan/v1/vlan.json/%s", identifier), &resp, nil)
+	err := v.transport.GetSingle(ctx, fmt.Sprintf("api/vlan/v1/vlan.json/%s", identifier), &resp)
 	return resp, mapTransportError(err)
 }
 
@@ -122,34 +118,30 @@ func (v *VlansClient) Update(ctx context.Context, identifier string, request Vla
 }
 
 // List returns a paged list of vlans.
-func (v *VlansClient) List(ctx context.Context, params VlanListParams) (paging.PagedResponse[VlanListItem], error) {
+func (v *VlansClient) List(ctx context.Context, pageParams paging.Params, params VlanListParams) (paging.PagedResponse[VlanListItem], error) {
 	resp := internal.RequestWrapper[paging.PagedResponse[VlanListItem]]{}
-	err := v.transport.Get(ctx, "/api/vlan/v1/vlan.json", &resp, params)
+	err := v.transport.Get(ctx, "/api/vlan/v1/vlan.json", &resp, pageParams, params)
 	return resp.Data, mapTransportError(err)
 }
 
 // ListPageFetcher returns a paging.PageFetcher for vlans.
 func (v *VlansClient) ListPageFetcher(params VlanListParams) paging.PageFetcher[VlanListItem] {
-	return func(ctx context.Context, page int, limit int) (paging.PagedResponse[VlanListItem], error) {
-		params.Page = page
-		params.Limit = limit
-		return v.List(ctx, params)
+	return func(ctx context.Context, pageParams paging.Params) (paging.PagedResponse[VlanListItem], error) {
+		return v.List(ctx, pageParams, params)
 	}
 }
 
 // ListFiltered returns a paged list of vlans filtered by the provided parameters.
-func (v *VlansClient) ListFiltered(ctx context.Context, params VlanFilteredParams) (paging.PagedResponse[VlanListItem], error) {
+func (v *VlansClient) ListFiltered(ctx context.Context, pageParams paging.Params, params VlanFilteredParams) (paging.PagedResponse[VlanListItem], error) {
 	resp := internal.RequestWrapper[paging.PagedResponse[VlanListItem]]{}
-	err := v.transport.Get(ctx, "/api/vlan/v1/vlan/filtered.json", &resp, params)
+	err := v.transport.Get(ctx, "/api/vlan/v1/vlan/filtered.json", &resp, pageParams, params)
 	return resp.Data, mapTransportError(err)
 }
 
 // ListFilteredPageFetcher returns a paging.PageFetcher for filtered vlans.
 func (v *VlansClient) ListFilteredPageFetcher(params VlanFilteredParams) paging.PageFetcher[VlanListItem] {
-	return func(ctx context.Context, page int, limit int) (paging.PagedResponse[VlanListItem], error) {
-		params.Page = page
-		params.Limit = limit
-		return v.ListFiltered(ctx, params)
+	return func(ctx context.Context, pageParams paging.Params) (paging.PagedResponse[VlanListItem], error) {
+		return v.ListFiltered(ctx, pageParams, params)
 	}
 }
 

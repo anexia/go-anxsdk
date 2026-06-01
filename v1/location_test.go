@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/kkostial/go-anx-sdk/internal"
+	"github.com/kkostial/go-anx-sdk/paging"
 	v1 "github.com/kkostial/go-anx-sdk/v1"
 
 	"github.com/stretchr/testify/require"
@@ -38,9 +39,7 @@ func TestLocationsClient_List(t *testing.T) {
 	client := newLocationsClient(t, ts)
 
 	// act
-	resp, err := client.List(context.Background(), v1.LocationListParams{
-		Page:   2,
-		Limit:  50,
+	resp, err := client.List(context.Background(), paging.Params{Page: 2, Limit: 50}, v1.LocationListParams{
 		Search: "vienna",
 	})
 

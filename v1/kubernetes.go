@@ -52,18 +52,12 @@ const (
 )
 
 // ClusterListParams defines the available parameters for the cluster list endpoint.
-type ClusterListParams struct {
-	Page  int `url:"page,omitempty"`
-	Limit int `url:"limit,omitempty"`
-}
+type ClusterListParams struct{}
 
 // ClusterListItem is an item in the cluster list response.
-type ClusterListItem struct {
-	Identifier string `json:"identifier"`
-	Name       string `json:"name"`
-}
+type ClusterListItem Resource
 
-// GetID returns the id of the cluster.
+// GetID returns the Identifier of the [ClusterListItem].
 func (c ClusterListItem) GetID() string {
 	return c.Identifier
 }
@@ -253,7 +247,7 @@ func (c *ClustersClient) endpointRoot() string {
 // Get returns a single cluster by its id.
 func (c *ClustersClient) Get(ctx context.Context, identifier string) (ClusterGetResponse, error) {
 	resp := ClusterGetResponse{}
-	err := c.transport.Get(ctx, fmt.Sprintf("%s/v1/cluster.json/%s", c.endpointRoot(), identifier), &resp, nil)
+	err := c.transport.GetSingle(ctx, fmt.Sprintf("%s/v1/cluster.json/%s", c.endpointRoot(), identifier), &resp)
 	return resp, mapTransportError(err)
 }
 
@@ -265,17 +259,15 @@ func (c *ClustersClient) Update(ctx context.Context, identifier string, request 
 }
 
 // List returns a list of paged clusters.
-func (c *ClustersClient) List(ctx context.Context, params ClusterListParams) (paging.PagedResponse[ClusterListItem], error) {
+func (c *ClustersClient) List(ctx context.Context, pageParams paging.Params, params ClusterListParams) (paging.PagedResponse[ClusterListItem], error) {
 	resp := internal.RequestWrapper[paging.PagedResponse[ClusterListItem]]{}
-	err := c.transport.Get(ctx, fmt.Sprintf("%s/v1/cluster.json", c.endpointRoot()), &resp, params)
+	err := c.transport.Get(ctx, fmt.Sprintf("%s/v1/cluster.json", c.endpointRoot()), &resp, pageParams, params)
 	return resp.Data, mapTransportError(err)
 }
 
 // ListPageFetcher returns a paging.PageFetcher for clusters.
 func (c *ClustersClient) ListPageFetcher(params ClusterListParams) paging.PageFetcher[ClusterListItem] {
-	return func(ctx context.Context, page int, limit int) (paging.PagedResponse[ClusterListItem], error) {
-		params.Page = page
-		params.Limit = limit
-		return c.List(ctx, params)
+	return func(ctx context.Context, pageParams paging.Params) (paging.PagedResponse[ClusterListItem], error) {
+		return c.List(ctx, pageParams, params)
 	}
 }

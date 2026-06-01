@@ -8,8 +8,10 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"github.com/google/go-querystring/query"
+	"github.com/kkostial/go-anx-sdk/paging"
 )
 
 // TransportError is an internal http error.
@@ -32,7 +34,7 @@ type Transport struct {
 	client  *http.Client
 }
 
-func (t *Transport) buildRequestURL(endpoint string, params any) (string, error) {
+func (t *Transport) buildRequestURL(endpoint string, pageParams *paging.Params, filterParams any) (string, error) {
 	base, err := url.Parse(t.baseURL)
 	if err != nil {
 		return "", fmt.Errorf("parsing base url: %w", err)
@@ -45,18 +47,29 @@ func (t *Transport) buildRequestURL(endpoint string, params any) (string, error)
 
 	base = base.ResolveReference(rel)
 
-	q, err := query.Values(params)
+	q, err := query.Values(filterParams)
 	if err != nil {
 		return "", fmt.Errorf("building query params: %w", err)
 	}
+
+	if pageParams != nil {
+		err := pageParams.Validate()
+		if err != nil {
+			return "", fmt.Errorf("validating page params: %w", err)
+		}
+
+		q.Set("page", strconv.Itoa(pageParams.Page))
+		q.Set("limit", strconv.Itoa(pageParams.Limit))
+	}
+
 	base.RawQuery = q.Encode()
 
 	fullURL := base.String()
 	return fullURL, nil
 }
 
-func (t *Transport) newRequest(ctx context.Context, method, endpoint string, body io.Reader, params any) (*http.Request, error) {
-	fullURL, err := t.buildRequestURL(endpoint, params)
+func (t *Transport) newRequest(ctx context.Context, method, endpoint string, body io.Reader, pageParams *paging.Params, filterParams any) (*http.Request, error) {
+	fullURL, err := t.buildRequestURL(endpoint, pageParams, filterParams)
 	if err != nil {
 		return nil, fmt.Errorf("building request url: %w", err)
 	}
@@ -111,7 +124,7 @@ func (t *Transport) do(req *http.Request, response any) error {
 	return nil
 }
 
-func (t *Transport) doWithBody(ctx context.Context, method string, endpoint string, request any, response any, params any) error {
+func (t *Transport) doRequest(ctx context.Context, method string, endpoint string, request any, response any, pageParams *paging.Params, params any) error {
 	var body io.Reader
 
 	if request != nil {
@@ -125,7 +138,7 @@ func (t *Transport) doWithBody(ctx context.Context, method string, endpoint stri
 		body = &reqBody
 	}
 
-	req, err := t.newRequest(ctx, method, endpoint, body, params)
+	req, err := t.newRequest(ctx, method, endpoint, body, pageParams, params)
 	if err != nil {
 		return fmt.Errorf("creating request: %w", err)
 	}
@@ -141,15 +154,23 @@ func (t *Transport) doWithBody(ctx context.Context, method string, endpoint stri
 // Get executes a get request against the anexia api.
 // endpoint is the relative url (to the configured base url) of the http api endpoint.
 // request if not nil will be JSON serialized and sent as the request body.
+// pageParams is the paging parameters
 // params will be used to extract the query parameters for the request via `query` attributes.
-func (t *Transport) Get(ctx context.Context, endpoint string, response any, params any) error {
-	return t.doWithBody(ctx, http.MethodGet, endpoint, nil, response, params)
+func (t *Transport) Get(ctx context.Context, endpoint string, response any, pageParams paging.Params, params any) error {
+	return t.doRequest(ctx, http.MethodGet, endpoint, nil, response, &pageParams, params)
+}
+
+// GetSingle executes a get request against the anexia api.
+// endpoint is the relative url (to the configured base url) of the http api endpoint.
+// request if not nil will be JSON serialized and sent as the request body.
+func (t *Transport) GetSingle(ctx context.Context, endpoint string, response any) error {
+	return t.doRequest(ctx, http.MethodGet, endpoint, nil, response, nil, nil)
 }
 
 // Delete executes a delete request against the anexia api.
 // endpoint is the relative url (to the configured base url) of the http api endpoint.
 func (t *Transport) Delete(ctx context.Context, endpoint string) error {
-	return t.doWithBody(ctx, http.MethodDelete, endpoint, nil, nil, nil)
+	return t.doRequest(ctx, http.MethodDelete, endpoint, nil, nil, nil, nil)
 }
 
 // Post executes a post request against the anexia api.
@@ -157,7 +178,7 @@ func (t *Transport) Delete(ctx context.Context, endpoint string) error {
 // request if not nil will be JSON serialized and sent as the request body.
 // response must be a pointer to a response struct in which the response body will be JSON deserialized if not nil.
 func (t *Transport) Post(ctx context.Context, endpoint string, request any, response any) error {
-	return t.doWithBody(ctx, http.MethodPost, endpoint, request, response, nil)
+	return t.doRequest(ctx, http.MethodPost, endpoint, request, response, nil, nil)
 }
 
 // Put executes a put request against the anexia api.
@@ -165,7 +186,7 @@ func (t *Transport) Post(ctx context.Context, endpoint string, request any, resp
 // request if not nil will be JSON serialized and sent as the request body.
 // response must be a pointer to a response struct in which the response body will be JSON deserialized if not nil.
 func (t *Transport) Put(ctx context.Context, endpoint string, request any, response any) error {
-	return t.doWithBody(ctx, http.MethodPut, endpoint, request, response, nil)
+	return t.doRequest(ctx, http.MethodPut, endpoint, request, response, nil, nil)
 }
 
 // NewTransport creates a new internal transport helper with the provided base url, api key and http client.
