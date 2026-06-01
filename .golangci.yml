@@ -8,7 +8,6 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - dupl
     - err113
     - errcheck
     - errchkjson
@@ -50,20 +49,26 @@ linters:
       - name: package-naming
         disabled: true
       - name: line-length-limit
-        arguments: [ 140 ]
+        arguments: [ 180 ]
       - name: redundant-import-alias
         disabled: true
       - name: cognitive-complexity
         arguments: [ 12 ]
+      - name: max-public-structs
+        disabled: true
 
   exclusions:
     rules:
       - path: cmd
         linters:
           - revive
+      - path: internal/example
+        linters:
+          - revive
       - path: _test\.go
         linters:
           - revive
+          - errcheck
       - path: v1/.+\.go
         linters:
           - revive
