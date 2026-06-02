@@ -1,2 +1,2 @@
-// Package paging is a collection of paging related utilty helpers and types.
+// Package paging is a collection of paging related utility helpers and types.
 package paging

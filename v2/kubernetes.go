@@ -32,7 +32,7 @@ const (
 	ClusterStateUpdatingNodes          ClusterState = "8"
 )
 
-// ClusterVersion is a type to represent valid cluster verions.
+// ClusterVersion is a type to represent valid cluster versions.
 type ClusterVersion string
 
 // All available supported ClusterVersion values.
