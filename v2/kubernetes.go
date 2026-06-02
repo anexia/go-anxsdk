@@ -8,12 +8,16 @@ import (
 	"code.anexia.com/se/ks/go-anxsdk/paging"
 )
 
-type kubernetesEnvironment string
+// KubernetesEnv is used to specify the environment to use.
+type KubernetesEnv string
 
 const (
-	kubernetesEnvironmentProduction  kubernetesEnvironment = "production"
-	kubernetesEnvironmentStaging     kubernetesEnvironment = "staging"
-	kubernetesEnvironmentDevelopment kubernetesEnvironment = "development"
+	// KubernetesEnvProduction specifies the production environment.
+	KubernetesEnvProduction KubernetesEnv = "prod"
+	// KubernetesEnvStaging specifies the staging environment.
+	KubernetesEnvStaging KubernetesEnv = "stage"
+	// KubernetesEnvDevelopment specifies the development environment.
+	KubernetesEnvDevelopment KubernetesEnv = "dev"
 )
 
 // ClusterState is a type to represent valid cluster states IDs.
@@ -226,13 +230,13 @@ type ClusterUpdateResponse struct {
 
 // ClustersClient is an api client for managing clusters.
 type ClustersClient struct {
-	environment kubernetesEnvironment
+	environment KubernetesEnv
 	transport   *internal.Transport
 }
 
 func newClustersClient(
 	transport *internal.Transport,
-	environment kubernetesEnvironment,
+	environment KubernetesEnv,
 ) *ClustersClient {
 	return &ClustersClient{
 		transport:   transport,
@@ -242,11 +246,11 @@ func newClustersClient(
 
 func (c *ClustersClient) endpointRoot() string {
 	switch c.environment {
-	case kubernetesEnvironmentDevelopment:
+	case KubernetesEnvDevelopment:
 		return "/api/kubernetes-dev"
-	case kubernetesEnvironmentStaging:
+	case KubernetesEnvStaging:
 		return "/api/kubernetes-stage"
-	case kubernetesEnvironmentProduction:
+	case KubernetesEnvProduction:
 		return "/api/kubernetes"
 	}
 

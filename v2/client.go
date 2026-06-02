@@ -14,17 +14,22 @@ func NewClient(transport *internal.Transport) *Client {
 	}
 }
 
+// ClustersByEnv returns a clusters client based on the provided env.
+func (c *Client) ClustersByEnv(env KubernetesEnv) *ClustersClient {
+	return newClustersClient(c.transport, env)
+}
+
 // Clusters returns a clusters client.
 func (c *Client) Clusters() *ClustersClient {
-	return newClustersClient(c.transport, kubernetesEnvironmentProduction)
+	return newClustersClient(c.transport, KubernetesEnvProduction)
 }
 
 // StageClusters returns a stage clusters client.
 func (c *Client) StageClusters() *ClustersClient {
-	return newClustersClient(c.transport, kubernetesEnvironmentStaging)
+	return newClustersClient(c.transport, KubernetesEnvStaging)
 }
 
 // DevClusters returns a dev clusters client.
 func (c *Client) DevClusters() *ClustersClient {
-	return newClustersClient(c.transport, kubernetesEnvironmentDevelopment)
+	return newClustersClient(c.transport, KubernetesEnvDevelopment)
 }
