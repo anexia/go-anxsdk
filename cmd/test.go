@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"os"
 
-	go_anx_sdk "github.com/kkostial/go-anx-sdk"
-	"github.com/kkostial/go-anx-sdk/config"
-	"github.com/kkostial/go-anx-sdk/paging"
-	"github.com/kkostial/go-anx-sdk/utils"
-	v1 "github.com/kkostial/go-anx-sdk/v1"
+	anxsdk "code.anexia.com/se/ks/go-anxsdk"
+	"code.anexia.com/se/ks/go-anxsdk/config"
+	"code.anexia.com/se/ks/go-anxsdk/paging"
+	"code.anexia.com/se/ks/go-anxsdk/utils"
+	v1 "code.anexia.com/se/ks/go-anxsdk/v1"
 )
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 		Transport: utils.NewLoggingRoundTripper(http.DefaultTransport),
 	}
 
-	client := go_anx_sdk.NewClient(
+	client := anxsdk.NewClient(
 		config.WithAPIKey(apiKey),
 		config.WithBaseURL("https://engine.anexia-it.com/"),
 		config.WithHTTPClient(httpClient),

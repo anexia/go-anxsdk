@@ -10,8 +10,8 @@ import (
 	"net/url"
 	"strconv"
 
+	"code.anexia.com/se/ks/go-anxsdk/paging"
 	"github.com/google/go-querystring/query"
-	"github.com/kkostial/go-anx-sdk/paging"
 )
 
 // TransportError is an internal http error.

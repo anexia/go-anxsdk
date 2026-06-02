@@ -3,8 +3,8 @@ package v1
 import (
 	"context"
 
-	"github.com/kkostial/go-anx-sdk/internal"
-	"github.com/kkostial/go-anx-sdk/paging"
+	"code.anexia.com/se/ks/go-anxsdk/internal"
+	"code.anexia.com/se/ks/go-anxsdk/paging"
 )
 
 // LocationListParams defines the available parameters for the location list endpoint.

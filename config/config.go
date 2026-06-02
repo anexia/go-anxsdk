@@ -3,7 +3,7 @@ package config
 import (
 	"net/http"
 
-	"github.com/kkostial/go-anx-sdk/internal"
+	"code.anexia.com/se/ks/go-anxsdk/internal"
 )
 
 // Config is a collection of all configuration options for a new client.
