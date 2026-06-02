@@ -153,7 +153,7 @@ func (t *Transport) doRequest(ctx context.Context, method string, endpoint strin
 
 // Get executes a get request against the anexia api.
 // endpoint is the relative url (to the configured base url) of the http api endpoint.
-// request if not nil will be JSON serialized and sent as the request body.
+// response must be a pointer to a response struct in which the response body will be JSON deserialized if not nil.
 // pageParams is the paging parameters
 // params will be used to extract the query parameters for the request via `query` attributes.
 func (t *Transport) Get(ctx context.Context, endpoint string, response any, pageParams paging.Params, params any) error {
@@ -162,7 +162,7 @@ func (t *Transport) Get(ctx context.Context, endpoint string, response any, page
 
 // GetSingle executes a get request against the anexia api.
 // endpoint is the relative url (to the configured base url) of the http api endpoint.
-// request if not nil will be JSON serialized and sent as the request body.
+// response must be a pointer to a response struct in which the response body will be JSON deserialized if not nil.
 func (t *Transport) GetSingle(ctx context.Context, endpoint string, response any) error {
 	return t.doRequest(ctx, http.MethodGet, endpoint, nil, response, nil, nil)
 }
