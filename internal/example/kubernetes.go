@@ -7,8 +7,7 @@ import (
 	"os"
 	"time"
 
-	anxsdk "code.anexia.com/se/ks/go-anxsdk"
-	"code.anexia.com/se/ks/go-anxsdk/config"
+	"code.anexia.com/se/ks/go-anxsdk"
 	"code.anexia.com/se/ks/go-anxsdk/paging"
 	"code.anexia.com/se/ks/go-anxsdk/utils"
 	v2 "code.anexia.com/se/ks/go-anxsdk/v2"
@@ -18,7 +17,7 @@ func main() {
 	httpClient := http.DefaultClient
 	httpClient.Transport = utils.NewRateLimitRoundTripper(httpClient.Transport, time.Second*10, 10)
 
-	client := anxsdk.NewClient(config.WithAPIKey(os.Getenv("ANEXIA_TOKEN")), config.WithHTTPClient(httpClient))
+	client := anxsdk.NewClient(anxsdk.WithAPIKey(os.Getenv("ANEXIA_TOKEN")), anxsdk.WithHTTPClient(httpClient))
 
 	ctx := context.Background()
 
