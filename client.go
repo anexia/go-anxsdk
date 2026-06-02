@@ -1,7 +1,6 @@
-package go_anx_sdk
+package anxsdk
 
 import (
-	"code.anexia.com/se/ks/go-anxsdk/config"
 	"code.anexia.com/se/ks/go-anxsdk/internal"
 	v1 "code.anexia.com/se/ks/go-anxsdk/v1"
 	v2 "code.anexia.com/se/ks/go-anxsdk/v2"
@@ -13,11 +12,11 @@ type Client struct {
 }
 
 // NewClient creates a new anexia go sdk client with the provided options.
-func NewClient(opts ...config.Option) *Client {
-	cfg := config.NewConfig(opts...)
+func NewClient(opts ...Option) *Client {
+	cfg := newConfig(opts...)
 
 	return &Client{
-		transport: cfg.CreateTransport(),
+		transport: cfg.createTransport(),
 	}
 }
 

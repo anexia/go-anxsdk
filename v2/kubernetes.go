@@ -55,6 +55,7 @@ const (
 type ClusterListParams struct {
 	Reseller           string `url:"reseller,omitempty"`
 	Customer           string `url:"customer,omitempty"`
+	Name               string `url:"name,omitempty"`
 	State              string `url:"state,omitempty"`
 	NeedsServiceVMs    bool   `url:"need_services_vms,omitempty"`
 	Location           string `url:"location,omitempty"`
@@ -283,5 +284,11 @@ func (c *ClustersClient) ListPageFetcher(params ClusterListParams) paging.PageFe
 // RequestKubeconfig triggers the automation endpoint request_kubeconfig.
 func (c *ClustersClient) RequestKubeconfig(ctx context.Context, identifier string) error {
 	err := c.transport.Post(ctx, fmt.Sprintf("%s/v2/cluster/%s/trigger/request_kubeconfig", c.endpointRoot(), identifier), nil, nil)
+	return mapTransportError(err)
+}
+
+// RemoveKubeconfig triggers the automation endpoint remove_kubeconfig.
+func (c *ClustersClient) RemoveKubeconfig(ctx context.Context, identifier string) error {
+	err := c.transport.Post(ctx, fmt.Sprintf("%s/v2/cluster/%s/trigger/remove_kubeconfig", c.endpointRoot(), identifier), nil, nil)
 	return mapTransportError(err)
 }

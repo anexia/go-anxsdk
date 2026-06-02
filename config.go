@@ -1,4 +1,4 @@
-package config
+package anxsdk
 
 import (
 	"net/http"
@@ -14,10 +14,10 @@ type Config struct {
 	client  *http.Client
 }
 
-// NewConfig creates a new Config struct with sensible defaults (url, http client, ...).
+// newConfig creates a new Config struct with sensible defaults (url, http client, ...).
 // Config settings can be overridden by passing in a corresponding config option.
 // A user should always configure an api key via WithAPIKey.
-func NewConfig(opts ...Option) Config {
+func newConfig(opts ...Option) Config {
 	cfg := Config{
 		baseURL: "https://engine.anexia-it.com",
 		client:  http.DefaultClient,
@@ -30,8 +30,8 @@ func NewConfig(opts ...Option) Config {
 	return cfg
 }
 
-// CreateTransport creates an internal transport helper from the config.
-func (c Config) CreateTransport() *internal.Transport {
+// createTransport creates an internal.Transport helper from the config.
+func (c Config) createTransport() *internal.Transport {
 	return internal.NewTransport(
 		c.baseURL,
 		c.apiKey,
@@ -49,7 +49,7 @@ func WithAPIKey(apiKey string) Option {
 	}
 }
 
-// WithBaseURL ovides a config option to use the given url as the base url.
+// WithBaseURL provides a config option to use the given url as the base url.
 func WithBaseURL(url string) Option {
 	return func(c *Config) {
 		c.baseURL = url
