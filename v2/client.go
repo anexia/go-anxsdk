@@ -1,6 +1,6 @@
 package v2
 
-import "code.anexia.com/se/ks/go-anxsdk/internal"
+import "github.com/anexia/go-anxsdk/internal"
 
 // Client is an anexia v2 api client.
 type Client struct {

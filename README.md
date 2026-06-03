@@ -9,7 +9,7 @@ The project is still in early development.
 ## Installation
 
 ```bash
-go get code.anexia.com/se/ks/go-anxsdk
+go get github.com/anexia/go-anxsdk
 ```
 
 ## Usage

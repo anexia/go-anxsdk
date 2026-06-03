@@ -7,10 +7,10 @@ import (
 	"os"
 	"time"
 
-	"code.anexia.com/se/ks/go-anxsdk"
-	"code.anexia.com/se/ks/go-anxsdk/paging"
-	"code.anexia.com/se/ks/go-anxsdk/utils"
-	v2 "code.anexia.com/se/ks/go-anxsdk/v2"
+	"github.com/anexia/go-anxsdk"
+	"github.com/anexia/go-anxsdk/paging"
+	"github.com/anexia/go-anxsdk/utils"
+	v2 "github.com/anexia/go-anxsdk/v2"
 )
 
 func main() {

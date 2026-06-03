@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"os"
 
-	"code.anexia.com/se/ks/go-anxsdk"
-	"code.anexia.com/se/ks/go-anxsdk/paging"
-	"code.anexia.com/se/ks/go-anxsdk/utils"
-	v1 "code.anexia.com/se/ks/go-anxsdk/v1"
+	"github.com/anexia/go-anxsdk"
+	"github.com/anexia/go-anxsdk/paging"
+	"github.com/anexia/go-anxsdk/utils"
+	v1 "github.com/anexia/go-anxsdk/v1"
 )
 
 func main() {

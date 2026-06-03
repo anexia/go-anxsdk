@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"code.anexia.com/se/ks/go-anxsdk/internal"
-	"code.anexia.com/se/ks/go-anxsdk/paging"
+	"github.com/anexia/go-anxsdk/internal"
+	"github.com/anexia/go-anxsdk/paging"
 )
 
 // KubernetesEnv is used to specify the environment to use.

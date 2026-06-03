@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"code.anexia.com/se/ks/go-anxsdk/internal"
-	"code.anexia.com/se/ks/go-anxsdk/paging"
+	"github.com/anexia/go-anxsdk/internal"
+	"github.com/anexia/go-anxsdk/paging"
 )
 
 // VlanCreateRequest defines all fields available when creating a new vlan.

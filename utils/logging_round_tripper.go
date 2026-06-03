@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"code.anexia.com/se/ks/go-anxsdk/internal/utils/sanitize"
+	"github.com/anexia/go-anxsdk/internal/utils/sanitize"
 )
 
 // LoggingRoundTripper is a helper http.RoundTripper implementation that logs requests and responses.

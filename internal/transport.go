@@ -10,7 +10,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"code.anexia.com/se/ks/go-anxsdk/paging"
+	"github.com/anexia/go-anxsdk/paging"
 	"github.com/google/go-querystring/query"
 )
 

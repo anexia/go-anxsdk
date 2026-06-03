@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"code.anexia.com/se/ks/go-anxsdk/paging"
+	"github.com/anexia/go-anxsdk/paging"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

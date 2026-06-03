@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"code.anexia.com/se/ks/go-anxsdk/internal"
+	"github.com/anexia/go-anxsdk/internal"
 )
 
 // APIError represents an api level error.

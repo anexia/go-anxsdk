@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"code.anexia.com/se/ks/go-anxsdk/internal"
-	"code.anexia.com/se/ks/go-anxsdk/paging"
-	v1 "code.anexia.com/se/ks/go-anxsdk/v1"
+	"github.com/anexia/go-anxsdk/internal"
+	"github.com/anexia/go-anxsdk/paging"
+	v1 "github.com/anexia/go-anxsdk/v1"
 
 	"github.com/stretchr/testify/require"
 )
