@@ -62,15 +62,6 @@ func (c ClusterListItem) GetID() string {
 	return c.Identifier
 }
 
-// State represents a clusters current state.
-// Maybe extract out as soon as others need it too.
-type State struct {
-	Text  string       `json:"text"`
-	Title string       `json:"title"`
-	ID    ClusterState `json:"id"`
-	Type  int          `json:"type"`
-}
-
 // ClusterGetResponse represents the response of the cluster get endpoint.
 type ClusterGetResponse struct {
 	CustomerIdentifier             string           `json:"customer_identifier"`
