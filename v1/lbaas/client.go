@@ -40,3 +40,28 @@ func (c *Client) Frontends() *FrontendClient {
 func (c *Client) LoadBalancers() *LoadBalancerClient {
 	return NewLoadBalancerClient(c.transport)
 }
+
+// Acls returns an acl client.
+func (c *Client) Acls() *ACLClient {
+	return NewACLClient(c.transport)
+}
+
+// Maps returns a map client.
+func (c *Client) Maps() *MapClient {
+	return NewMapClient(c.transport)
+}
+
+// Rules returns a rule client.
+func (c *Client) Rules() *RuleClient {
+	return NewRuleClient(c.transport)
+}
+
+// Servers returns a server client.
+func (c *Client) Servers() *ServerClient {
+	return NewServerClient(c.transport)
+}
+
+// Ssls returns an ssl client.
+func (c *Client) Ssls() *SslClient {
+	return NewSslClient(c.transport)
+}
