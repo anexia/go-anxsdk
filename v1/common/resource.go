@@ -1,4 +1,4 @@
-package v1
+package common
 
 // Resource is a combination of id and name.
 type Resource struct {

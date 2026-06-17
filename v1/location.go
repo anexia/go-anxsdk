@@ -5,7 +5,7 @@ import (
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
-	"github.com/anexia/go-anxsdk/v1/errorv1"
+	"github.com/anexia/go-anxsdk/v1/common"
 )
 
 // LocationListParams defines the available parameters for the location list endpoint.
@@ -45,7 +45,7 @@ func NewLocationsClient(transport *internal.Transport) *LocationsClient {
 func (v *LocationsClient) List(ctx context.Context, pagingParams paging.Params, params LocationListParams) (paging.PagedResponse[LocationListItem], error) {
 	resp := internal.RequestWrapper[paging.PagedResponse[LocationListItem]]{}
 	err := v.transport.Get(ctx, "/api/core/v1/location.json", &resp, pagingParams, params)
-	return resp.Data, errorv1.MapTransportError(err)
+	return resp.Data, common.MapTransportError(err)
 }
 
 // ListPageFetcher returns a paging.PageFetcher for locations.

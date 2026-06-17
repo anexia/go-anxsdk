@@ -6,6 +6,7 @@ import (
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
+	"github.com/anexia/go-anxsdk/v1/common"
 )
 
 type BackendSwitchingRuleListParams struct {
@@ -43,7 +44,7 @@ func NewBackendSwitchingRuleClient(transport *internal.Transport) *BackendSwitch
 func (c *BackendSwitchingRuleClient) List(ctx context.Context, pagingParams paging.Params, params BackendSwitchingRuleListParams) (paging.PagedResponse[BackendSwitchingRuleListItem], error) {
 	resp := internal.RequestWrapper[paging.PagedResponse[BackendSwitchingRuleListItem]]{}
 	err := c.transport.Get(ctx, "/api/LBaaS/v1/backendswitchingrule.json", &resp, pagingParams, params)
-	return resp.Data, v1.mapTransportError(err)
+	return resp.Data, common.MapTransportError(err)
 }
 
 // ListPageFetcher returns a paging.PageFetcher for backendSwitchingRules.
@@ -57,5 +58,5 @@ func (c *BackendSwitchingRuleClient) ListPageFetcher(params BackendSwitchingRule
 func (c *BackendSwitchingRuleClient) Get(ctx context.Context, identifier string) (BackendSwitchingRuleGetResponse, error) {
 	resp := BackendSwitchingRuleGetResponse{}
 	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/LBaaS/v1/backendswitchingrule.json/%s", identifier), &resp)
-	return resp, v1.mapTransportError(err)
+	return resp, common.MapTransportError(err)
 }

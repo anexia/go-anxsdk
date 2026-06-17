@@ -6,8 +6,7 @@ import (
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
-	v1 "github.com/anexia/go-anxsdk/v1"
-	"github.com/anexia/go-anxsdk/v1/errorv1"
+	"github.com/anexia/go-anxsdk/v1/common"
 )
 
 type LoadBalancerListParams struct {
@@ -25,15 +24,15 @@ func (i LoadBalancerListItem) GetID() string {
 }
 
 type LoadBalancerGetResponse struct {
-	CustomerIdentifier         *string       `json:"customer_identifier"`
-	ResellerIdentifier         string        `json:"reseller_identifier"`
-	CriticalOperationPassword  *string       `json:"critical_operation_password"`
-	CriticalOperationConfirmed bool          `json:"critical_operation_confirmed"`
-	Identifier                 string        `json:"identifier"`
-	Name                       string        `json:"name"`
-	State                      v1.State      `json:"state"`
-	IpAddress                  string        `json:"ip_address"`
-	AutomationRules            []v1.Resource `json:"automation_rules"`
+	CustomerIdentifier         *string              `json:"customer_identifier"`
+	ResellerIdentifier         string               `json:"reseller_identifier"`
+	CriticalOperationPassword  *string              `json:"critical_operation_password"`
+	CriticalOperationConfirmed bool                 `json:"critical_operation_confirmed"`
+	Identifier                 string               `json:"identifier"`
+	Name                       string               `json:"name"`
+	State                      common.State[string] `json:"state"`
+	IpAddress                  string               `json:"ip_address"`
+	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
 
 // LoadBalancerClient is an api client for managing load balancers.
@@ -52,7 +51,7 @@ func NewLoadBalancerClient(transport *internal.Transport) *LoadBalancerClient {
 func (c *LoadBalancerClient) List(ctx context.Context, pagingParams paging.Params, params LoadBalancerListParams) (paging.PagedResponse[LoadBalancerListItem], error) {
 	resp := internal.RequestWrapper[paging.PagedResponse[LoadBalancerListItem]]{}
 	err := c.transport.Get(ctx, "/api/LBaaS/v1/loadbalancer.json", &resp, pagingParams, params)
-	return resp.Data, errorv1.MapTransportError(err)
+	return resp.Data, common.MapTransportError(err)
 }
 
 // ListPageFetcher returns a paging.PageFetcher for load balancers.
@@ -66,5 +65,5 @@ func (c *LoadBalancerClient) ListPageFetcher(params LoadBalancerListParams) pagi
 func (c *LoadBalancerClient) Get(ctx context.Context, identifier string) (LoadBalancerGetResponse, error) {
 	resp := LoadBalancerGetResponse{}
 	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/LBaaS/v1/loadbalancer.json/%s", identifier), &resp)
-	return resp, errorv1.MapTransportError(err)
+	return resp, common.MapTransportError(err)
 }
