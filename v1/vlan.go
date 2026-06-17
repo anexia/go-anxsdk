@@ -6,6 +6,7 @@ import (
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
+	"github.com/anexia/go-anxsdk/v1/errorv1"
 )
 
 // VlanCreateRequest defines all fields available when creating a new vlan.
@@ -100,28 +101,28 @@ func NewVlansClient(transport *internal.Transport) *VlansClient {
 func (v *VlansClient) Create(ctx context.Context, request VlanCreateRequest) (VlanCreateResponse, error) {
 	resp := VlanCreateResponse{}
 	err := v.transport.Post(ctx, "/api/vlan/v1/vlan.json", request, &resp)
-	return resp, mapTransportError(err)
+	return resp, errorv1.MapTransportError(err)
 }
 
 // Get returns a vlan by identifier.
 func (v *VlansClient) Get(ctx context.Context, identifier string) (VlanGetResponse, error) {
 	resp := VlanGetResponse{}
 	err := v.transport.GetSingle(ctx, fmt.Sprintf("api/vlan/v1/vlan.json/%s", identifier), &resp)
-	return resp, mapTransportError(err)
+	return resp, errorv1.MapTransportError(err)
 }
 
 // Update updates a vlan by identifier.
 func (v *VlansClient) Update(ctx context.Context, identifier string, request VlanUpdateRequest) (VlanUpdateResponse, error) {
 	resp := VlanUpdateResponse{}
 	err := v.transport.Put(ctx, fmt.Sprintf("/api/vlan/v1/vlan.json/%s", identifier), request, &resp)
-	return resp, mapTransportError(err)
+	return resp, errorv1.MapTransportError(err)
 }
 
 // List returns a paged list of vlans.
 func (v *VlansClient) List(ctx context.Context, pageParams paging.Params, params VlanListParams) (paging.PagedResponse[VlanListItem], error) {
 	resp := internal.RequestWrapper[paging.PagedResponse[VlanListItem]]{}
 	err := v.transport.Get(ctx, "/api/vlan/v1/vlan.json", &resp, pageParams, params)
-	return resp.Data, mapTransportError(err)
+	return resp.Data, errorv1.MapTransportError(err)
 }
 
 // ListPageFetcher returns a paging.PageFetcher for vlans.
@@ -135,7 +136,7 @@ func (v *VlansClient) ListPageFetcher(params VlanListParams) paging.PageFetcher[
 func (v *VlansClient) ListFiltered(ctx context.Context, pageParams paging.Params, params VlanFilteredParams) (paging.PagedResponse[VlanListItem], error) {
 	resp := internal.RequestWrapper[paging.PagedResponse[VlanListItem]]{}
 	err := v.transport.Get(ctx, "/api/vlan/v1/vlan/filtered.json", &resp, pageParams, params)
-	return resp.Data, mapTransportError(err)
+	return resp.Data, errorv1.MapTransportError(err)
 }
 
 // ListFilteredPageFetcher returns a paging.PageFetcher for filtered vlans.
@@ -148,5 +149,5 @@ func (v *VlansClient) ListFilteredPageFetcher(params VlanFilteredParams) paging.
 // Delete deletes a vlan by identifier.
 func (v *VlansClient) Delete(ctx context.Context, identifier string) error {
 	err := v.transport.Delete(ctx, fmt.Sprintf("/api/vlan/v1/vlan.json/%s", identifier))
-	return mapTransportError(err)
+	return errorv1.MapTransportError(err)
 }

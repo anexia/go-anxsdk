@@ -1,4 +1,4 @@
-package v1
+package errorv1
 
 import (
 	"errors"
@@ -19,7 +19,7 @@ func (a *APIError) Error() string {
 	return fmt.Sprintf("api error: StatusCode=%d, Status=%s, Body=%s", a.StatusCode, a.Status, a.Body)
 }
 
-func mapTransportError(err error) error {
+func MapTransportError(err error) error {
 	if err == nil {
 		return nil
 	}

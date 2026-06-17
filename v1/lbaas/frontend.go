@@ -1,4 +1,4 @@
-package v1
+package lbaas
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
+	v1 "github.com/anexia/go-anxsdk/v1"
 )
 
 type FrontendListParams struct {
@@ -23,20 +24,20 @@ func (i FrontendListItem) GetID() string {
 }
 
 type FrontendGetResponse struct {
-	CustomerIdentifier         *string    `json:"customer_identifier"`
-	ResellerIdentifier         string     `json:"reseller_identifier"`
-	CriticalOperationPassword  *string    `json:"critical_operation_password"`
-	CriticalOperationConfirmed bool       `json:"critical_operation_confirmed"`
-	Identifier                 string     `json:"identifier"`
-	Name                       string     `json:"name"`
-	State                      State      `json:"state"`
-	Enable                     bool       `json:"enable"`
-	LoadBalancer               Resource   `json:"load_balancer"`
-	DefaultBackend             Resource   `json:"default_backend"`
-	Mode                       string     `json:"mode"`
-	ClientTimeout              string     `json:"client_timeout"`
-	Redeploy                   bool       `json:"redeploy"`
-	AutomationRules            []Resource `json:"automation_rules"`
+	CustomerIdentifier         *string       `json:"customer_identifier"`
+	ResellerIdentifier         string        `json:"reseller_identifier"`
+	CriticalOperationPassword  *string       `json:"critical_operation_password"`
+	CriticalOperationConfirmed bool          `json:"critical_operation_confirmed"`
+	Identifier                 string        `json:"identifier"`
+	Name                       string        `json:"name"`
+	State                      v1.State      `json:"state"`
+	Enable                     bool          `json:"enable"`
+	LoadBalancer               v1.Resource   `json:"load_balancer"`
+	DefaultBackend             v1.Resource   `json:"default_backend"`
+	Mode                       string        `json:"mode"`
+	ClientTimeout              string        `json:"client_timeout"`
+	Redeploy                   bool          `json:"redeploy"`
+	AutomationRules            []v1.Resource `json:"automation_rules"`
 }
 
 // FrontendClient is an api client for managing load balancer frontends.
@@ -55,7 +56,7 @@ func NewFrontendClient(transport *internal.Transport) *FrontendClient {
 func (c *FrontendClient) List(ctx context.Context, pagingParams paging.Params, params FrontendListParams) (paging.PagedResponse[FrontendListItem], error) {
 	resp := internal.RequestWrapper[paging.PagedResponse[FrontendListItem]]{}
 	err := c.transport.Get(ctx, "/api/LBaaS/v1/frontend.json", &resp, pagingParams, params)
-	return resp.Data, mapTransportError(err)
+	return resp.Data, v1.mapTransportError(err)
 }
 
 // ListPageFetcher returns a paging.PageFetcher for frontends.
@@ -69,5 +70,5 @@ func (c *FrontendClient) ListPageFetcher(params FrontendListParams) paging.PageF
 func (c *FrontendClient) Get(ctx context.Context, identifier string) (FrontendGetResponse, error) {
 	resp := FrontendGetResponse{}
 	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/LBaaS/v1/frontend.json/%s", identifier), &resp)
-	return resp, mapTransportError(err)
+	return resp, v1.mapTransportError(err)
 }

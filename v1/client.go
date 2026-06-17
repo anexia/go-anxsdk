@@ -1,6 +1,9 @@
 package v1
 
-import "github.com/anexia/go-anxsdk/internal"
+import (
+	"github.com/anexia/go-anxsdk/internal"
+	"github.com/anexia/go-anxsdk/v1/lbaas"
+)
 
 // Client is an anexia v1 api client.
 type Client struct {
@@ -37,4 +40,9 @@ func (c *Client) StageClusters() *ClustersClient {
 // DevClusters returns a dev clusters client.
 func (c *Client) DevClusters() *ClustersClient {
 	return newClustersClient(c.transport, kubernetesEnvironmentDevelopment)
+}
+
+// LBaaS is the entry point to lbaas related clients.
+func (c *Client) LBaaS() *lbaas.Client {
+	return lbaas.NewClient(c.transport)
 }

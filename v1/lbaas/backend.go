@@ -1,4 +1,4 @@
-package v1
+package lbaas
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
+	v1 "github.com/anexia/go-anxsdk/v1"
 )
 
 type BackendListParams struct {
@@ -23,20 +24,20 @@ func (i BackendListItem) GetID() string {
 }
 
 type BackendGetResponse struct {
-	CustomerIdentifier         *string    `json:"customer_identifier"`
-	ResellerIdentifier         string     `json:"reseller_identifier"`
-	CriticalOperationPassword  *string    `json:"critical_operation_password"`
-	CriticalOperationConfirmed bool       `json:"critical_operation_confirmed"`
-	Identifier                 string     `json:"identifier"`
-	Name                       string     `json:"name"`
-	State                      State      `json:"state"`
-	Enable                     bool       `json:"enable"`
-	LoadBalancer               Resource   `json:"load_balancer"`
-	HealthCheck                string     `json:"health_check"`
-	Mode                       string     `json:"mode"`
-	ServerTimeout              int        `json:"server_timeout"`
-	Redeploy                   bool       `json:"redeploy"`
-	AutomationRules            []Resource `json:"automation_rules"`
+	CustomerIdentifier         *string       `json:"customer_identifier"`
+	ResellerIdentifier         string        `json:"reseller_identifier"`
+	CriticalOperationPassword  *string       `json:"critical_operation_password"`
+	CriticalOperationConfirmed bool          `json:"critical_operation_confirmed"`
+	Identifier                 string        `json:"identifier"`
+	Name                       string        `json:"name"`
+	State                      v1.State      `json:"state"`
+	Enable                     bool          `json:"enable"`
+	LoadBalancer               v1.Resource   `json:"load_balancer"`
+	HealthCheck                string        `json:"health_check"`
+	Mode                       string        `json:"mode"`
+	ServerTimeout              int           `json:"server_timeout"`
+	Redeploy                   bool          `json:"redeploy"`
+	AutomationRules            []v1.Resource `json:"automation_rules"`
 }
 
 // BackendClient is an api client for managing load balancer backends.
@@ -55,7 +56,7 @@ func NewBackendClient(transport *internal.Transport) *BackendClient {
 func (c *BackendClient) List(ctx context.Context, pagingParams paging.Params, params BackendListParams) (paging.PagedResponse[BackendListItem], error) {
 	resp := internal.RequestWrapper[paging.PagedResponse[BackendListItem]]{}
 	err := c.transport.Get(ctx, "/api/LBaaS/v1/backend.json", &resp, pagingParams, params)
-	return resp.Data, mapTransportError(err)
+	return resp.Data, v1.mapTransportError(err)
 }
 
 // ListPageFetcher returns a paging.PageFetcher for backends.
@@ -69,5 +70,5 @@ func (c *BackendClient) ListPageFetcher(params BackendListParams) paging.PageFet
 func (c *BackendClient) Get(ctx context.Context, identifier string) (BackendGetResponse, error) {
 	resp := BackendGetResponse{}
 	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/LBaaS/v1/backend.json/%s", identifier), &resp)
-	return resp, mapTransportError(err)
+	return resp, v1.mapTransportError(err)
 }

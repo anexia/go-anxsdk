@@ -1,4 +1,4 @@
-package v1
+package lbaas
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
+	v1 "github.com/anexia/go-anxsdk/v1"
 )
 
 type BindListParams struct {
@@ -23,20 +24,20 @@ func (i BindListItem) GetID() string {
 }
 
 type BindGetResponse struct {
-	CustomerIdentifier         *string    `json:"customer_identifier"`
-	ResellerIdentifier         string     `json:"reseller_identifier"`
-	CriticalOperationPassword  *string    `json:"critical_operation_password"`
-	CriticalOperationConfirmed bool       `json:"critical_operation_confirmed"`
-	Identifier                 string     `json:"identifier"`
-	Name                       string     `json:"name"`
-	State                      State      `json:"state"`
-	Frontend                   Resource   `json:"frontend"`
-	Address                    *string    `json:"address"`
-	Port                       int        `json:"port"`
-	Ssl                        bool       `json:"ssl"`
-	SslCertificatePath         string     `json:"ssl_certificate_path"`
-	Redeploy                   bool       `json:"redeploy"`
-	AutomationRules            []Resource `json:"automation_rules"`
+	CustomerIdentifier         *string       `json:"customer_identifier"`
+	ResellerIdentifier         string        `json:"reseller_identifier"`
+	CriticalOperationPassword  *string       `json:"critical_operation_password"`
+	CriticalOperationConfirmed bool          `json:"critical_operation_confirmed"`
+	Identifier                 string        `json:"identifier"`
+	Name                       string        `json:"name"`
+	State                      v1.State      `json:"state"`
+	Frontend                   v1.Resource   `json:"frontend"`
+	Address                    *string       `json:"address"`
+	Port                       int           `json:"port"`
+	Ssl                        bool          `json:"ssl"`
+	SslCertificatePath         string        `json:"ssl_certificate_path"`
+	Redeploy                   bool          `json:"redeploy"`
+	AutomationRules            []v1.Resource `json:"automation_rules"`
 }
 
 // BindClient is an api client for managing load balancer binds.
@@ -55,7 +56,7 @@ func NewBindClient(transport *internal.Transport) *BindClient {
 func (c *BindClient) List(ctx context.Context, pagingParams paging.Params, params BindListParams) (paging.PagedResponse[BindListItem], error) {
 	resp := internal.RequestWrapper[paging.PagedResponse[BindListItem]]{}
 	err := c.transport.Get(ctx, "/api/LBaaS/v1/bind.json", &resp, pagingParams, params)
-	return resp.Data, mapTransportError(err)
+	return resp.Data, v1.mapTransportError(err)
 }
 
 // ListPageFetcher returns a paging.PageFetcher for binds.
@@ -69,5 +70,5 @@ func (c *BindClient) ListPageFetcher(params BindListParams) paging.PageFetcher[B
 func (c *BindClient) Get(ctx context.Context, identifier string) (BindGetResponse, error) {
 	resp := BindGetResponse{}
 	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/LBaaS/v1/bind.json/%s", identifier), &resp)
-	return resp, mapTransportError(err)
+	return resp, v1.mapTransportError(err)
 }

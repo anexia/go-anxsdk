@@ -6,6 +6,7 @@ import (
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
+	"github.com/anexia/go-anxsdk/v1/errorv1"
 )
 
 type kubernetesEnvironment string
@@ -239,21 +240,21 @@ func (c *ClustersClient) endpointRoot() string {
 func (c *ClustersClient) Get(ctx context.Context, identifier string) (ClusterGetResponse, error) {
 	resp := ClusterGetResponse{}
 	err := c.transport.GetSingle(ctx, fmt.Sprintf("%s/v1/cluster.json/%s", c.endpointRoot(), identifier), &resp)
-	return resp, mapTransportError(err)
+	return resp, errorv1.MapTransportError(err)
 }
 
 // Update updates a cluster.
 func (c *ClustersClient) Update(ctx context.Context, identifier string, request ClusterUpdateRequest) (ClusterUpdateResponse, error) {
 	resp := ClusterUpdateResponse{}
 	err := c.transport.Put(ctx, fmt.Sprintf("%s/v1/cluster.json/%s", c.endpointRoot(), identifier), request, &resp)
-	return resp, mapTransportError(err)
+	return resp, errorv1.MapTransportError(err)
 }
 
 // List returns a list of paged clusters.
 func (c *ClustersClient) List(ctx context.Context, pageParams paging.Params, params ClusterListParams) (paging.PagedResponse[ClusterListItem], error) {
 	resp := internal.RequestWrapper[paging.PagedResponse[ClusterListItem]]{}
 	err := c.transport.Get(ctx, fmt.Sprintf("%s/v1/cluster.json", c.endpointRoot()), &resp, pageParams, params)
-	return resp.Data, mapTransportError(err)
+	return resp.Data, errorv1.MapTransportError(err)
 }
 
 // ListPageFetcher returns a paging.PageFetcher for clusters.
