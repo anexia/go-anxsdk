@@ -9,10 +9,12 @@ import (
 	"github.com/anexia/go-anxsdk/v1/common"
 )
 
+// LoadBalancerListParams defines the available parameters for the load balancer list endpoint.
 type LoadBalancerListParams struct {
 	Search string `url:"search,omitempty"`
 }
 
+// LoadBalancerListItem is an item in the load balancer list response.
 type LoadBalancerListItem struct {
 	Identifier string `json:"identifier"`
 	Name       string `json:"name"`

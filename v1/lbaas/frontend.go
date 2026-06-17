@@ -9,10 +9,12 @@ import (
 	"github.com/anexia/go-anxsdk/v1/common"
 )
 
+// FrontendListParams defines the available parameters for the frontend list endpoint.
 type FrontendListParams struct {
 	Search string `url:"search,omitempty"`
 }
 
+// FrontendListItem is an item in the frontend list response.
 type FrontendListItem struct {
 	Identifier string `json:"identifier"`
 	Name       string `json:"name"`
@@ -23,6 +25,7 @@ func (i FrontendListItem) GetID() string {
 	return i.Identifier
 }
 
+// FrontendGetResponse represents the response of the frontend get endpoint.
 type FrontendGetResponse struct {
 	CustomerIdentifier         *string              `json:"customer_identifier"`
 	ResellerIdentifier         string               `json:"reseller_identifier"`

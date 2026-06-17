@@ -78,7 +78,7 @@ func (t *RateLimitRoundTripper) RoundTrip(req *http.Request) (*http.Response, er
 
 		if req.Body != nil {
 			if req.GetBody == nil {
-				return nil, ErrNoRewindableBody
+				return nil, ErrNoRewindableBody //nolint:wrapcheck
 			}
 
 			body, err := req.GetBody()

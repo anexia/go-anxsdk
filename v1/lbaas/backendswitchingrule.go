@@ -9,10 +9,12 @@ import (
 	"github.com/anexia/go-anxsdk/v1/common"
 )
 
+// BackendSwitchingRuleListParams defines the available parameters for the backend switching rule list endpoint.
 type BackendSwitchingRuleListParams struct {
 	Search string `url:"search,omitempty"`
 }
 
+// BackendSwitchingRuleListItem is an item in the backend switching rule list response.
 type BackendSwitchingRuleListItem struct {
 	Identifier string `json:"identifier"`
 	Name       string `json:"name"`
@@ -23,6 +25,7 @@ func (i BackendSwitchingRuleListItem) GetID() string {
 	return i.Identifier
 }
 
+// BackendSwitchingRuleGetResponse represents the response of the backend switching rule get endpoint.
 type BackendSwitchingRuleGetResponse struct {
 	Identifier string `json:"identifier"`
 	Name       string `json:"name"`
@@ -41,7 +44,11 @@ func NewBackendSwitchingRuleClient(transport *internal.Transport) *BackendSwitch
 }
 
 // List returns a list of paged backendSwitchingRules.
-func (c *BackendSwitchingRuleClient) List(ctx context.Context, pagingParams paging.Params, params BackendSwitchingRuleListParams) (paging.PagedResponse[BackendSwitchingRuleListItem], error) {
+func (c *BackendSwitchingRuleClient) List(
+	ctx context.Context,
+	pagingParams paging.Params,
+	params BackendSwitchingRuleListParams,
+) (paging.PagedResponse[BackendSwitchingRuleListItem], error) {
 	resp := internal.RequestWrapper[paging.PagedResponse[BackendSwitchingRuleListItem]]{}
 	err := c.transport.Get(ctx, "/api/LBaaS/v1/backendswitchingrule.json", &resp, pagingParams, params)
 	return resp.Data, common.MapTransportError(err)

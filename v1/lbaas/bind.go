@@ -9,10 +9,12 @@ import (
 	"github.com/anexia/go-anxsdk/v1/common"
 )
 
+// BindListParams defines the available parameters for the bind list endpoint.
 type BindListParams struct {
 	Search string `url:"search,omitempty"`
 }
 
+// BindListItem is an item in the bind list response.
 type BindListItem struct {
 	Identifier string `json:"identifier"`
 	Name       string `json:"name"`
@@ -23,6 +25,7 @@ func (i BindListItem) GetID() string {
 	return i.Identifier
 }
 
+// BindGetResponse represents the response of the bind get endpoint.
 type BindGetResponse struct {
 	CustomerIdentifier         *string              `json:"customer_identifier"`
 	ResellerIdentifier         string               `json:"reseller_identifier"`

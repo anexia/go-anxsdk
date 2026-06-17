@@ -9,10 +9,12 @@ import (
 	"github.com/anexia/go-anxsdk/v1/common"
 )
 
+// BackendListParams defines the available parameters for the backend list endpoint.
 type BackendListParams struct {
 	Search string `url:"search,omitempty"`
 }
 
+// BackendListItem is an item in the backend list response.
 type BackendListItem struct {
 	Identifier string `json:"identifier"`
 	Name       string `json:"name"`
@@ -23,6 +25,7 @@ func (i BackendListItem) GetID() string {
 	return i.Identifier
 }
 
+// BackendGetResponse represents the response of the backend get endpoint.
 type BackendGetResponse struct {
 	CustomerIdentifier         *string              `json:"customer_identifier"`
 	ResellerIdentifier         string               `json:"reseller_identifier"`
