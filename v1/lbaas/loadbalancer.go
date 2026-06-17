@@ -23,6 +23,7 @@ func (i LoadBalancerListItem) GetID() string {
 	return i.Identifier
 }
 
+// LoadBalancerGetResponse represents the response of the load balancer get endpoint.
 type LoadBalancerGetResponse struct {
 	CustomerIdentifier         *string              `json:"customer_identifier"`
 	ResellerIdentifier         string               `json:"reseller_identifier"`
@@ -31,7 +32,7 @@ type LoadBalancerGetResponse struct {
 	Identifier                 string               `json:"identifier"`
 	Name                       string               `json:"name"`
 	State                      common.State[string] `json:"state"`
-	IpAddress                  string               `json:"ip_address"`
+	IPAddress                  string               `json:"ip_address"`
 	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
 
