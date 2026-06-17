@@ -36,6 +36,10 @@ linters:
     - whitespace
     - wrapcheck
   settings:
+    wrapcheck:
+      ignore-sigs:
+        - github.com/anexia/go-anxsdk/v1/common.MapTransportError
+        - fmt.Errorf
     revive:
       enable-all-rules: true
       rules:
