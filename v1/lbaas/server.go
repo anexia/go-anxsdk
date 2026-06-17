@@ -3,15 +3,35 @@ package lbaas
 import (
 	"context"
 	"fmt"
+	"net/url"
+	"strings"
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
 	"github.com/anexia/go-anxsdk/v1/common"
 )
 
+// ServerFilters is a struct that represents all filterable fields of a server.
+type ServerFilters struct {
+	Backend *string
+}
+
+// EncodeValues implements the query.Encode interface for ServerFilters.
+func (f *ServerFilters) EncodeValues(key string, v *url.Values) error {
+	sb := strings.Builder{}
+
+	if f.Backend != nil {
+		sb.WriteString(fmt.Sprintf("backend=%s", *f.Backend))
+	}
+
+	v.Add(key, sb.String())
+	return nil
+}
+
 // ServerListParams defines the available parameters for the server list endpoint.
 type ServerListParams struct {
-	Search string `url:"search,omitempty"`
+	Search  string         `url:"search,omitempty"`
+	Filters *ServerFilters `url:"filters,omitempty"`
 }
 
 // ServerListItem is an item in the server list response.

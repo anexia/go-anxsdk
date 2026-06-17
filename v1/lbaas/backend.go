@@ -3,15 +3,35 @@ package lbaas
 import (
 	"context"
 	"fmt"
+	"net/url"
+	"strings"
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
 	"github.com/anexia/go-anxsdk/v1/common"
 )
 
+// BackendFilters is a struct that represents all filterable fields of a backend.
+type BackendFilters struct {
+	LoadBalancer *string
+}
+
+// EncodeValues implements the query.Encode interface for BackendFilters.
+func (f *BackendFilters) EncodeValues(key string, v *url.Values) error {
+	sb := strings.Builder{}
+
+	if f.LoadBalancer != nil {
+		sb.WriteString(fmt.Sprintf("load_balancer=%s", *f.LoadBalancer))
+	}
+
+	v.Add(key, sb.String())
+	return nil
+}
+
 // BackendListParams defines the available parameters for the backend list endpoint.
 type BackendListParams struct {
-	Search string `url:"search,omitempty"`
+	Search  string          `url:"search,omitempty"`
+	Filters *BackendFilters `url:"filters,omitempty"`
 }
 
 // BackendListItem is an item in the backend list response.
