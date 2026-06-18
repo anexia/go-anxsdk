@@ -21,7 +21,7 @@ func (f *ServerFilters) EncodeValues(key string, v *url.Values) error {
 	sb := strings.Builder{}
 
 	if f.Backend != nil {
-		sb.WriteString(fmt.Sprintf("backend=%s", *f.Backend))
+		_, _ = fmt.Fprintf(&sb, "backend=%s", *f.Backend)
 	}
 
 	v.Add(key, sb.String())

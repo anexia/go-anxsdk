@@ -21,15 +21,15 @@ func main() {
 
 	ctx := context.Background()
 
-	list, err := client.V2().Clusters().List(ctx, paging.Params{Page: 1, Limit: 3}, v2.ClusterListParams{})
+	list, err := client.V2().Clusters().ListFull(ctx, paging.Params{Page: 1, Limit: 3}, v2.ClusterListParams{})
 
-	_, _ = fmt.Printf("%s\t%s\n", "Identifier                      ", "Name")
+	_, _ = fmt.Printf("%s\t%s\t%s\n", "Identifier                      ", "Name", "State")
 	if err != nil {
 		panic(err)
 	}
 
 	for _, item := range list.Data {
-		_, _ = fmt.Printf("%s\t%s\n", item.Identifier, item.Name)
+		_, _ = fmt.Printf("%s\t%s\t%s\n", item.Identifier, item.Name, item.State.Title)
 	}
 
 	iter := paging.PaginateAndLoad(context.Background(), client.V2().DevClusters().ListPageFetcher(v2.ClusterListParams{}), client.V2().DevClusters().Get)

@@ -68,6 +68,50 @@ func TestTransport_Get_Success(t *testing.T) {
 	assert.Equal("ok", out.Data.Message)
 }
 
+func TestTransport_Get_SuccessWithAllAttributes(t *testing.T) {
+	// arrange
+	require := require.New(t)
+	assert := assert.New(t)
+
+	ts := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+		// request assertions (contract validation)
+		assert.Equal(http.MethodGet, r.Method)
+		assert.Equal("/v1/test", r.URL.Path)
+		assert.Equal("Token test-key", r.Header.Get("Authorization"))
+		assert.Equal("2", r.URL.Query().Get("foo"))
+		assert.Equal("all", r.URL.Query().Get("attributes"))
+
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"data": map[string]any{
+				"message": "ok",
+			},
+		})
+	})
+	defer ts.Close()
+
+	tr := NewTransport(ts.URL, "test-key", ts.Client())
+
+	var out struct {
+		Data struct {
+			Message string `json:"message"`
+		} `json:"data"`
+	}
+
+	params := struct {
+		Foo int `url:"foo"`
+	}{
+		Foo: 2,
+	}
+
+	// act
+	err := tr.Get(context.Background(), "/v1/test", &out, paging.DefaultParams(), NewAllAttributesWrapper(params))
+
+	// assert
+	require.NoError(err)
+	assert.Equal("ok", out.Data.Message)
+}
+
 func TestTransport_Post_Success(t *testing.T) {
 	// arrange
 	require := require.New(t)

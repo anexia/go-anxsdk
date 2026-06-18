@@ -21,7 +21,7 @@ func (f *FrontendFilters) EncodeValues(key string, v *url.Values) error {
 	sb := strings.Builder{}
 
 	if f.LoadBalancer != nil {
-		sb.WriteString(fmt.Sprintf("load_balancer=%s", *f.LoadBalancer))
+		_, _ = fmt.Fprintf(&sb, "load_balancer=%s", *f.LoadBalancer)
 	}
 
 	v.Add(key, sb.String())

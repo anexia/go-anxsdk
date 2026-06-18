@@ -47,7 +47,15 @@ func (t *Transport) buildRequestURL(endpoint string, pageParams *paging.Params, 
 
 	base = base.ResolveReference(rel)
 
-	q, err := query.Values(filterParams)
+	var q url.Values
+	switch w := (filterParams).(type) {
+	case AllAttributesWrapper:
+		q, err = query.Values(w.Params)
+		q.Set("attributes", "all")
+	default:
+		q, err = query.Values(filterParams)
+	}
+
 	if err != nil {
 		return "", fmt.Errorf("building query params: %w", err)
 	}
