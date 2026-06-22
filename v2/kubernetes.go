@@ -6,6 +6,7 @@ import (
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
+	"github.com/anexia/go-anxsdk/v1/common"
 )
 
 // KubernetesEnv is used to specify the environment to use.
@@ -71,21 +72,13 @@ type ClusterListParams struct {
 // ClusterListItem is an item in the cluster list response.
 type ClusterListItem Resource
 
-// State represents a clusters current state.
-// Maybe extract out as soon as others need it too.
-type State struct {
-	Title string       `json:"title"`
-	ID    ClusterState `json:"id"`
-	Type  int          `json:"type"`
-}
-
 // ClusterGetResponse represents the response of the cluster get endpoint.
 type ClusterGetResponse struct {
 	CustomerIdentifier             string                         `json:"customer_identifier"`
 	ResellerIdentifier             string                         `json:"reseller_identifier"`
 	Identifier                     string                         `json:"identifier"`
 	Name                           string                         `json:"name"`
-	State                          State                          `json:"state"`
+	State                          common.State[ClusterState]     `json:"state"`
 	Location                       Resource                       `json:"location"`
 	Version                        IDTitleTuple[ClusterVersion]   `json:"version"`
 	PatchVersion                   string                         `json:"patch_version"`
@@ -162,65 +155,65 @@ type ClusterUpdateRequest struct {
 
 // ClusterUpdateResponse represents the response of the cluster update endpoint.
 type ClusterUpdateResponse struct {
-	CustomerIdentifier             string     `json:"customer_identifier"`
-	ResellerIdentifier             string     `json:"reseller_identifier"`
-	Identifier                     string     `json:"identifier"`
-	Name                           string     `json:"name"`
-	State                          State      `json:"state"`
-	Location                       Resource   `json:"location"`
-	Version                        string     `json:"version"`
-	PatchVersion                   any        `json:"patch_version"`
-	Kubeconfig                     string     `json:"kubeconfig"`
-	Autoscaling                    bool       `json:"autoscaling"`
-	EnablePersistentStorage        bool       `json:"enable_persistent_storage"`
-	CniPlugin                      string     `json:"cni_plugin"`
-	ApiserverAllowlist             any        `json:"apiserver_allowlist"`
-	BackendName                    string     `json:"backend_name"`
-	Backend                        string     `json:"backend"`
-	MaintenanceWindowStartTime     string     `json:"maintenance_window_start_time"`
-	MaintenanceWindowDuration      string     `json:"maintenance_window_duration"`
-	ServiceUser                    Resource   `json:"service_user"`
-	ManageInternalIpv4Prefix       bool       `json:"manage_internal_ipv4_prefix"`
-	InternalIpv4Prefix             Resource   `json:"internal_ipv4_prefix"`
-	NeedsServiceVms                bool       `json:"needs_service_vms"`
-	EnableNatGateways              bool       `json:"enable_nat_gateways"`
-	EnableLbaas                    bool       `json:"enable_lbaas"`
-	ExternalIPFamilies             string     `json:"external_ip_families"`
-	ManageExternalIpv4Prefix       bool       `json:"manage_external_ipv4_prefix"`
-	ExternalIpv4Prefix             Resource   `json:"external_ipv4_prefix"`
-	ManageExternalIpv6Prefix       bool       `json:"manage_external_ipv6_prefix"`
-	ExternalIpv6Prefix             Resource   `json:"external_ipv6_prefix"`
-	ServiceVM01                    Resource   `json:"service_vm_01"`
-	ServiceVM02                    Resource   `json:"service_vm_02"`
-	ServiceVM01InternalIpv4Address Resource   `json:"service_vm_01_internal_ipv4_address"`
-	ServiceVM02InternalIpv4Address Resource   `json:"service_vm_02_internal_ipv4_address"`
-	ServiceVM01ExternalIpv4Address Resource   `json:"service_vm_01_external_ipv4_address"`
-	ServiceVM02ExternalIpv4Address Resource   `json:"service_vm_02_external_ipv4_address"`
-	ServiceVM01ExternalIpv6Address Resource   `json:"service_vm_01_external_ipv6_address"`
-	ServiceVM02ExternalIpv6Address Resource   `json:"service_vm_02_external_ipv6_address"`
-	ServiceLb01                    Resource   `json:"service_lb_01"`
-	ServiceLb02                    Resource   `json:"service_lb_02"`
-	ExternalIpv4Vip                Resource   `json:"external_ipv4_vip"`
-	ExternalIpv6Vip                Resource   `json:"external_ipv6_vip"`
-	KKPApiLbaasBackend01           Resource   `json:"kkp_api_lbaas_backend_01"`
-	KKPApiLbaasBackend02           Resource   `json:"kkp_api_lbaas_backend_02"`
-	KKPVpnLbaasBackend01           Resource   `json:"kkp_vpn_lbaas_backend_01"`
-	KKPVpnLbaasBackend02           Resource   `json:"kkp_vpn_lbaas_backend_02"`
-	StorageServerInterfaceAddress  any        `json:"storage_server_interface_address"`
-	KKPProjectID                   string     `json:"kkp_project_id"`
-	KKPClusterID                   string     `json:"kkp_cluster_id"`
-	InternalVlan                   any        `json:"internal_vlan"`
-	ExternalVlan                   any        `json:"external_vlan"`
-	EnableOidcAuthentication       bool       `json:"enable_oidc_authentication"`
-	OIDCClientID                   any        `json:"oidc_client_id"`
-	OIDCIssuerURL                  any        `json:"oidc_issuer_url"`
-	OIDCGroupsClaim                string     `json:"oidc_groups_claim"`
-	OIDCUsernameClaim              string     `json:"oidc_username_claim"`
-	OIDCExtraScopes                any        `json:"oidc_extra_scopes"`
-	OIDCGroupsPrefix               any        `json:"oidc_groups_prefix"`
-	OIDCRequiredClaim              any        `json:"oidc_required_claim"`
-	OIDCUsernamePrefix             any        `json:"oidc_username_prefix"`
-	AutomationRules                []Resource `json:"automation_rules"`
+	CustomerIdentifier             string                     `json:"customer_identifier"`
+	ResellerIdentifier             string                     `json:"reseller_identifier"`
+	Identifier                     string                     `json:"identifier"`
+	Name                           string                     `json:"name"`
+	State                          common.State[ClusterState] `json:"state"`
+	Location                       Resource                   `json:"location"`
+	Version                        string                     `json:"version"`
+	PatchVersion                   any                        `json:"patch_version"`
+	Kubeconfig                     string                     `json:"kubeconfig"`
+	Autoscaling                    bool                       `json:"autoscaling"`
+	EnablePersistentStorage        bool                       `json:"enable_persistent_storage"`
+	CniPlugin                      string                     `json:"cni_plugin"`
+	ApiserverAllowlist             any                        `json:"apiserver_allowlist"`
+	BackendName                    string                     `json:"backend_name"`
+	Backend                        string                     `json:"backend"`
+	MaintenanceWindowStartTime     string                     `json:"maintenance_window_start_time"`
+	MaintenanceWindowDuration      string                     `json:"maintenance_window_duration"`
+	ServiceUser                    Resource                   `json:"service_user"`
+	ManageInternalIpv4Prefix       bool                       `json:"manage_internal_ipv4_prefix"`
+	InternalIpv4Prefix             Resource                   `json:"internal_ipv4_prefix"`
+	NeedsServiceVms                bool                       `json:"needs_service_vms"`
+	EnableNatGateways              bool                       `json:"enable_nat_gateways"`
+	EnableLbaas                    bool                       `json:"enable_lbaas"`
+	ExternalIPFamilies             string                     `json:"external_ip_families"`
+	ManageExternalIpv4Prefix       bool                       `json:"manage_external_ipv4_prefix"`
+	ExternalIpv4Prefix             Resource                   `json:"external_ipv4_prefix"`
+	ManageExternalIpv6Prefix       bool                       `json:"manage_external_ipv6_prefix"`
+	ExternalIpv6Prefix             Resource                   `json:"external_ipv6_prefix"`
+	ServiceVM01                    Resource                   `json:"service_vm_01"`
+	ServiceVM02                    Resource                   `json:"service_vm_02"`
+	ServiceVM01InternalIpv4Address Resource                   `json:"service_vm_01_internal_ipv4_address"`
+	ServiceVM02InternalIpv4Address Resource                   `json:"service_vm_02_internal_ipv4_address"`
+	ServiceVM01ExternalIpv4Address Resource                   `json:"service_vm_01_external_ipv4_address"`
+	ServiceVM02ExternalIpv4Address Resource                   `json:"service_vm_02_external_ipv4_address"`
+	ServiceVM01ExternalIpv6Address Resource                   `json:"service_vm_01_external_ipv6_address"`
+	ServiceVM02ExternalIpv6Address Resource                   `json:"service_vm_02_external_ipv6_address"`
+	ServiceLb01                    Resource                   `json:"service_lb_01"`
+	ServiceLb02                    Resource                   `json:"service_lb_02"`
+	ExternalIpv4Vip                Resource                   `json:"external_ipv4_vip"`
+	ExternalIpv6Vip                Resource                   `json:"external_ipv6_vip"`
+	KKPApiLbaasBackend01           Resource                   `json:"kkp_api_lbaas_backend_01"`
+	KKPApiLbaasBackend02           Resource                   `json:"kkp_api_lbaas_backend_02"`
+	KKPVpnLbaasBackend01           Resource                   `json:"kkp_vpn_lbaas_backend_01"`
+	KKPVpnLbaasBackend02           Resource                   `json:"kkp_vpn_lbaas_backend_02"`
+	StorageServerInterfaceAddress  any                        `json:"storage_server_interface_address"`
+	KKPProjectID                   string                     `json:"kkp_project_id"`
+	KKPClusterID                   string                     `json:"kkp_cluster_id"`
+	InternalVlan                   any                        `json:"internal_vlan"`
+	ExternalVlan                   any                        `json:"external_vlan"`
+	EnableOidcAuthentication       bool                       `json:"enable_oidc_authentication"`
+	OIDCClientID                   any                        `json:"oidc_client_id"`
+	OIDCIssuerURL                  any                        `json:"oidc_issuer_url"`
+	OIDCGroupsClaim                string                     `json:"oidc_groups_claim"`
+	OIDCUsernameClaim              string                     `json:"oidc_username_claim"`
+	OIDCExtraScopes                any                        `json:"oidc_extra_scopes"`
+	OIDCGroupsPrefix               any                        `json:"oidc_groups_prefix"`
+	OIDCRequiredClaim              any                        `json:"oidc_required_claim"`
+	OIDCUsernamePrefix             any                        `json:"oidc_username_prefix"`
+	AutomationRules                []Resource                 `json:"automation_rules"`
 }
 
 // ClustersClient is an api client for managing clusters.
