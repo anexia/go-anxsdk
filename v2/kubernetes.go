@@ -71,11 +71,6 @@ type ClusterListParams struct {
 // ClusterListItem is an item in the cluster list response.
 type ClusterListItem Resource
 
-// GetID returns the Identifier of the [ClusterListItem].
-func (c ClusterListItem) GetID() string {
-	return c.Identifier
-}
-
 // State represents a clusters current state.
 // Maybe extract out as soon as others need it too.
 type State struct {
