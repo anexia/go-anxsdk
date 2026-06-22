@@ -6,7 +6,7 @@ import (
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
-	"github.com/anexia/go-anxsdk/v1/common"
+	"github.com/anexia/go-anxsdk/v2/common"
 )
 
 // KubernetesEnv is used to specify the environment to use.
