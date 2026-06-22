@@ -3,35 +3,16 @@ package lbaas
 import (
 	"context"
 	"fmt"
-	"net/url"
-	"strings"
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
 	"github.com/anexia/go-anxsdk/v2/common"
 )
 
-// FrontendFilters is a struct that represents all filterable fields of a frontend.
-type FrontendFilters struct {
-	LoadBalancer *string
-}
-
-// EncodeValues implements the query.Encode interface for FrontendFilters.
-func (f *FrontendFilters) EncodeValues(key string, v *url.Values) error {
-	sb := strings.Builder{}
-
-	if f.LoadBalancer != nil {
-		_, _ = fmt.Fprintf(&sb, "load_balancer=%s", *f.LoadBalancer)
-	}
-
-	v.Add(key, sb.String())
-	return nil
-}
-
 // FrontendListParams defines the available parameters for the frontend list endpoint.
 type FrontendListParams struct {
-	Search  string           `url:"search,omitempty"`
-	Filters *FrontendFilters `url:"filters,omitempty"`
+	Search       string `url:"search,omitempty"`
+	LoadBalancer string `url:"load_balancer,omitempty"`
 }
 
 // FrontendListItem is an item in the frontend list response.
