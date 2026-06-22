@@ -23,20 +23,20 @@ type BackendListItem struct {
 
 // BackendGetResponse represents the response of the backend get endpoint.
 type BackendGetResponse struct {
-	CustomerIdentifier         *string              `json:"customer_identifier"`
-	ResellerIdentifier         string               `json:"reseller_identifier"`
-	CriticalOperationPassword  *string              `json:"critical_operation_password"`
-	CriticalOperationConfirmed bool                 `json:"critical_operation_confirmed"`
-	Identifier                 string               `json:"identifier"`
-	Name                       string               `json:"name"`
-	State                      common.State[string] `json:"state"`
-	Enable                     bool                 `json:"enable"`
-	LoadBalancer               common.Resource      `json:"load_balancer"`
-	HealthCheck                string               `json:"health_check"`
-	Mode                       string               `json:"mode"`
-	ServerTimeout              int                  `json:"server_timeout"`
-	Redeploy                   bool                 `json:"redeploy"`
-	AutomationRules            []common.Resource    `json:"automation_rules"`
+	CustomerIdentifier         *string                     `json:"customer_identifier"`
+	ResellerIdentifier         string                      `json:"reseller_identifier"`
+	CriticalOperationPassword  *string                     `json:"critical_operation_password"`
+	CriticalOperationConfirmed bool                        `json:"critical_operation_confirmed"`
+	Identifier                 string                      `json:"identifier"`
+	Name                       string                      `json:"name"`
+	State                      common.State[string]        `json:"state"`
+	Enable                     bool                        `json:"enable"`
+	LoadBalancer               common.Resource             `json:"load_balancer"`
+	HealthCheck                string                      `json:"health_check"`
+	Mode                       common.IDTitleTuple[string] `json:"mode"`
+	ServerTimeout              int                         `json:"server_timeout"`
+	Redeploy                   bool                        `json:"redeploy"`
+	AutomationRules            []common.Resource           `json:"automation_rules"`
 }
 
 // BackendClient is an api client for managing load balancer backends.

@@ -23,20 +23,20 @@ type FrontendListItem struct {
 
 // FrontendGetResponse represents the response of the frontend get endpoint.
 type FrontendGetResponse struct {
-	CustomerIdentifier         *string              `json:"customer_identifier"`
-	ResellerIdentifier         string               `json:"reseller_identifier"`
-	CriticalOperationPassword  *string              `json:"critical_operation_password"`
-	CriticalOperationConfirmed bool                 `json:"critical_operation_confirmed"`
-	Identifier                 string               `json:"identifier"`
-	Name                       string               `json:"name"`
-	State                      common.State[string] `json:"state"`
-	Enable                     bool                 `json:"enable"`
-	LoadBalancer               common.Resource      `json:"load_balancer"`
-	DefaultBackend             common.Resource      `json:"default_backend"`
-	Mode                       string               `json:"mode"`
-	ClientTimeout              string               `json:"client_timeout"`
-	Redeploy                   bool                 `json:"redeploy"`
-	AutomationRules            []common.Resource    `json:"automation_rules"`
+	CustomerIdentifier         *string                     `json:"customer_identifier"`
+	ResellerIdentifier         string                      `json:"reseller_identifier"`
+	CriticalOperationPassword  *string                     `json:"critical_operation_password"`
+	CriticalOperationConfirmed bool                        `json:"critical_operation_confirmed"`
+	Identifier                 string                      `json:"identifier"`
+	Name                       string                      `json:"name"`
+	State                      common.State[string]        `json:"state"`
+	Enable                     bool                        `json:"enable"`
+	LoadBalancer               common.Resource             `json:"load_balancer"`
+	DefaultBackend             common.Resource             `json:"default_backend"`
+	Mode                       common.IDTitleTuple[string] `json:"mode"`
+	ClientTimeout              string                      `json:"client_timeout"`
+	Redeploy                   bool                        `json:"redeploy"`
+	AutomationRules            []common.Resource           `json:"automation_rules"`
 }
 
 // FrontendClient is an api client for managing load balancer frontends.
