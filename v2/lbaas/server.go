@@ -11,8 +11,8 @@ import (
 
 // ServerListParams defines the available parameters for the server list endpoint.
 type ServerListParams struct {
-	Search       string `url:"search,omitempty"`
-	LoadBalancer string `url:"load_balancer,omitempty"`
+	Search  string `url:"search,omitempty"`
+	Backend string `url:"backend,omitempty"`
 }
 
 // ServerListItem is an item in the server list response.
