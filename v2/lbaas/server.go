@@ -33,7 +33,7 @@ type ServerGetResponse struct {
 	IP                         string               `json:"ip"`
 	Port                       int                  `json:"port"`
 	Backend                    common.Resource      `json:"backend"`
-	Check                      string               `json:"check"`
+	HealthCheck                string               `json:"health_check"`
 	Redeploy                   bool                 `json:"redeploy"`
 	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
