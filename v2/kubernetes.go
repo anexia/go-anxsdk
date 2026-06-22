@@ -266,6 +266,13 @@ func (c *ClustersClient) List(ctx context.Context, pageParams paging.Params, par
 	return resp, mapTransportError(err)
 }
 
+// ListPageFetcher returns a paging.PageFetcher for clusters.
+func (c *ClustersClient) ListPageFetcher(params ClusterListParams) paging.PageFetcher[ClusterListItem] {
+	return func(ctx context.Context, pageParams paging.Params) (paging.PagedResponse[ClusterListItem], error) {
+		return c.List(ctx, pageParams, params)
+	}
+}
+
 // ListFull returns a list of paged clusters with all attributes included.
 func (c *ClustersClient) ListFull(ctx context.Context, pageParams paging.Params, params ClusterListParams) (paging.PagedResponse[ClusterGetResponse], error) {
 	resp := paging.PagedResponse[ClusterGetResponse]{}
@@ -274,10 +281,10 @@ func (c *ClustersClient) ListFull(ctx context.Context, pageParams paging.Params,
 	return resp, mapTransportError(err)
 }
 
-// ListPageFetcher returns a paging.PageFetcher for clusters.
-func (c *ClustersClient) ListPageFetcher(params ClusterListParams) paging.PageFetcher[ClusterListItem] {
-	return func(ctx context.Context, pageParams paging.Params) (paging.PagedResponse[ClusterListItem], error) {
-		return c.List(ctx, pageParams, params)
+// ListFullPageFetcher returns a paging.PageFetcher for clusters with all attributes included.
+func (c *ClustersClient) ListFullPageFetcher(params ClusterListParams) paging.PageFetcher[ClusterGetResponse] {
+	return func(ctx context.Context, pageParams paging.Params) (paging.PagedResponse[ClusterGetResponse], error) {
+		return c.ListFull(ctx, pageParams, params)
 	}
 }
 
