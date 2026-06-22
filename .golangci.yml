@@ -39,6 +39,7 @@ linters:
     wrapcheck:
       ignore-sigs:
         - github.com/anexia/go-anxsdk/v1/common.MapTransportError
+        - github.com/anexia/go-anxsdk/v2/common.MapTransportError
         - fmt.Errorf
     revive:
       enable-all-rules: true
