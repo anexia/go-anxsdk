@@ -2,7 +2,7 @@ package lbaas
 
 import "github.com/anexia/go-anxsdk/internal"
 
-// A struct that hols access method to lbaas related resource clients.
+// Client is a struct that holds access method to lbaas related resource clients.
 type Client struct {
 	transport *internal.Transport
 }
