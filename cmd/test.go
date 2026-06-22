@@ -9,7 +9,7 @@ import (
 	"github.com/anexia/go-anxsdk"
 	"github.com/anexia/go-anxsdk/paging"
 	"github.com/anexia/go-anxsdk/utils"
-	v1 "github.com/anexia/go-anxsdk/v1"
+	v2 "github.com/anexia/go-anxsdk/v2"
 )
 
 func main() {
@@ -27,8 +27,12 @@ func main() {
 		anxsdk.WithHTTPClient(httpClient),
 	)
 
-	clusterClient := client.V1().DevClusters()
-	clusters := paging.PaginateAndLoad(ctx, clusterClient.ListPageFetcher(v1.ClusterListParams{}), clusterClient.Get)
+	clusterClient := client.V2().DevClusters()
+	clusters := paging.Paginate(ctx, clusterClient.ListFullPageFetcher(v2.ClusterListParams{
+		Name:  "a",
+		State: "Foo",
+	}))
+
 	for cluster, err := range clusters {
 		if err != nil {
 			panic(err)
