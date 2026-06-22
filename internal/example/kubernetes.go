@@ -32,7 +32,7 @@ func main() {
 		_, _ = fmt.Printf("%s\t%s\t%s\n", item.Identifier, item.Name, item.State.Title)
 	}
 
-	iter := paging.PaginateAndLoad(context.Background(), client.V2().DevClusters().ListPageFetcher(v2.ClusterListParams{}), client.V2().DevClusters().Get)
+	iter := paging.Paginate(context.Background(), client.V2().DevClusters().ListFullPageFetcher(v2.ClusterListParams{}))
 
 	_, _ = fmt.Printf("%s\t%s\n", "Identifier                      ", "Name")
 
