@@ -5,11 +5,11 @@ import "github.com/anexia/go-anxsdk/internal"
 // Client is an anexia v2 api client.
 type Client struct {
 	transport   *internal.Transport
-	environment KubernetesEnv
+	environment Env
 }
 
 // NewClient creates a new v2 api client.
-func NewClient(transport *internal.Transport, environment KubernetesEnv) *Client {
+func NewClient(transport *internal.Transport, environment Env) *Client {
 	return &Client{
 		transport:   transport,
 		environment: environment,
@@ -18,10 +18,20 @@ func NewClient(transport *internal.Transport, environment KubernetesEnv) *Client
 
 // Clusters returns a clusters client.
 func (c *Client) Clusters() *ClustersClient {
-	return NewClustersClient(c.transport, c.environment)
+	return newClustersClient(c.transport, c.environment)
 }
 
 // Nodepools returns a nodepools client.
 func (c *Client) Nodepools() *NodepoolsClient {
-	return NewNodepoolsClient(c.transport, c.environment)
+	return newNodepoolsClient(c.transport, c.environment)
+}
+
+// NodepoolDisks returns a nodepool disk client.
+func (c *Client) NodepoolDisks() *NodepoolDisksClient {
+	return newNodepoolDisksClient(c.transport, c.environment)
+}
+
+// NodepoolNetworks returns a nodepool network client.
+func (c *Client) NodepoolNetworks() *NodepoolNetworksClient {
+	return newNodepoolNetworksClient(c.transport, c.environment)
 }

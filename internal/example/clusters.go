@@ -13,7 +13,7 @@ import (
 	"github.com/anexia/go-anxsdk/v2/kubernetes"
 )
 
-func main() {
+func clusters() {
 	httpClient := http.DefaultClient
 	httpClient.Transport = utils.NewRateLimitRoundTripper(httpClient.Transport, time.Second*10, 10)
 

@@ -10,6 +10,8 @@ import (
 	"github.com/anexia/go-anxsdk/v2/common"
 )
 
+//revive:disable // self-explanatory constants
+
 type SyncSource string
 
 const (
@@ -49,6 +51,8 @@ const (
 	NodepoolStateError    State = "1"
 )
 
+//revive:enable
+
 // NodepoolListParams defines the available parameters for the nodepool list endpoint.
 type NodepoolListParams struct {
 	Search string `url:"search,omitempty"`
@@ -73,19 +77,17 @@ type NodepoolListParams struct {
 // NodepoolListItem is an item in the nodepool list response.
 type NodepoolListItem common.Resource
 
-// NodepoolGetResponse resource represents the main resource to map to the MachineDeployment in the customer cluster.
+// NodepoolGetResponse represents the response of the nodepool get endpoint.
 type NodepoolGetResponse struct {
-	State              common.State[State] `json:"state,omitempty"`
-	CustomerIdentifier string              `json:"customer_identifier"`
-	ResellerIdentifier string              `json:"reseller_identifier"`
-	Identifier         string              `json:"identifier"`
-	Name               string              `json:"name"`
+	State      common.State[State] `json:"state,omitempty"`
+	Identifier string              `json:"identifier"`
+	Name       string              `json:"name"`
 
 	Cluster            common.Resource                         `json:"cluster"`
 	SyncSource         common.IDTitleTuple[SyncSource]         `json:"syncsource"`
 	Replicas           uint                                    `json:"replicas"`
 	CPUs               uint                                    `json:"cpus"`
-	CPUType            common.IDTitleTuple[CPUPerformanceType] `json:"cpu_performance_type"`
+	CPUPerformanceType common.IDTitleTuple[CPUPerformanceType] `json:"cpu_performance_type"`
 	MemoryBytes        uint64                                  `json:"memory"`
 	OperatingSystem    common.IDTitleTuple[OS]                 `json:"operating_system"`
 	AutoscalerEnabled  bool                                    `json:"autoscaler_enabled"`
@@ -94,8 +96,8 @@ type NodepoolGetResponse struct {
 
 	DiskSizeBytes       uint64                                   `json:"disk_size"`
 	DiskPerformanceType common.IDTitleTuple[DiskPerformanceType] `json:"disk_performance_type"`
-	AdditionalDisks     []DisksGetResponse                       `json:"additional_disks"`
-	Networks            []NetworkGetResponse                     `json:"networks"`
+	AdditionalDisks     []NodepoolDiskGetResponse                `json:"additional_disks"`
+	Networks            []NodepoolNetworkGetResponse             `json:"networks"`
 
 	DNSOverrideIPv4 bool   `json:"dns_override_ipv4"`
 	DNSv4Entry1     string `json:"dns_v4_1"`
@@ -116,21 +118,47 @@ type NodepoolGetResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+// NodepoolUpdateRequest represents all changes made to a nodepool during an update request.
 type NodepoolUpdateRequest struct {
-	// TODO
-}
+	Name      *string `json:"name,omitempty"`
+	ClusterID *string `json:"cluster,omitempty"`
 
-type NodepoolUpdateResponse struct {
-	// TODO
+	SyncSource         *string `json:"syncsource,omitempty"`
+	Replicas           *uint   `json:"replicas,omitempty"`
+	CPUs               *uint   `json:"cpus,omitempty"`
+	CPUPerformanceType *string `json:"cpu_performance_type,omitempty"`
+	MemoryBytes        *uint64 `json:"memory,omitempty"`
+	OperatingSystem    *string `json:"operating_system,omitempty"`
+	AutoscalerEnabled  *bool   `json:"autoscaler_enabled,omitempty"`
+	AutoscalerMinNodes *uint   `json:"autoscaler_min_nodes,omitempty"`
+	AutoscalerMaxNodes *uint   `json:"autoscaler_max_nodes,omitempty"`
+
+	DiskSizeBytes       *uint64                         `json:"disk_size,omitempty"`
+	DiskPerformanceType *string                         `json:"disk_performance_type,omitempty"`
+	AdditionalDisks     *[]NodepoolDiskUpdateRequest    `json:"additional_disks,omitempty"`
+	Networks            *[]NodepoolNetworkUpdateRequest `json:"networks,omitempty"`
+
+	DNSOverrideIPv4 *bool   `json:"dns_override_ipv4,omitempty"`
+	DNSv4Entry1     *string `json:"dns_v4_1,omitempty"`
+	DNSv4Entry2     *string `json:"dns_v4_2,omitempty"`
+
+	DNSOverrideIPv6 *bool   `json:"dns_override_ipv6,omitempty"`
+	DNSv6Entry1     *string `json:"dns_v6_1,omitempty"`
+	DNSv6Entry2     *string `json:"dns_v6_2,omitempty"`
+
+	Taints      *string `json:"taints,omitempty"`
+	Labels      *string `json:"labels,omitempty"`
+	Annotations *string `json:"annotations,omitempty"`
+	SSHPubKeys  *string `json:"sshpubkeys,omitempty"`
 }
 
 // NodepoolsClient is an api client for managing Nodepools.
 type NodepoolsClient struct {
-	environment KubernetesEnv
+	environment Env
 	transport   *internal.Transport
 }
 
-func NewNodepoolsClient(transport *internal.Transport, environment KubernetesEnv) *NodepoolsClient {
+func newNodepoolsClient(transport *internal.Transport, environment Env) *NodepoolsClient {
 	return &NodepoolsClient{
 		transport:   transport,
 		environment: environment,
@@ -139,11 +167,11 @@ func NewNodepoolsClient(transport *internal.Transport, environment KubernetesEnv
 
 func (c *NodepoolsClient) endpointRoot() string {
 	switch c.environment {
-	case KubernetesEnvDevelopment:
+	case EnvDevelopment:
 		return "/api/kubernetes-dev"
-	case KubernetesEnvStaging:
+	case EnvStaging:
 		return "/api/kubernetes-stage"
-	case KubernetesEnvProduction:
+	case EnvProduction:
 		return "/api/kubernetes"
 	}
 
@@ -158,8 +186,8 @@ func (c *NodepoolsClient) Get(ctx context.Context, identifier string) (NodepoolG
 }
 
 // Update updates a nodepool.
-func (c *NodepoolsClient) Update(ctx context.Context, identifier string, request NodepoolUpdateRequest) (NodepoolUpdateResponse, error) {
-	resp := NodepoolUpdateResponse{}
+func (c *NodepoolsClient) Update(ctx context.Context, identifier string, request NodepoolUpdateRequest) (NodepoolGetResponse, error) {
+	resp := NodepoolGetResponse{}
 	err := c.transport.Put(ctx, fmt.Sprintf("%s/v2/node_pool/%s", c.endpointRoot(), identifier), request, &resp)
 	return resp, common.MapTransportError(err)
 }

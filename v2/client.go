@@ -19,23 +19,23 @@ func NewClient(transport *internal.Transport) *Client {
 }
 
 // KubernetesByEnv returns a clusters client based on the provided env.
-func (c *Client) KubernetesByEnv(env kubernetes.KubernetesEnv) *kubernetes.Client {
+func (c *Client) KubernetesByEnv(env kubernetes.Env) *kubernetes.Client {
 	return kubernetes.NewClient(c.transport, env)
 }
 
 // Kubernetes returns a clusters client.
 func (c *Client) Kubernetes() *kubernetes.Client {
-	return kubernetes.NewClient(c.transport, kubernetes.KubernetesEnvProduction)
+	return kubernetes.NewClient(c.transport, kubernetes.EnvProduction)
 }
 
 // KubernetesStage returns a stage clusters client.
 func (c *Client) KubernetesStage() *kubernetes.Client {
-	return kubernetes.NewClient(c.transport, kubernetes.KubernetesEnvStaging)
+	return kubernetes.NewClient(c.transport, kubernetes.EnvStaging)
 }
 
 // KubernetesDev returns a dev clusters client.
 func (c *Client) KubernetesDev() *kubernetes.Client {
-	return kubernetes.NewClient(c.transport, kubernetes.KubernetesEnvDevelopment)
+	return kubernetes.NewClient(c.transport, kubernetes.EnvDevelopment)
 }
 
 // LBaaS returns an entrypoint for getting lbaas resource clients.
