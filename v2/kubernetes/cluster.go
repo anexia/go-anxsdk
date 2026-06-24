@@ -1,4 +1,4 @@
-package v2
+package kubernetes
 
 import (
 	"context"
@@ -222,7 +222,7 @@ type ClustersClient struct {
 	transport   *internal.Transport
 }
 
-func newClustersClient(
+func NewClustersClient(
 	transport *internal.Transport,
 	environment KubernetesEnv,
 ) *ClustersClient {

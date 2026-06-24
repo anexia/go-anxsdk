@@ -27,7 +27,7 @@ func main() {
 		anxsdk.WithHTTPClient(httpClient),
 	)
 
-	clusterClient := client.V2().DevClusters()
+	clusterClient := client.V2().KubernetesDev()
 	clusters := paging.Paginate(ctx, clusterClient.ListFullPageFetcher(v2.ClusterListParams{
 		Name:  "a",
 		State: "Foo",

@@ -10,7 +10,7 @@ import (
 	"github.com/anexia/go-anxsdk"
 	"github.com/anexia/go-anxsdk/paging"
 	"github.com/anexia/go-anxsdk/utils"
-	v2 "github.com/anexia/go-anxsdk/v2"
+	"github.com/anexia/go-anxsdk/v2/kubernetes"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 
 	ctx := context.Background()
 
-	list, err := client.V2().Clusters().ListFull(ctx, paging.Params{Page: 1, Limit: 3}, v2.ClusterListParams{})
+	list, err := client.V2().Kubernetes().Clusters().ListFull(ctx, paging.Params{Page: 1, Limit: 3}, kubernetes.ClusterListParams{})
 
 	_, _ = fmt.Printf("%s\t%s\t%s\n", "Identifier                      ", "Name", "State")
 	if err != nil {
@@ -32,7 +32,7 @@ func main() {
 		_, _ = fmt.Printf("%s\t%s\t%s\n", item.Identifier, item.Name, item.State.Title)
 	}
 
-	iter := paging.Paginate(context.Background(), client.V2().DevClusters().ListFullPageFetcher(v2.ClusterListParams{}))
+	iter := paging.Paginate(context.Background(), client.V2().KubernetesDev().Clusters().ListFullPageFetcher(kubernetes.ClusterListParams{}))
 
 	_, _ = fmt.Printf("%s\t%s\n", "Identifier                      ", "Name")
 
