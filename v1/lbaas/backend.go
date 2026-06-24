@@ -40,7 +40,7 @@ type BackendListItem struct {
 	Name       string `json:"name"`
 }
 
-// GetID returns the Itentifier of the BackendListItem.
+// GetID returns the Identifier of the BackendListItem.
 func (i BackendListItem) GetID() string {
 	return i.Identifier
 }

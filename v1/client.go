@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/anexia/go-anxsdk/internal"
+	"github.com/anexia/go-anxsdk/v1/ipam"
 	"github.com/anexia/go-anxsdk/v1/lbaas"
 )
 
@@ -40,6 +41,11 @@ func (c *Client) StageClusters() *ClustersClient {
 // DevClusters returns a dev clusters client.
 func (c *Client) DevClusters() *ClustersClient {
 	return newClustersClient(c.transport, kubernetesEnvironmentDevelopment)
+}
+
+// Ipam is the entry point to ipam related clients.
+func (c *Client) Ipam() *ipam.Client {
+	return ipam.NewClient(c.transport)
 }
 
 // LBaaS is the entry point to lbaas related clients.
