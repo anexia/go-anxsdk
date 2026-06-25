@@ -13,11 +13,13 @@ import (
 type AggregateStatus int
 
 const (
-	AggregateStatusActive   AggregateStatus = 1
+	// AggregateStatusActive means that the aggregate is active.
+	AggregateStatusActive AggregateStatus = 1
+	// AggregateStatusInactive means that the aggregate is inactive.
 	AggregateStatusInactive AggregateStatus = 2
 )
 
-// AggegateListParams defines the available parameters for the aggegate list endpoint.
+// AggregateListParams defines the available parameters for the aggegate list endpoint.
 type AggregateListParams struct {
 	Search string `url:"search,omitempty"`
 }
@@ -38,6 +40,12 @@ type AggregateListItem struct {
 	Name       string `json:"name"`
 }
 
+// GetID returns the Identifier of the AggregateListItem.
+func (i AggregateListItem) GetID() string {
+	return i.Identifier
+}
+
+// AggregateGetResponse represents the response of the aggregate get endpoint.
 type AggregateGetResponse struct {
 	Identifier  string         `json:"identifier"`
 	Name        string         `json:"name"`
@@ -45,7 +53,7 @@ type AggregateGetResponse struct {
 	Description string         `json:"description"`
 	IsFull      bool           `json:"isFull"`
 	Role        string         `json:"role"`
-	Locations   []IpamLocation `json:"locations"`
+	Locations   []Location     `json:"locations"`
 	Private     bool           `json:"private"`
 	Version     AddressVersion `json:"version"`
 }

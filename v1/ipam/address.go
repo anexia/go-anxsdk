@@ -72,7 +72,7 @@ type AddressGetResponse struct {
 	Prefix               string      `json:"prefix"`
 	AssignedResourceName string      `json:"assigned_resource_name"`
 	AssignedResourceId   string      `json:"assigned_resource_id"`
-	RdnsName             interface{} `json:"rdns_name"`
+	RdnsName             *string     `json:"rdns_name"`
 }
 
 // AddressCreateRequest defines all fields available when creating a new address.
@@ -101,7 +101,7 @@ type AddressReserveRandomRequest struct {
 	LocationIdentifier string          `json:"location_identifier"`
 	VlanIdentifier     string          `json:"vlan_identifier"`
 	PrefixIdentifier   *string         `json:"prefix_identifier,omitempty"`
-	IpVersion          *AddressVersion `json:"ip_version,omitempty"`
+	IPVersion          *AddressVersion `json:"ip_version,omitempty"`
 	ReservationPeriod  *int            `json:"reservation_period,omitempty"`
 }
 
@@ -181,35 +181,35 @@ func (c *AddressClient) Get(ctx context.Context, identifier string) (AddressGetR
 }
 
 // Create creates a new address.
-func (v *AddressClient) Create(ctx context.Context, request AddressCreateRequest) (AddressCreateResponse, error) {
+func (c *AddressClient) Create(ctx context.Context, request AddressCreateRequest) (AddressCreateResponse, error) {
 	resp := AddressCreateResponse{}
-	err := v.transport.Post(ctx, "/api/ipam/v1/address.json", request, &resp)
+	err := c.transport.Post(ctx, "/api/ipam/v1/address.json", request, &resp)
 	return resp, common.MapTransportError(err)
 }
 
 // ReserveRandom reserves random ip addresses.
-func (v *AddressClient) ReserveRandom(ctx context.Context, request AddressReserveRandomRequest) (paging.PagedResponse[AddressReserveResponseItem], error) {
+func (c *AddressClient) ReserveRandom(ctx context.Context, request AddressReserveRandomRequest) (paging.PagedResponse[AddressReserveResponseItem], error) {
 	resp := paging.PagedResponse[AddressReserveResponseItem]{}
-	err := v.transport.Post(ctx, "/api/ipam/v1/address/ip/count.json", request, &resp)
+	err := c.transport.Post(ctx, "/api/ipam/v1/address/ip/count.json", request, &resp)
 	return resp, common.MapTransportError(err)
 }
 
 // ReserveSpecific reserves specific ip addresses.
-func (v *AddressClient) ReserveSpecific(ctx context.Context, request AddressReserveSpecificRequest) (paging.PagedResponse[AddressReserveResponseItem], error) {
+func (c *AddressClient) ReserveSpecific(ctx context.Context, request AddressReserveSpecificRequest) (paging.PagedResponse[AddressReserveResponseItem], error) {
 	resp := paging.PagedResponse[AddressReserveResponseItem]{}
-	err := v.transport.Post(ctx, "/api/ipam/v1/address/ip/specific.json", request, &resp)
+	err := c.transport.Post(ctx, "/api/ipam/v1/address/ip/specific.json", request, &resp)
 	return resp, common.MapTransportError(err)
 }
 
 // Update updates an address by identifier.
-func (v *AddressClient) Update(ctx context.Context, identifier string, request AddressUpdateRequest) (AddressUpdateResponse, error) {
+func (c *AddressClient) Update(ctx context.Context, identifier string, request AddressUpdateRequest) (AddressUpdateResponse, error) {
 	resp := AddressUpdateResponse{}
-	err := v.transport.Put(ctx, fmt.Sprintf("/api/ipam/v1/address.json/%s", identifier), request, &resp)
+	err := c.transport.Put(ctx, fmt.Sprintf("/api/ipam/v1/address.json/%s", identifier), request, &resp)
 	return resp, common.MapTransportError(err)
 }
 
 // Delete deletes an address by identifier.
-func (v *AddressClient) Delete(ctx context.Context, identifier string) error {
-	err := v.transport.Delete(ctx, fmt.Sprintf("/api/ipam/v1/address.json/%s", identifier))
+func (c *AddressClient) Delete(ctx context.Context, identifier string) error {
+	err := c.transport.Delete(ctx, fmt.Sprintf("/api/ipam/v1/address.json/%s", identifier))
 	return common.MapTransportError(err)
 }

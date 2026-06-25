@@ -20,7 +20,7 @@ type SslListItem struct {
 	Name       string `json:"name"`
 }
 
-// GetID returns the Itentifier of the SslListItem.
+// GetID returns the Identifier of the SslListItem.
 func (i SslListItem) GetID() string {
 	return i.Identifier
 }

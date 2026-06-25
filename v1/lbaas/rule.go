@@ -20,7 +20,7 @@ type RuleListItem struct {
 	Name       string `json:"name"`
 }
 
-// GetID returns the Itentifier of the RuleListItem.
+// GetID returns the Identifier of the RuleListItem.
 func (i RuleListItem) GetID() string {
 	return i.Identifier
 }

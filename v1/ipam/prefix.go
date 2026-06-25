@@ -9,10 +9,13 @@ import (
 	"github.com/anexia/go-anxsdk/v1/common"
 )
 
+// PrefixType represents the type of a prefix.
 type PrefixType int
 
 const (
-	PrefixTypePublic  PrefixType = 0
+	// PrefixTypePublic means that a prefix is public.
+	PrefixTypePublic PrefixType = 0
+	// PrefixTypePrivate means that a prefix is private.
 	PrefixTypePrivate PrefixType = 1
 )
 
@@ -38,6 +41,11 @@ type PrefixListItem struct {
 	DescriptionCustomer *string          `json:"description_customer"`
 	RouterRedundancy    *string          `json:"router_redundancy"`
 	Vlans               []PrefixVlanItem `json:"vlans"`
+}
+
+// GetID returns the Identifier of the PrefixListItem.
+func (i PrefixListItem) GetID() string {
+	return i.Identifier
 }
 
 // PrefixVlanItem represents a vlan that a prefix is inside of.

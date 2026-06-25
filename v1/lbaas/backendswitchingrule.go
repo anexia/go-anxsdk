@@ -20,7 +20,7 @@ type BackendSwitchingRuleListItem struct {
 	Name       string `json:"name"`
 }
 
-// GetID returns the Itentifier of the BackendSwitchingRuleListItem.
+// GetID returns the Identifier of the BackendSwitchingRuleListItem.
 func (i BackendSwitchingRuleListItem) GetID() string {
 	return i.Identifier
 }

@@ -20,7 +20,7 @@ type MapListItem struct {
 	Name       string `json:"name"`
 }
 
-// GetID returns the Itentifier of the MapListItem.
+// GetID returns the Identifier of the MapListItem.
 func (i MapListItem) GetID() string {
 	return i.Identifier
 }

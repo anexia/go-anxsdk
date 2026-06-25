@@ -40,7 +40,7 @@ type ServerListItem struct {
 	Name       string `json:"name"`
 }
 
-// GetID returns the Itentifier of the ServerListItem.
+// GetID returns the Identifier of the ServerListItem.
 func (i ServerListItem) GetID() string {
 	return i.Identifier
 }

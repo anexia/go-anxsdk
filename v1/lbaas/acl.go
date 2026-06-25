@@ -20,7 +20,7 @@ type ACLListItem struct {
 	Name       string `json:"name"`
 }
 
-// GetID returns the Itentifier of the ACLListItem.
+// GetID returns the Identifier of the ACLListItem.
 func (i ACLListItem) GetID() string {
 	return i.Identifier
 }

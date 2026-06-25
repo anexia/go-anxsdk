@@ -40,7 +40,7 @@ type FrontendListItem struct {
 	Name       string `json:"name"`
 }
 
-// GetID returns the Itentifier of the FrontendListItem.
+// GetID returns the Identifier of the FrontendListItem.
 func (i FrontendListItem) GetID() string {
 	return i.Identifier
 }

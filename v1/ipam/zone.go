@@ -27,12 +27,17 @@ type ZoneListItem struct {
 	Name       string `url:"name"`
 }
 
+// GetID returns the Identifier of the ZoneListItem.
+func (i ZoneListItem) GetID() string {
+	return i.Identifier
+}
+
 // ZoneGetResponse represents the response of the zone get endpoint.
 type ZoneGetResponse struct {
-	Identifier  string       `json:"identifier"`
-	Name        string       `json:"name"`
-	Description string       `json:"description"`
-	Location    IpamLocation `json:"location"`
+	Identifier  string   `json:"identifier"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Location    Location `json:"location"`
 }
 
 // ZoneClient is an api client for managing zones.

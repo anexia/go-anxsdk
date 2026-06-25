@@ -20,7 +20,7 @@ type BindListItem struct {
 	Name       string `json:"name"`
 }
 
-// GetID returns the Itentifier of the BindListItem.
+// GetID returns the Identifier of the BindListItem.
 func (i BindListItem) GetID() string {
 	return i.Identifier
 }

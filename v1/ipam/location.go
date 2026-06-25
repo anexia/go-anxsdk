@@ -1,8 +1,8 @@
 package ipam
 
-// IpamLocation represents a location in ipam responses.
-type IpamLocation struct {
-	Id         int    `json:"id"`
+// Location represents a location in ipam responses.
+type Location struct {
+	ID         int    `json:"id"`
 	Identifier string `json:"identifier"`
 	Code       string `json:"code"`
 	Name       string `json:"name"`
