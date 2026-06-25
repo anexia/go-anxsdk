@@ -137,3 +137,19 @@ func PaginateAndLoad[T ItemWithID, TResult any](
 		}
 	}
 }
+
+// CollectAll is a helper method to collect all items into a slice.
+//
+// Returns the first error found, if any, otherwise the resulting slice and nil is returned.
+func CollectAll[T any](seq iter.Seq2[T, error]) ([]T, error) {
+	result := make([]T, 0, EngineMaxPageLimit)
+
+	for item, itemErr := range seq {
+		if itemErr != nil {
+			return nil, itemErr
+		}
+		result = append(result, item)
+	}
+
+	return result, nil
+}

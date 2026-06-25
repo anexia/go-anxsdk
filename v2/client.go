@@ -2,6 +2,7 @@ package v2
 
 import (
 	"github.com/anexia/go-anxsdk/internal"
+	"github.com/anexia/go-anxsdk/v2/kubernetes"
 	"github.com/anexia/go-anxsdk/v2/lbaas"
 )
 
@@ -17,24 +18,24 @@ func NewClient(transport *internal.Transport) *Client {
 	}
 }
 
-// ClustersByEnv returns a clusters client based on the provided env.
-func (c *Client) ClustersByEnv(env KubernetesEnv) *ClustersClient {
-	return newClustersClient(c.transport, env)
+// KubernetesByEnv returns a clusters client based on the provided env.
+func (c *Client) KubernetesByEnv(env kubernetes.Env) *kubernetes.Client {
+	return kubernetes.NewClient(c.transport, env)
 }
 
-// Clusters returns a clusters client.
-func (c *Client) Clusters() *ClustersClient {
-	return newClustersClient(c.transport, KubernetesEnvProduction)
+// Kubernetes returns a clusters client.
+func (c *Client) Kubernetes() *kubernetes.Client {
+	return kubernetes.NewClient(c.transport, kubernetes.EnvProduction)
 }
 
-// StageClusters returns a stage clusters client.
-func (c *Client) StageClusters() *ClustersClient {
-	return newClustersClient(c.transport, KubernetesEnvStaging)
+// KubernetesStage returns a stage clusters client.
+func (c *Client) KubernetesStage() *kubernetes.Client {
+	return kubernetes.NewClient(c.transport, kubernetes.EnvStaging)
 }
 
-// DevClusters returns a dev clusters client.
-func (c *Client) DevClusters() *ClustersClient {
-	return newClustersClient(c.transport, KubernetesEnvDevelopment)
+// KubernetesDev returns a dev clusters client.
+func (c *Client) KubernetesDev() *kubernetes.Client {
+	return kubernetes.NewClient(c.transport, kubernetes.EnvDevelopment)
 }
 
 // LBaaS returns an entrypoint for getting lbaas resource clients.

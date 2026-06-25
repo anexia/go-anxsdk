@@ -64,12 +64,10 @@ linters:
 
   exclusions:
     rules:
-      - path: cmd
-        linters:
-          - revive
       - path: internal/example
         linters:
           - revive
+          - errchkjson
       - path: _test\.go
         linters:
           - revive

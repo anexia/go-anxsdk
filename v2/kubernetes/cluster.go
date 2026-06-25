@@ -1,4 +1,4 @@
-package v2
+package kubernetes
 
 import (
 	"context"
@@ -9,16 +9,16 @@ import (
 	"github.com/anexia/go-anxsdk/v2/common"
 )
 
-// KubernetesEnv is used to specify the environment to use.
-type KubernetesEnv string
+// Env is used to specify the kubernetes environment to use.
+type Env string
 
 const (
-	// KubernetesEnvProduction specifies the production environment.
-	KubernetesEnvProduction KubernetesEnv = "prod"
-	// KubernetesEnvStaging specifies the staging environment.
-	KubernetesEnvStaging KubernetesEnv = "stage"
-	// KubernetesEnvDevelopment specifies the development environment.
-	KubernetesEnvDevelopment KubernetesEnv = "dev"
+	// EnvProduction specifies the production environment.
+	EnvProduction Env = "prod"
+	// EnvStaging specifies the staging environment.
+	EnvStaging Env = "stage"
+	// EnvDevelopment specifies the development environment.
+	EnvDevelopment Env = "dev"
 )
 
 // ClusterState is a type to represent valid cluster states IDs.
@@ -62,10 +62,10 @@ type ClusterListParams struct {
 	Customer           string `url:"customer,omitempty"`
 	Name               string `url:"name,omitempty"`
 	State              string `url:"state,omitempty"`
-	NeedsServiceVMs    bool   `url:"need_services_vms,omitempty"`
+	NeedsServiceVMs    *bool  `url:"need_services_vms,omitempty"`
 	Location           string `url:"location,omitempty"`
 	CNIPlugin          string `url:"cni_plugin,omitempty"`
-	Autoscaling        bool   `url:"autoscaling,omitempty"`
+	Autoscaling        *bool  `url:"autoscaling,omitempty"`
 	ExternalIPFamilies string `url:"external_ip_families,omitempty"`
 }
 
@@ -218,13 +218,13 @@ type ClusterUpdateResponse struct {
 
 // ClustersClient is an api client for managing clusters.
 type ClustersClient struct {
-	environment KubernetesEnv
+	environment Env
 	transport   *internal.Transport
 }
 
 func newClustersClient(
 	transport *internal.Transport,
-	environment KubernetesEnv,
+	environment Env,
 ) *ClustersClient {
 	return &ClustersClient{
 		transport:   transport,
@@ -234,11 +234,11 @@ func newClustersClient(
 
 func (c *ClustersClient) endpointRoot() string {
 	switch c.environment {
-	case KubernetesEnvDevelopment:
+	case EnvDevelopment:
 		return "/api/kubernetes-dev"
-	case KubernetesEnvStaging:
+	case EnvStaging:
 		return "/api/kubernetes-stage"
-	case KubernetesEnvProduction:
+	case EnvProduction:
 		return "/api/kubernetes"
 	}
 
