@@ -12,6 +12,8 @@ import (
 // AddressRole represents a role of an address.
 type AddressRole string
 
+//revive:disable // self-explanatory constants
+
 const (
 	AddressRoleDefault  AddressRole = "Default"
 	AddressRoleReserved AddressRole = "Reserved"
@@ -25,6 +27,8 @@ const (
 	AddressVersion4 AddressVersion = 4
 	AddressVersion6 AddressVersion = 6
 )
+
+//revive:enable
 
 // AddressListParams defines the available parameters for the address list endpoint.
 type AddressListParams struct {
@@ -71,7 +75,7 @@ type AddressGetResponse struct {
 	Vlan                 string      `json:"vlan"`
 	Prefix               string      `json:"prefix"`
 	AssignedResourceName string      `json:"assigned_resource_name"`
-	AssignedResourceId   string      `json:"assigned_resource_id"`
+	AssignedResourceID   string      `json:"assigned_resource_id"`
 	RdnsName             *string     `json:"rdns_name"`
 }
 
@@ -91,7 +95,7 @@ type AddressCreateResponse struct {
 	DescriptionCustomer  *string `json:"description_customer"`
 	RoleText             string  `json:"role_text"`
 	AssignedResourceName *string `json:"assigned_resource_name"`
-	AssignedResourceId   *string `json:"assigned_resource_id"`
+	AssignedResourceID   *string `json:"assigned_resource_id"`
 	RdnsName             *string `json:"rdns_name"`
 }
 

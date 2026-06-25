@@ -35,10 +35,7 @@ type AggregateFilteredParams struct {
 }
 
 // AggregateListItem is an item in the aggregate list response.
-type AggregateListItem struct {
-	Identifier string `json:"identifier"`
-	Name       string `json:"name"`
-}
+type AggregateListItem common.Resource
 
 // GetID returns the Identifier of the AggregateListItem.
 func (i AggregateListItem) GetID() string {

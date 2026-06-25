@@ -22,10 +22,7 @@ type ZoneFilteredParams struct {
 }
 
 // ZoneListItem is an item in the zone list response.
-type ZoneListItem struct {
-	Identifier string `url:"identifier"`
-	Name       string `url:"name"`
-}
+type ZoneListItem common.Resource
 
 // GetID returns the Identifier of the ZoneListItem.
 func (i ZoneListItem) GetID() string {
