@@ -56,6 +56,7 @@ const (
 // NodepoolListParams defines the available parameters for the nodepool list endpoint.
 type NodepoolListParams struct {
 	Search string `url:"search,omitempty"`
+	Name   string `url:"name,omitempty"`
 
 	State               State               `url:"state,omitempty"`
 	OperatingSystem     OS                  `url:"operating_system,omitempty"`
@@ -63,13 +64,13 @@ type NodepoolListParams struct {
 	SyncSource          SyncSource          `url:"syncsource,omitempty"`
 	CPUPerformanceType  CPUPerformanceType  `url:"cpu_performance_type,omitempty"`
 	DiskPerformanceType DiskPerformanceType `url:"disk_performance_type,omitempty"`
-	AutoscalerEnabled   bool                `url:"autoscaler_enabled,omitempty"`
+	AutoscalerEnabled   *bool               `url:"autoscaler_enabled,omitempty"`
 
-	DNSOverrideIPv4 bool   `url:"dns_override_ipv4,omitempty"`
+	DNSOverrideIPv4 *bool  `url:"dns_override_ipv4,omitempty"`
 	DNSv4Entry1     string `url:"dns_v4_1,omitempty"`
 	DNSv4Entry2     string `url:"dns_v4_2,omitempty"`
 
-	DNSOverrideIPv6 bool   `url:"dns_override_ipv6,omitempty"`
+	DNSOverrideIPv6 *bool  `url:"dns_override_ipv6,omitempty"`
 	DNSv6Entry1     string `url:"dns_v6_1,omitempty"`
 	DNSv6Entry2     string `url:"dns_v6_2,omitempty"`
 }

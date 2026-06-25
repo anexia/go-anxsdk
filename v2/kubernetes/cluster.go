@@ -62,10 +62,10 @@ type ClusterListParams struct {
 	Customer           string `url:"customer,omitempty"`
 	Name               string `url:"name,omitempty"`
 	State              string `url:"state,omitempty"`
-	NeedsServiceVMs    bool   `url:"need_services_vms,omitempty"`
+	NeedsServiceVMs    *bool  `url:"need_services_vms,omitempty"`
 	Location           string `url:"location,omitempty"`
 	CNIPlugin          string `url:"cni_plugin,omitempty"`
-	Autoscaling        bool   `url:"autoscaling,omitempty"`
+	Autoscaling        *bool  `url:"autoscaling,omitempty"`
 	ExternalIPFamilies string `url:"external_ip_families,omitempty"`
 }
 

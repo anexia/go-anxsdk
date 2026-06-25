@@ -1,6 +1,6 @@
 module github.com/anexia/go-anxsdk
 
-go 1.25
+go 1.26
 
 require (
 	github.com/google/go-querystring v1.2.0

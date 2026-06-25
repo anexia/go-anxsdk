@@ -23,7 +23,7 @@ func nodepools() {
 	ctx := context.Background()
 
 	iter := paging.Paginate(ctx, client.V2().KubernetesDev().Nodepools().ListFullPageFetcher(kubernetes.NodepoolListParams{
-		SyncSource: kubernetes.SyncSourceCluster,
+		DNSOverrideIPv4: new(false),
 	}))
 
 	allNodepools, err := paging.CollectAll(iter)
