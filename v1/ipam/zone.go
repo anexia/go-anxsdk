@@ -77,7 +77,7 @@ func (c *ZoneClient) ListFilteredPageFetcher(params ZoneFilteredParams) paging.P
 	}
 }
 
-// Get returns an zone by identifier.
+// Get returns a zone by identifier.
 func (c *ZoneClient) Get(ctx context.Context, identifier string) (ZoneGetResponse, error) {
 	resp := ZoneGetResponse{}
 	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/ipam/v1/zone.json/%s", identifier), &resp)
