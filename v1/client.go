@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/anexia/go-anxsdk/internal"
+	"github.com/anexia/go-anxsdk/v1/core"
 	"github.com/anexia/go-anxsdk/v1/ipam"
 	"github.com/anexia/go-anxsdk/v1/lbaas"
 	"github.com/anexia/go-anxsdk/v1/vsphere"
@@ -57,4 +58,9 @@ func (c *Client) LBaaS() *lbaas.Client {
 // VSphere is the entry point for dynamic compute client.
 func (c *Client) VSphere() *vsphere.Client {
 	return vsphere.NewClient(c.transport)
+}
+
+// Core is the entry point for core engine api services.
+func (c *Client) Core() *core.Client {
+	return core.NewClient(c.transport)
 }
