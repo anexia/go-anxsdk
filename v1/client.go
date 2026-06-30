@@ -4,6 +4,7 @@ import (
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/v1/ipam"
 	"github.com/anexia/go-anxsdk/v1/lbaas"
+	"github.com/anexia/go-anxsdk/v1/vsphere"
 )
 
 // Client is an anexia v1 api client.
@@ -51,4 +52,9 @@ func (c *Client) Ipam() *ipam.Client {
 // LBaaS is the entry point to lbaas related clients.
 func (c *Client) LBaaS() *lbaas.Client {
 	return lbaas.NewClient(c.transport)
+}
+
+// VSphere is the entry point for dynamic compute client.
+func (c *Client) VSphere() *vsphere.Client {
+	return vsphere.NewClient(c.transport)
 }

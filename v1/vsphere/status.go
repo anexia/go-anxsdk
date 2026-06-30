@@ -3,46 +3,49 @@ package vsphere
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/v1/common"
 )
 
+// PowerState represents the possible power states.
+type PowerState string
+
+const (
+	// PowerStatePoweredOn shows that a VM is running.
+	PowerStatePoweredOn PowerState = "PoweredOn"
+	// PowerStatePoweredOff shows that a VM is turned off.
+	PowerStatePoweredOff PowerState = "PoweredOff"
+)
+
 // StatusGetResponse represents the response of the status get endpoint.
 type StatusGetResponse struct {
-	Identifier     string                        `json:"identifier"`
-	CPUUsage       int                           `json:"cpu_usage"`
-	MemoryUsage    int                           `json:"memory_usage"`
-	DiskSpaceTotal int                           `json:"disk_space_total"`
-	DiskSpaceFree  int                           `json:"disk_space_free"`
-	MountPoints    []StatusGetResponseMountPoint `json:"mount_points"`
-	LastRefresh    StatusGetResponseLastRefresh  `json:"last_refresh"`
-	Total          string                        `json:"total"`
-	Free           string                        `json:"free"`
-	Used           string                        `json:"used"`
-	Percentage     float32                       `json:"percentage"`
-	DiskSizeState  string                        `json:"disk_size_state"`
-	PowerState     string                        `json:"power_state"`
+	Identifier          string                        `json:"identifier"`
+	CPUUsagePercent     float32                       `json:"cpu_usage_percent"`
+	MemoryUsageMegabyte int                           `json:"memory_usage"`
+	DiskSpaceTotalBytes string                        `json:"disk_space_total"`
+	DiskSpaceFreeBytes  string                        `json:"disk_space_free"`
+	MountPoints         []StatusGetResponseMountPoint `json:"mount_points"`
+	LastRefresh         StatusGetResponseLastRefresh  `json:"last_refresh"`
+	PowerState          PowerState                    `json:"power_state"`
 }
 
 // StatusGetResponseMountPoint represents infos about a single mount point.
 type StatusGetResponseMountPoint struct {
+	// Name is the mountpoint directory.
 	Name             string  `json:"name"`
-	CapacityInBytes  string  `json:"capacity_in_bytes"`
-	FreeSpaceInBytes string  `json:"free_space_in_bytes"`
-	UsedSpace        int     `json:"used_space"`
+	CapacityInBytes  uint64  `json:"capacity_in_bytes"`
+	FreeSpaceInBytes uint64  `json:"free_space_in_bytes"`
+	UsedSpace        uint64  `json:"used_space"`
 	Percentage       float64 `json:"percentage"`
-	Total            string  `json:"total"`
-	Free             string  `json:"free"`
-	Used             string  `json:"used"`
-	State            string  `json:"state"`
 }
 
 // StatusGetResponseLastRefresh represents infos about the last refresh.
 type StatusGetResponseLastRefresh struct {
-	Date string `json:"date"`
-	Day  string `json:"day"`
-	Time string `json:"time"`
+	Date time.Time `json:"date"`
+	Day  string    `json:"day"`
+	Time string    `json:"time"`
 }
 
 // StatusClient is an api client for getting vm status.

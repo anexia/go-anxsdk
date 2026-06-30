@@ -70,10 +70,10 @@ type ProvisioningProgress struct {
 type TemplateType string
 
 const (
-	// FromScratchTemplateType indicates that a vm uses the from_scratch template type.
-	FromScratchTemplateType TemplateType = "from_scratch"
-	// TemplatesTemplateType indicates that a vm uses the templates template type.
-	TemplatesTemplateType TemplateType = "templates"
+	// TemplateTypeFromScratch indicates that a vm uses the from_scratch template type.
+	TemplateTypeFromScratch TemplateType = "from_scratch"
+	// TemplateTypeTemplates indicates that a vm uses the templates template type.
+	TemplateTypeTemplates TemplateType = "templates"
 )
 
 // ProvisioningRequest represents a VM provisioning request.
@@ -127,6 +127,16 @@ type ProvisioningRequestNetwork struct {
 	Ips            []string `json:"ips"`
 }
 
+// TemplateResponse represents the templates from a location.
+type TemplateResponse struct {
+	ID           string         `json:"id"`
+	Name         string         `json:"name"`
+	Architecture string         `json:"architecture"`
+	Bit          string         `json:"bit"`
+	Build        string         `json:"build"`
+	Params       map[string]any `json:"params"`
+}
+
 // ProvisioningClient is an api client for managing vm provisioning.
 type ProvisioningClient struct {
 	transport *internal.Transport
@@ -173,6 +183,21 @@ func (c *ProvisioningClient) ListLocationPageFetcher() paging.PageFetcher[Locati
 	}
 }
 
+// ListTemplates returns a paging.PageFetcher for templates.
+func (c *ProvisioningClient) ListTemplates(ctx context.Context,
+	locationIdentifier string, templateType TemplateType, pageParams paging.Params) (paging.PagedResponse[TemplateResponse], error) {
+	resp := paging.PagedResponse[TemplateResponse]{}
+	err := c.transport.Get(ctx, fmt.Sprintf("/v1/provisioning/templates.json/%s/%s", locationIdentifier, templateType), &resp, pageParams, nil)
+	return resp, common.MapTransportError(err)
+}
+
+// ListTemplatesPageFetcher returns a paging.PageFetcher for templates.
+func (c *ProvisioningClient) ListTemplatesPageFetcher(locationIdentifier string, templateType TemplateType) paging.PageFetcher[TemplateResponse] {
+	return func(ctx context.Context, pageParams paging.Params) (paging.PagedResponse[TemplateResponse], error) {
+		return c.ListTemplates(ctx, locationIdentifier, templateType, pageParams)
+	}
+}
+
 // ListAvailabilityZones lists a paged response of availability zones in a location.
 func (c *ProvisioningClient) ListAvailabilityZones(ctx context.Context, locationIdentifier string, pageParams paging.Params) (paging.PagedResponse[AvailabilityZone], error) {
 	resp := paging.PagedResponse[AvailabilityZone]{}
@@ -212,4 +237,24 @@ func (c *ProvisioningClient) Provision(
 	resp := ProvisioningResponse{}
 	err := c.transport.Post(ctx, fmt.Sprintf("/api/vshphere/v1/provisioning/vm.json/%s/%s/%s", locationIdentifier, templateType, templateIdentifier), request, &resp)
 	return resp, common.MapTransportError(err)
+}
+
+// ProvisionFromScratch provisions a new vm from scratch.
+func (c *ProvisioningClient) ProvisionFromScratch(
+	ctx context.Context,
+	locationIdentifier string,
+	templateIdentifier string,
+	request ProvisioningRequest,
+) (ProvisioningResponse, error) {
+	return c.Provision(ctx, locationIdentifier, TemplateTypeFromScratch, templateIdentifier, request)
+}
+
+// ProvisionTemplate provisions a new vm using a template.
+func (c *ProvisioningClient) ProvisionTemplate(
+	ctx context.Context,
+	locationIdentifier string,
+	templateIdentifier string,
+	request ProvisioningRequest,
+) (ProvisioningResponse, error) {
+	return c.Provision(ctx, locationIdentifier, TemplateTypeTemplates, templateIdentifier, request)
 }
