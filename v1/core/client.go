@@ -18,3 +18,8 @@ func NewClient(transport *internal.Transport) *Client {
 func (c *Client) User() *UserClient {
 	return newUserClient(c.transport)
 }
+
+// PermissionGroup returns a permission group api client.
+func (c *Client) PermissionGroup() *PermissionGroupClient {
+	return newPermissionGroupClient(c.transport)
+}
