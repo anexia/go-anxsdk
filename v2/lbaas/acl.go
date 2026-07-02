@@ -11,7 +11,12 @@ import (
 
 // ACLListParams defines the available parameters for the acl list endpoint.
 type ACLListParams struct {
-	Search string `url:"search,omitempty"`
+	Search   string `url:"search,omitempty"`
+	Reseller string `url:"reseller,omitempty"`
+	Customer string `url:"customer,omitempty"`
+	State    string `url:"state,omitempty"`
+	Frontend string `url:"frontend,omitempty"`
+	Backend  string `url:"backend,omitempty"`
 }
 
 // ACLListItem is an item in the acl list response.
