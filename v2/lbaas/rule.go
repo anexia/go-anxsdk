@@ -11,7 +11,9 @@ import (
 
 // RuleListParams defines the available parameters for the rule list endpoint.
 type RuleListParams struct {
-	Search string `url:"search,omitempty"`
+	Search   string `url:"search,omitempty"`
+	Frontend string `url:"frontend,omitempty"`
+	Backend  string `url:"backend,omitempty"`
 }
 
 // RuleListItem is an item in the rule list response.
@@ -22,27 +24,27 @@ type RuleListItem struct {
 
 // RuleGetResponse represents the response of the rule get endpoint.
 type RuleGetResponse struct {
-	CustomerIdentifier         *string              `json:"customer_identifier"`
-	ResellerIdentifier         string               `json:"reseller_identifier"`
-	CriticalOperationPassword  *string              `json:"critical_operation_password"`
-	CriticalOperationConfirmed bool                 `json:"critical_operation_confirmed"`
-	Identifier                 string               `json:"identifier"`
-	Name                       string               `json:"name"`
-	State                      common.State[string] `json:"state"`
-	RuleType                   string               `json:"rule_type"`
-	ParentType                 string               `json:"parent_type"`
-	Frontend                   common.Resource      `json:"frontend"`
-	Backend                    *common.Resource     `json:"backend"`
-	Index                      int                  `json:"index"`
-	Condition                  string               `json:"condition"`
-	ConditionTest              string               `json:"condition_test"`
-	Type                       string               `json:"type"`
-	Action                     string               `json:"action"`
-	Redeploy                   bool                 `json:"redeploy"`
-	RedirectionType            string               `json:"redirection_type"`
-	RedirectionValue           string               `json:"redirection_value"`
-	RedirectionCode            *string              `json:"redirection_code"`
-	AutomationRules            []common.Resource    `json:"automation_rules"`
+	CustomerIdentifier         *string                     `json:"customer_identifier"`
+	ResellerIdentifier         string                      `json:"reseller_identifier"`
+	CriticalOperationPassword  *string                     `json:"critical_operation_password"`
+	CriticalOperationConfirmed bool                        `json:"critical_operation_confirmed"`
+	Identifier                 string                      `json:"identifier"`
+	Name                       string                      `json:"name"`
+	State                      common.State[string]        `json:"state"`
+	RuleType                   common.IDTitleTuple[string] `json:"rule_type"`
+	ParentType                 common.IDTitleTuple[string] `json:"parent_type"`
+	Frontend                   common.Resource             `json:"frontend"`
+	Backend                    *common.Resource            `json:"backend"`
+	Index                      int                         `json:"index"`
+	Condition                  common.IDTitleTuple[string] `json:"condition"`
+	ConditionTest              string                      `json:"condition_test"`
+	Type                       common.IDTitleTuple[string] `json:"type"`
+	Action                     common.IDTitleTuple[string] `json:"action"`
+	Redeploy                   bool                        `json:"redeploy"`
+	RedirectionType            common.IDTitleTuple[string] `json:"redirection_type"`
+	RedirectionValue           string                      `json:"redirection_value"`
+	RedirectionCode            *string                     `json:"redirection_code"`
+	AutomationRules            []common.Resource           `json:"automation_rules"`
 }
 
 // RuleClient is an api client for managing load balancer rules.
