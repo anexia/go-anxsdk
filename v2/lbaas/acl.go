@@ -27,21 +27,21 @@ type ACLListItem struct {
 
 // ACLGetResponse represents the response of the acl get endpoint.
 type ACLGetResponse struct {
-	CustomerIdentifier         *string              `json:"customer_identifier"`
-	ResellerIdentifier         string               `json:"reseller_identifier"`
-	CriticalOperationPassword  *string              `json:"critical_operation_password"`
-	CriticalOperationConfirmed bool                 `json:"critical_operation_confirmed"`
-	Identifier                 string               `json:"identifier"`
-	Name                       string               `json:"name"`
-	State                      common.State[string] `json:"state"`
-	ParentType                 string               `json:"parent_type"`
-	Frontend                   common.Resource      `json:"frontend"`
-	Backend                    *common.Resource     `json:"backend"`
-	Criterion                  string               `json:"criterion"`
-	Index                      int                  `json:"index"`
-	Value                      string               `json:"value"`
-	Redeploy                   bool                 `json:"redeploy"`
-	AutomationRules            []common.Resource    `json:"automation_rules"`
+	CustomerIdentifier         *string                     `json:"customer_identifier"`
+	ResellerIdentifier         string                      `json:"reseller_identifier"`
+	CriticalOperationPassword  *string                     `json:"critical_operation_password"`
+	CriticalOperationConfirmed bool                        `json:"critical_operation_confirmed"`
+	Identifier                 string                      `json:"identifier"`
+	Name                       string                      `json:"name"`
+	State                      common.State[string]        `json:"state"`
+	ParentType                 common.IDTitleTuple[string] `json:"parent_type"`
+	Frontend                   common.Resource             `json:"frontend"`
+	Backend                    *common.Resource            `json:"backend"`
+	Criterion                  string                      `json:"criterion"`
+	Index                      int                         `json:"index"`
+	Value                      string                      `json:"value"`
+	Redeploy                   bool                        `json:"redeploy"`
+	AutomationRules            []common.Resource           `json:"automation_rules"`
 }
 
 // ACLClient is an api client for managing load balancer acls.
@@ -74,7 +74,7 @@ func (c *ACLClient) ListPageFetcher(params ACLListParams) paging.PageFetcher[ACL
 func (c *ACLClient) ListFull(ctx context.Context, pagingParams paging.Params, params ACLListParams) (paging.PagedResponse[ACLGetResponse], error) {
 	resp := paging.PagedResponse[ACLGetResponse]{}
 	wrap := internal.NewAllAttributesWrapper(params)
-	err := c.transport.Get(ctx, "/api/LBaaS/v2/acl", &resp, pagingParams, wrap)
+	err := c.transport.Get(ctx, "/api/LBaaS/v2/ACL", &resp, pagingParams, wrap)
 	return resp, common.MapTransportError(err)
 }
 
