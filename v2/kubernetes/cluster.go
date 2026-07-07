@@ -299,3 +299,9 @@ func (c *ClustersClient) RemoveKubeconfig(ctx context.Context, identifier string
 	err := c.transport.Post(ctx, fmt.Sprintf("%s/v2/cluster/%s/trigger/remove_kubeconfig", c.endpointRoot(), identifier), nil, nil)
 	return common.MapTransportError(err)
 }
+
+// RotateKubeconfig triggers the automation endpoint rotate_kubeconfig.
+func (c *ClustersClient) RotateKubeconfig(ctx context.Context, identifier string) error {
+	err := c.transport.Post(ctx, fmt.Sprintf("%s/v2/cluster/%s/trigger/rotate_kubeconfig", c.endpointRoot(), identifier), nil, nil)
+	return common.MapTransportError(err)
+}
