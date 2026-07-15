@@ -84,7 +84,7 @@ func (c *PermissionGroupClient) Get(ctx context.Context, identifier string) (Per
 // Create creates a new permission group.
 func (c *PermissionGroupClient) Create(ctx context.Context, group PermissionGroupCreateRequest) (PermissionGroupCreateResponse, error) {
 	resp := PermissionGroupCreateResponse{}
-	err := c.transport.Post(ctx, "/api/core/v1/permissiongroup.json", &resp, nil)
+	err := c.transport.Post(ctx, "/api/core/v1/permissiongroup.json", group, &resp)
 	return resp, common.MapTransportError(err)
 }
 
