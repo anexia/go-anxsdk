@@ -33,3 +33,8 @@ func (c *Client) Locations() *LocationsClient {
 func (c *Client) Resources() *ResourceClient {
 	return newResourceClient(c.transport)
 }
+
+// Tags returns a tag api client.
+func (c *Client) Tags() *TagClient {
+	return newTagClient(c.transport)
+}
