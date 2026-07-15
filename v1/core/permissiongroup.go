@@ -9,6 +9,12 @@ import (
 	"github.com/anexia/go-anxsdk/v1/common"
 )
 
+// PermissionListParams defines the available parameters for the permission list endpoint.
+type PermissionListParams struct {
+	OrganizationIdentifier string `url:"organization_identifier,omitempty"`
+	ServiceIdentifier      string `url:"service_identifier,omitempty"`
+}
+
 // PermissionGroupListParams defines the available parameters for the permission group list endpoint.
 type PermissionGroupListParams struct {
 	OrganizationIdentifier string `url:"organization_identifier,omitempty"`
@@ -97,6 +103,13 @@ func (c *PermissionGroupClient) Update(ctx context.Context, identifier string, r
 
 // Delete deletes a permission group.
 func (c *PermissionGroupClient) Delete(ctx context.Context, identifier string) error {
-	err := c.transport.Delete(ctx, fmt.Sprintf("/api/core/v1/permissiongroup/json/%s", identifier))
+	err := c.transport.Delete(ctx, fmt.Sprintf("/api/core/v1/permissiongroup.json/%s", identifier))
 	return common.MapTransportError(err)
+}
+
+// ListPermissions lists all permissions.
+func (c *PermissionGroupClient) ListPermissions(ctx context.Context, params PermissionListParams) ([]common.Resource, error) {
+	var resp []common.Resource
+	err := c.transport.Get(ctx, "/api/core/v1/permissoingroup/permissions.json", &resp, paging.DefaultParams(), params)
+	return resp, common.MapTransportError(err)
 }
