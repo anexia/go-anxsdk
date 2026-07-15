@@ -32,10 +32,10 @@ type PermissionGroup struct {
 
 // PermissionGroupUpdateRequest represents all updatable fields.
 type PermissionGroupUpdateRequest struct {
-	Comment     *string            `json:"comment,omitempty"`
-	Name        *string            `json:"name,omitempty"`
-	Permissions *[]common.Resource `json:"permissions,omitempty"`
-	Visible     *bool              `json:"visible,omitempty"`
+	Comment     *string   `json:"comment,omitempty"`
+	Name        *string   `json:"name,omitempty"`
+	Permissions *[]string `json:"permissions,omitempty"`
+	Visible     *bool     `json:"visible,omitempty"`
 }
 
 // PermissionGroupUpdateResponse represents the response of updating a permission group.
