@@ -25,11 +25,6 @@ func (c *Client) Vlans() *VlansClient {
 	return NewVlansClient(c.transport)
 }
 
-// Locations returns a locations client.
-func (c *Client) Locations() *LocationsClient {
-	return NewLocationsClient(c.transport)
-}
-
 // Clusters returns a clusters client.
 func (c *Client) Clusters() *ClustersClient {
 	return newClustersClient(c.transport, kubernetesEnvironmentProduction)

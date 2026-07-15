@@ -1,4 +1,4 @@
-package v1
+package core
 
 import (
 	"context"
@@ -34,8 +34,8 @@ type LocationsClient struct {
 	transport *internal.Transport
 }
 
-// NewLocationsClient creates a new location client.
-func NewLocationsClient(transport *internal.Transport) *LocationsClient {
+// newLocationsClient creates a new location client.
+func newLocationsClient(transport *internal.Transport) *LocationsClient {
 	return &LocationsClient{
 		transport,
 	}

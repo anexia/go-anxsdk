@@ -23,3 +23,8 @@ func (c *Client) User() *UserClient {
 func (c *Client) PermissionGroup() *PermissionGroupClient {
 	return newPermissionGroupClient(c.transport)
 }
+
+// Locations returns a locations client.
+func (c *Client) Locations() *LocationsClient {
+	return newLocationsClient(c.transport)
+}
