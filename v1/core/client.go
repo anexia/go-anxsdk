@@ -28,3 +28,8 @@ func (c *Client) PermissionGroup() *PermissionGroupClient {
 func (c *Client) Locations() *LocationsClient {
 	return newLocationsClient(c.transport)
 }
+
+// Resources returns a resource api client.
+func (c *Client) Resources() *ResourceClient {
+	return newResourceClient(c.transport)
+}
