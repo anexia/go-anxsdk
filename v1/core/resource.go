@@ -80,7 +80,7 @@ func (v *ResourceClient) Get(ctx context.Context, identifier string) (ResourceGe
 // GetTags returns a list of all tags on a resource.
 func (v *ResourceClient) GetTags(ctx context.Context, identifier string) ([]common.Resource, error) {
 	var resp []common.Resource
-	err := v.transport.GetSingle(ctx, fmt.Sprintf("api/core/v1/resource.json/%s/tags"), &resp)
+	err := v.transport.GetSingle(ctx, fmt.Sprintf("api/core/v1/resource.json/%s/tags", identifier), &resp)
 	return resp, common.MapTransportError(err)
 }
 
