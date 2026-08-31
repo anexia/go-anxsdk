@@ -11,9 +11,8 @@ import (
 
 // BindListParams defines the available parameters for the bind list endpoint.
 type BindListParams struct {
-	Search string `url:"search,omitempty"`
-	FrontendId string `url:"frontend,omitempty"`
-
+	Search     string `url:"search,omitempty"`
+	FrontendID string `url:"frontend,omitempty"`
 }
 
 // BindListItem is an item in the bind list response.

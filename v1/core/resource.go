@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
@@ -11,6 +12,11 @@ import (
 
 // ResourceListParams defines the available parameters for the resource list endpoint.
 type ResourceListParams struct {
+	IncludeSoftDelete      *bool   `json:"include_soft_delete"`
+	ResellerIdentifier     *string `json:"reseller_identifier"`
+	CustomerIdentifier     *string `json:"customer_identifier"`
+	TagName                *string `json:"tag_name"`
+	ResourcePoolIdentifier *string `json:"resource_pool_identifier"`
 }
 
 // ResourceListItem is an item in the resource list response.
@@ -19,36 +25,43 @@ type ResourceListItem struct {
 	Name       string `json:"name"`
 }
 
+// ResourceGetResponse represents the details of a core resource.
 type ResourceGetResponse struct {
-	Name         string          `json:"name"`
-	Identifier   string          `json:"identifier"`
-	ResourceType common.Resource `json:"resource_type"`
-	ServiceName  string          `json:"service_name"`
-	DeletedAt    *string         `json:"deleted_at"`
-	UpdatedAt    string          `json:"updated_at"`
-	CreatedAt    string          `json:"created_at"`
-	Reseller     struct {
-		CustomerId string      `json:"customer_id"`
-		Demo       bool        `json:"demo"`
-		Identifier string      `json:"identifier"`
-		Name       string      `json:"name"`
-		NameSlug   string      `json:"name_slug"`
-		Reseller   interface{} `json:"reseller"`
-	} `json:"reseller"`
-	Customer struct {
-		CustomerId interface{} `json:"customer_id"`
-		Demo       bool        `json:"demo"`
-		Identifier string      `json:"identifier"`
-		Name       string      `json:"name"`
-		NameSlug   string      `json:"name_slug"`
-		Reseller   string      `json:"reseller"`
-	} `json:"customer"`
+	Name            string            `json:"name"`
+	Identifier      string            `json:"identifier"`
+	ResourceType    common.Resource   `json:"resource_type"`
+	ServiceName     string            `json:"service_name"`
+	CreatedAt       time.Time         `json:"created_at"`
+	DeletedAt       *time.Time        `json:"deleted_at"`
+	UpdatedAt       time.Time         `json:"updated_at"`
+	Reseller        Reseller          `json:"reseller"`
+	Customer        Customer          `json:"customer"`
 	BillingContract *string           `json:"billing_contract"`
 	ManagedStatus   string            `json:"managed_status"`
 	SharedBy        *string           `json:"shared_by"`
 	SharedAt        *string           `json:"shared_at"`
 	ResourcePools   []common.Resource `json:"resource_pools"`
 	Tags            []common.Resource `json:"tags"`
+}
+
+// Reseller represents the reseller from the resource.
+type Reseller struct {
+	CustomerID string  `json:"customer_id"`
+	Demo       bool    `json:"demo"`
+	Identifier string  `json:"identifier"`
+	Name       string  `json:"name"`
+	NameSlug   string  `json:"name_slug"`
+	Reseller   *string `json:"reseller"`
+}
+
+// Customer represents the customer from the resource.
+type Customer struct {
+	CustomerID *string `json:"customer_id"`
+	Demo       bool    `json:"demo"`
+	Identifier string  `json:"identifier"`
+	Name       string  `json:"name"`
+	NameSlug   string  `json:"name_slug"`
+	Reseller   *string `json:"reseller"`
 }
 
 // ResourceClient is an api client for managing resources.
