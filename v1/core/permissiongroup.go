@@ -41,7 +41,7 @@ type PermissionGroupUpdateRequest struct {
 // PermissionGroupUpdateResponse represents the response of updating a permission group.
 type PermissionGroupUpdateResponse struct{}
 
-// PermissionGroup represents the permission group create request.
+// PermissionGroupCreateRequest represents the permission group create request.
 type PermissionGroupCreateRequest struct {
 	Comment                string            `json:"comment"`
 	Name                   string            `json:"name"`

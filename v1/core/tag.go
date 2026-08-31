@@ -21,19 +21,15 @@ type TagListItem struct {
 
 // TagGetResponse represents a single tag.
 type TagGetResponse struct {
-	Identifier              string `json:"identifier"`
-	Name                    string `json:"name"`
-	OrganizationAssignments []struct {
-		Customer struct {
-			CustomerId string `json:"customer_id"`
-			Demo       bool   `json:"demo"`
-			Identifier string `json:"identifier"`
-			Name       string `json:"name"`
-			NameSlug   string `json:"name_slug"`
-			Reseller   string `json:"reseller"`
-		} `json:"customer"`
-		Service common.Resource `json:"service"`
-	} `json:"organization_assignments"`
+	Identifier              string                   `json:"identifier"`
+	Name                    string                   `json:"name"`
+	OrganizationAssignments []OrganizationAssignment `json:"organisation_assignments"`
+}
+
+// OrganizationAssignment represents the assignment of a tag.
+type OrganizationAssignment struct {
+	Customer Customer        `json:"customer"`
+	Service  common.Resource `json:"service"`
 }
 
 // TagCreateRequest represents a request to create a new tag.

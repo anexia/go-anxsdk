@@ -28,11 +28,13 @@ type UserListParams struct {
 	OrganizationIdentifier string `url:"organization_identifier,omitempty"`
 }
 
+// UserSearchParams defines the available parameters for the user search endpoint.
 type UserSearchParams struct {
 	Query                  string `url:"query"`
 	OrganizationIdentifier string `url:"organization_identifier,omitempty"`
 }
 
+// UserListItem represents the.
 type UserListItem struct {
 	Active     bool     `json:"active"`
 	Email      string   `json:"email"`
@@ -42,19 +44,22 @@ type UserListItem struct {
 	Type       UserType `json:"type"`
 }
 
+// GetID return the identifier of the UserListItem.
 func (i UserListItem) GetID() string {
 	return i.Identifier
 }
 
-type UserApiAccess struct {
-	Basic     bool `json:"basic"`
-	Token     bool `json:"token"`
-	Signature bool `json:"signature"`
+// UserAPIAccess represents the types of API access for a user.
+type UserAPIAccess struct {
+	Basic     bool    `json:"basic"`
+	Token     string  `json:"token"`
+	Signature *string `json:"signature"`
 }
 
+// UserGetResponse represents the user details.
 type UserGetResponse struct {
 	Active                 bool              `json:"active"`
-	ApiAccess              UserApiAccess     `json:"api_access"`
+	APIAccess              UserAPIAccess     `json:"api_access"`
 	CreatedAt              string            `json:"created_at"`
 	Email                  string            `json:"email"`
 	FirstName              string            `json:"first_name"`
@@ -74,40 +79,48 @@ type UserGetResponse struct {
 	City                   string            `json:"city"`
 	Country                string            `json:"country"`
 
-	// unsure what this is, leaving it commented out
-	// ContactResponsibilities []interface{} `json:"contact_responsibilities"`
-
-	TfaEnabled bool `json:"tfa_enabled"`
+	TFAEnabled bool `json:"tfa_enabled"`
 }
 
+// UserCreateRequest represents the user create request.
 type UserCreateRequest struct {
-	LastName               string        `json:"last_name"`
-	Type                   UserType      `json:"type"`
-	Email                  string        `json:"email"`
-	FirstName              string        `json:"firstName,omitempty"`
-	Active                 bool          `json:"active"`
-	PermissionGroups       []string      `json:"permissionGroups"`
-	Language               string        `json:"language,omitempty"`
-	Address                string        `json:"address,omitempty"`
-	City                   string        `json:"city,omitempty"`
-	Country                string        `json:"country,omitempty"`
-	Fax                    string        `json:"fax,omitempty"`
-	Phone                  string        `json:"phone,omitempty"`
-	MobilePhone            string        `json:"mobile_phone,omitempty"`
-	Position               string        `json:"position,omitempty"`
-	Zip                    string        `json:"zip,omitempty"`
-	ApiAccess              UserApiAccess `json:"api_access"`
-	OrganizationIdentifier string        `json:"organization_identifier,omitempty"`
-	SendPassword           bool          `json:"send_password"`
+	LastName               string              `json:"last_name"`
+	Type                   UserType            `json:"type"`
+	Email                  string              `json:"email"`
+	FirstName              string              `json:"first_name,omitempty"`
+	Active                 bool                `json:"active"`
+	PermissionGroups       []string            `json:"permission_groups"`
+	Language               string              `json:"language,omitempty"`
+	Address                string              `json:"address,omitempty"`
+	City                   string              `json:"city,omitempty"`
+	Country                string              `json:"country,omitempty"`
+	Fax                    string              `json:"fax,omitempty"`
+	Phone                  string              `json:"phone,omitempty"`
+	MobilePhone            string              `json:"mobile_phone,omitempty"`
+	Position               string              `json:"position,omitempty"`
+	ZIP                    string              `json:"zip,omitempty"`
+	APIAccess              UserCreateAPIAccess `json:"api_access"`
+	OrganizationIdentifier string              `json:"organization_identifier,omitempty"`
+	SendPassword           bool                `json:"send_password"`
 }
 
+// UserCreateAPIAccess represents the types of API access for a user.
+type UserCreateAPIAccess struct {
+	Basic     bool `json:"basic"`
+	Token     bool `json:"token"`
+	Signature bool `json:"signature"`
+}
+
+// UserCreateResponse represents the user create response.
 type UserCreateResponse struct {
 	Identifier string `json:"identifier"`
 }
 
+// UserUpdateRequest represents the user update request.
 type UserUpdateRequest struct {
 }
 
+// UserUpdateResponse represents the user update response.
 type UserUpdateResponse struct {
 }
 
