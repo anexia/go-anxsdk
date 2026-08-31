@@ -25,6 +25,11 @@ jobs:
       - name: install just
         uses: extractions/setup-just@v3
 
+      - name: install golangci-lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: latest
+
       - name: run lint
         run: just lint
 
