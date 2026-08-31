@@ -131,8 +131,11 @@ func PaginateAndLoad[T ItemWithID, TResult any](
 			engineResource, err := fetchItem(ctx, item.GetID())
 			if err != nil {
 				yield(zero, err)
-			} else {
-				yield(engineResource, nil)
+				return
+			}
+
+			if !yield(engineResource, nil) {
+				return
 			}
 		}
 	}
