@@ -27,7 +27,7 @@ type PermissionGroup struct {
 	Name                   string            `json:"name"`
 	Permissions            []common.Resource `json:"permissions"`
 	Visible                bool              `json:"visible"`
-	OrganizationIdentifier string            `url:"organization_identifier"`
+	OrganizationIdentifier string            `json:"organization_identifier"`
 }
 
 // PermissionGroupUpdateRequest represents all updatable fields.
@@ -47,7 +47,7 @@ type PermissionGroupCreateRequest struct {
 	Name                   string            `json:"name"`
 	Permissions            []common.Resource `json:"permissions"`
 	Visible                bool              `json:"visible"`
-	OrganizationIdentifier string            `url:"organization_identifier,omitempty"`
+	OrganizationIdentifier string            `json:"organization_identifier,omitempty"`
 }
 
 // PermissionGroupCreateResponse represents the response of creating a permission group.
