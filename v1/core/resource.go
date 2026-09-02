@@ -12,11 +12,11 @@ import (
 
 // ResourceListParams defines the available parameters for the resource list endpoint.
 type ResourceListParams struct {
-	IncludeSoftDelete      *bool   `json:"include_soft_delete"`
-	ResellerIdentifier     *string `json:"reseller_identifier"`
-	CustomerIdentifier     *string `json:"customer_identifier"`
-	TagName                *string `json:"tag_name"`
-	ResourcePoolIdentifier *string `json:"resource_pool_identifier"`
+	IncludeSoftDelete      *bool   `url:"include_soft_delete"`
+	ResellerIdentifier     *string `url:"reseller_identifier"`
+	CustomerIdentifier     *string `url:"customer_identifier"`
+	TagName                *string `url:"tag_name"`
+	ResourcePoolIdentifier *string `url:"resource_pool_identifier"`
 }
 
 // ResourceListItem is an item in the resource list response.

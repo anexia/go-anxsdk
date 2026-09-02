@@ -50,7 +50,7 @@ type NodepoolNetworkListParams struct {
 
 	NodepoolID     string                `url:"nodepool,omitempty"`
 	BandwidthLimit NetworkBandwidthLimit `url:"bandwidth_limit,omitempty"`
-	VLANID         string                `url:"performance_type,omitempty"`
+	VLANID         string                `url:"vlan,omitempty"`
 }
 
 // NodepoolNetworkListItem is an item in the network list response.
