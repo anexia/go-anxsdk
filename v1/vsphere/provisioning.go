@@ -3,6 +3,7 @@ package vsphere
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
@@ -44,7 +45,7 @@ type Location struct {
 	CountryName string  `json:"country_name"`
 }
 
-// AvailabilityZone represents a per location sub zone.
+// AvailabilityZone represents a per-location sub zone.
 type AvailabilityZone struct {
 	Identifier     string   `json:"identifier"`
 	Name           string   `json:"name"`
@@ -53,18 +54,32 @@ type AvailabilityZone struct {
 	DiskCategories []string `json:"disk_categories"`
 }
 
-// NicType is the type of a nic.
+// NicType is the type of network interface card.
 type NicType string
 
 // ProvisioningProgress represents the current progress of a vm provisioning.
 type ProvisioningProgress struct {
-	Identifier   string   `json:"identifier"`
-	Queued       string   `json:"queued"`
-	Progress     int      `json:"progress"`
-	VMIdentifier string   `json:"vm_identifier"`
-	Errors       []string `json:"errors"`
-	Status       string   `json:"status"`
+	TaskIdentifier string             `json:"identifier"`
+	Queued         bool               `json:"queued"`
+	Progress       int                `json:"progress"`
+	VMIdentifier   string             `json:"vm_identifier"`
+	Errors         []string           `json:"errors"`
+	Status         ProvisioningStatus `json:"status"`
 }
+
+// ProvisioningStatus specifies the status of the provisioning request.
+type ProvisioningStatus string
+
+const (
+	// ProvisioningStatusFailed indicates that the provisioning failed.
+	ProvisioningStatusFailed ProvisioningStatus = "-1"
+	// ProvisioningStatusSuccess indicates that the provisioning succeeded.
+	ProvisioningStatusSuccess ProvisioningStatus = "1"
+	// ProvisioningStatusInProgress indicates that the provisioning is still ongoing.
+	ProvisioningStatusInProgress ProvisioningStatus = "2"
+	// ProvisioningStatusCancelled indicates that the provisioning has been cancelled.
+	ProvisioningStatusCancelled ProvisioningStatus = "3"
+)
 
 // TemplateType is the template type for provisioning vms.
 type TemplateType string
@@ -78,7 +93,10 @@ const (
 
 // ProvisioningRequest represents a VM provisioning request.
 type ProvisioningRequest struct {
-	Hostname           string                              `json:"hostname"`
+	// required fields
+	Hostname string `json:"hostname"`
+
+	// optional fields
 	MemoryMB           *int                                `json:"memory_mb,omitempty"`
 	CPUs               *int                                `json:"cpus,omitempty"`
 	DiskGB             *int                                `json:"disk_gb,omitempty"`
@@ -89,7 +107,7 @@ type ProvisioningRequest struct {
 	Sockets            *int                                `json:"sockets,omitempty"`
 	Network            []ProvisioningRequestNetwork        `json:"network"`
 	VideoMemoryAuto    *bool                               `json:"video_memory_auto,omitempty"`
-	VideoMemoryMb      *int                                `json:"video_memory_mb,omitempty"`
+	VideoMemoryMB      *int                                `json:"video_memory_mb,omitempty"`
 	DNS1               *string                             `json:"dns1,omitempty"`
 	DNS2               *string                             `json:"dns2,omitempty"`
 	DNS3               *string                             `json:"dns3,omitempty"`
@@ -99,7 +117,8 @@ type ProvisioningRequest struct {
 	Script             *string                             `json:"script,omitempty"`
 	BootDelay          *int                                `json:"boot_delay,omitempty"`
 	EnterBiosSetup     *bool                               `json:"enter_bios_setup,omitempty"`
-	CustomName         *string                             `json:"customName,omitempty"`
+	Organization       *string                             `json:"organization,omitempty"`
+	CustomName         *string                             `json:"custom_name,omitempty"`
 	VTPMEnabled        *bool                               `json:"vtpm_enabled,omitempty"`
 	Firmware           *string                             `json:"firmware,omitempty"`
 	OSHostname         *string                             `json:"os_hostname,omitempty"`
@@ -107,10 +126,10 @@ type ProvisioningRequest struct {
 
 // ProvisioningResponse represents the response of a provisioning request.
 type ProvisioningResponse struct {
-	Progress   int      `json:"progress"`
-	Errors     []string `json:"errors"`
-	Identifier string   `json:"identifier"`
-	Queued     bool     `json:"queued"`
+	Progress       int      `json:"progress"`
+	Errors         []string `json:"errors"`
+	TaskIdentifier string   `json:"identifier"`
+	Queued         bool     `json:"queued"`
 }
 
 // ProvisioningRequestAdditionalDisk represents the info needed for an additional disk for vm provisioning.
@@ -123,8 +142,8 @@ type ProvisioningRequestAdditionalDisk struct {
 type ProvisioningRequestNetwork struct {
 	NicType        string   `json:"nic_type"`
 	BandwidthLimit int      `json:"bandwidth_limit"`
-	Vlan           string   `json:"vlan"`
-	Ips            []string `json:"ips"`
+	VLan           string   `json:"vlan"`
+	IPs            []string `json:"ips"`
 }
 
 // TemplateResponse represents the templates from a location.
@@ -151,28 +170,28 @@ func newProvisioningClient(transport *internal.Transport) *ProvisioningClient {
 // GetCPUArchitectures returns all available cpu architectures.
 func (c *ProvisioningClient) GetCPUArchitectures(ctx context.Context) ([]CPUArchitecture, error) {
 	var resp []CPUArchitecture
-	err := c.transport.GetSingle(ctx, "/api/vshphere/v1/provisioning/cpu_architecture.json", &resp)
+	err := c.transport.GetSingle(ctx, "/api/vsphere/v1/provisioning/cpu_architecture.json", &resp)
 	return resp, common.MapTransportError(err)
 }
 
-// GetPerformanceTypes returns all available cpu performance types.
-func (c *ProvisioningClient) GetPerformanceTypes(ctx context.Context) ([]CPUPerformanceType, error) {
+// GetCPUPerformanceTypes returns all available cpu performance types.
+func (c *ProvisioningClient) GetCPUPerformanceTypes(ctx context.Context) ([]CPUPerformanceType, error) {
 	var resp []CPUPerformanceType
-	err := c.transport.GetSingle(ctx, "/api/vshphere/v1/provisioning/cpu_performance_type.json", &resp)
+	err := c.transport.GetSingle(ctx, "/api/vsphere/v1/provisioning/cpu_performance_type.json", &resp)
 	return resp, common.MapTransportError(err)
 }
 
 // GetDiskTypes returns all available disk types in a location.
 func (c *ProvisioningClient) GetDiskTypes(ctx context.Context, locationIdentifier string) ([]DiskType, error) {
 	var resp []DiskType
-	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/vshphere/v1/provisioning/cpu_performance_type.json/%s", locationIdentifier), &resp)
+	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/vsphere/v1/provisioning/disk_type.json/%s", locationIdentifier), &resp)
 	return resp, common.MapTransportError(err)
 }
 
 // ListLocations lists a paged response of locations.
 func (c *ProvisioningClient) ListLocations(ctx context.Context, pageParams paging.Params) (paging.PagedResponse[Location], error) {
 	resp := paging.PagedResponse[Location]{}
-	err := c.transport.Get(ctx, "/api/vshphere/v1/provisioning/locations.json", &resp, pageParams, nil)
+	err := c.transport.Get(ctx, "/api/vsphere/v1/provisioning/location.json", &resp, pageParams, nil)
 	return resp, common.MapTransportError(err)
 }
 
@@ -185,45 +204,65 @@ func (c *ProvisioningClient) ListLocationPageFetcher() paging.PageFetcher[Locati
 
 // ListTemplates returns a paging.PageFetcher for templates.
 func (c *ProvisioningClient) ListTemplates(ctx context.Context,
-	locationIdentifier string, templateType TemplateType, pageParams paging.Params) (paging.PagedResponse[TemplateResponse], error) {
-	resp := paging.PagedResponse[TemplateResponse]{}
-	err := c.transport.Get(ctx, fmt.Sprintf("/v1/provisioning/templates.json/%s/%s", locationIdentifier, templateType), &resp, pageParams, nil)
+	locationIdentifier string, templateType TemplateType) ([]TemplateResponse, error) {
+	var resp []TemplateResponse
+	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/vsphere/v1/provisioning/templates.json/%s/%s", locationIdentifier, templateType), &resp)
 	return resp, common.MapTransportError(err)
-}
-
-// ListTemplatesPageFetcher returns a paging.PageFetcher for templates.
-func (c *ProvisioningClient) ListTemplatesPageFetcher(locationIdentifier string, templateType TemplateType) paging.PageFetcher[TemplateResponse] {
-	return func(ctx context.Context, pageParams paging.Params) (paging.PagedResponse[TemplateResponse], error) {
-		return c.ListTemplates(ctx, locationIdentifier, templateType, pageParams)
-	}
 }
 
 // ListAvailabilityZones lists a paged response of availability zones in a location.
-func (c *ProvisioningClient) ListAvailabilityZones(ctx context.Context, locationIdentifier string, pageParams paging.Params) (paging.PagedResponse[AvailabilityZone], error) {
-	resp := paging.PagedResponse[AvailabilityZone]{}
-	err := c.transport.Get(ctx, fmt.Sprintf("/api/vshphere/v1/provisioning/locations.json/%s/availability_zone", locationIdentifier), &resp, pageParams, nil)
+func (c *ProvisioningClient) ListAvailabilityZones(ctx context.Context, locationIdentifier string) ([]AvailabilityZone, error) {
+	var resp []AvailabilityZone
+	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/vsphere/v1/provisioning/location.json/%s/availability_zone", locationIdentifier), &resp)
 	return resp, common.MapTransportError(err)
-}
-
-// ListAvailabilityZonesPageFetcher returns a paging.PageFetcher for availability zones in a location.
-func (c *ProvisioningClient) ListAvailabilityZonesPageFetcher(locationIdentifier string) paging.PageFetcher[AvailabilityZone] {
-	return func(ctx context.Context, pageParams paging.Params) (paging.PagedResponse[AvailabilityZone], error) {
-		return c.ListAvailabilityZones(ctx, locationIdentifier, pageParams)
-	}
 }
 
 // GetNicTypes returns all available nic types.
 func (c *ProvisioningClient) GetNicTypes(ctx context.Context) ([]NicType, error) {
 	var resp []NicType
-	err := c.transport.GetSingle(ctx, "/api/vshphere/v1/provisioning/nic_type.json", &resp)
+	err := c.transport.GetSingle(ctx, "/api/vsphere/v1/provisioning/nic_type.json", &resp)
 	return resp, common.MapTransportError(err)
 }
 
 // GetProvisioningProgress returns the progress for the specified vm provisioning.
-func (c *ProvisioningClient) GetProvisioningProgress(ctx context.Context, progressIdentifier string) (ProvisioningProgress, error) {
+func (c *ProvisioningClient) GetProvisioningProgress(ctx context.Context, taskIdentifier string) (ProvisioningProgress, error) {
 	resp := ProvisioningProgress{}
-	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/vshphere/v1/provisioning/progress.json/%s", progressIdentifier), &resp)
+	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/vsphere/v1/provisioning/progress.json/%s", taskIdentifier), &resp)
 	return resp, common.MapTransportError(err)
+}
+
+// AwaitCompletion polls the status of a started provisioning request and blocks until it is done.
+//
+// ctx will be checked for cancellation and the method returns immediately if so.
+// taskIdentifier is the running provisioning task and is contained within ProvisioningResponse.
+//
+// Returned will be the VM identifier and an error if polling or provision failed.
+func (c *ProvisioningClient) AwaitCompletion(ctx context.Context, taskIdentifier string) (string, error) {
+	const (
+		pollInterval          = 10 * time.Second
+		progressCompleteValue = 100
+	)
+
+	ticker := time.NewTicker(pollInterval)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
+			progressResponse, err := c.GetProvisioningProgress(ctx, taskIdentifier)
+			switch {
+			case common.IsNotFoundError(err):
+				return "", fmt.Errorf("could not get provision progress. not found: %w", err)
+			case err == nil:
+				if progressResponse.Progress == progressCompleteValue {
+					return progressResponse.VMIdentifier, nil
+				}
+			default:
+				return "", fmt.Errorf("could not get provision progress: %w", err)
+			}
+		case <-ctx.Done():
+			return "", fmt.Errorf("vm did not get ready in time: %w", ctx.Err())
+		}
+	}
 }
 
 // Provision provisions a new vm.
@@ -235,7 +274,7 @@ func (c *ProvisioningClient) Provision(
 	request ProvisioningRequest,
 ) (ProvisioningResponse, error) {
 	resp := ProvisioningResponse{}
-	err := c.transport.Post(ctx, fmt.Sprintf("/api/vshphere/v1/provisioning/vm.json/%s/%s/%s", locationIdentifier, templateType, templateIdentifier), request, &resp)
+	err := c.transport.Post(ctx, fmt.Sprintf("/api/vsphere/v1/provisioning/vm.json/%s/%s/%s", locationIdentifier, templateType, templateIdentifier), request, &resp)
 	return resp, common.MapTransportError(err)
 }
 
