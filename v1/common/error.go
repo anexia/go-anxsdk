@@ -3,6 +3,7 @@ package common
 import (
 	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/anexia/go-anxsdk/internal"
 )
@@ -19,14 +20,25 @@ func (a *APIError) Error() string {
 	return fmt.Sprintf("api error: StatusCode=%d, Status=%s, Body=%s", a.StatusCode, a.Status, a.Body)
 }
 
-// MapTransportError maps a internal transport error to an externally usable error.
+// IsNotFoundError checks if the provided err is a NotFound error returned from the Anexia Engine.
+func IsNotFoundError(err error) bool {
+	return isStatusCode(err, http.StatusNotFound)
+}
+
+func isStatusCode(err error, status int) bool {
+	if unwrapped, ok := errors.AsType[*APIError](err); ok {
+		return unwrapped.StatusCode == status
+	}
+	return false
+}
+
+// MapTransportError maps an internal transport error to an externally usable error.
 func MapTransportError(err error) error {
 	if err == nil {
 		return nil
 	}
 
-	var te *internal.TransportError
-	if errors.As(err, &te) {
+	if te, ok := errors.AsType[*internal.TransportError](err); ok {
 		return &APIError{
 			StatusCode: te.StatusCode,
 			Status:     te.Status,
