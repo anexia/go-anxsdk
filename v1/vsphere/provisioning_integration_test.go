@@ -82,6 +82,13 @@ var _ = Describe("ProvisioningClient", func() {
 			Expect(common.IsNotFoundError(err)).To(BeTrue())
 			Expect(tmpl).To(BeNil())
 		})
+
+		It("cannot find templates on wrong locations", func() {
+			tmpl, err := provisioningClient.FindNamedTemplate(ctx, "wrong location id", "i do not exist", vsphere.LatestTemplateBuild)
+			Expect(err).To(HaveOccurred())
+			Expect(common.IsNotFoundError(err)).To(BeTrue())
+			Expect(tmpl).To(BeNil())
+		})
 	})
 
 	Describe("GetCPUArchitectures", func() {
