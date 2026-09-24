@@ -35,3 +35,8 @@ func (c *Client) Status() *StatusClient {
 func (c *Client) Provisioning() *ProvisioningClient {
 	return newProvisioningClient(c.transport)
 }
+
+// Search returns a search client.
+func (c *Client) Search() *SearchClient {
+	return newSearchClient(c.transport)
+}
