@@ -2,6 +2,7 @@ package vsphere
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -161,7 +162,7 @@ type TemplateResponse struct {
 // BuildNumber returns the parsed build number as int.
 func (t *TemplateResponse) BuildNumber() (int, error) {
 	if t.Build == "" || t.Build[0] != 'b' {
-		return 0, fmt.Errorf("template build does not start with 'b'")
+		return 0, errors.New("template build does not start with 'b'") //nolint:err113,wrapcheck
 	}
 
 	buildNumber, err := strconv.Atoi(t.Build[1:])
@@ -221,7 +222,7 @@ func (c *ProvisioningClient) ListLocationPageFetcher() paging.PageFetcher[Locati
 // ListTemplates returns a paging.PageFetcher for templates.
 func (c *ProvisioningClient) ListTemplates(ctx context.Context, locationIdentifier string, templateType TemplateType) ([]TemplateResponse, error) {
 	var resp []TemplateResponse
-	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/vsphere/v1/provisioning/templates.json/%s/%s", locationIdentifier, templateType), &resp)
+	err := c.transport.Get(ctx, fmt.Sprintf("/api/vsphere/v1/provisioning/templates.json/%s/%s", locationIdentifier, templateType), &resp, paging.NewParams(1, 1000), nil) //nolint:revive
 	return resp, common.MapTransportError(err)
 }
 
@@ -232,10 +233,10 @@ const (
 
 // FindNamedTemplate retrieves a template by name and build at a specified location.
 // Empty and LatestTemplateBuild build identifier will yield the highest available build.
-func (c *ProvisioningClient) FindNamedTemplate(ctx context.Context, locationIdentifier, name, build string) (*TemplateResponse, error) {
+func (c *ProvisioningClient) FindNamedTemplate(ctx context.Context, locationIdentifier, name, build string) (*TemplateResponse, error) { //nolint:revive // it's not that hard
 	var match *TemplateResponse
 	buildNo := -1
-	latest := build == "" || build == LatestTemplateBuild
+	useLatest := build == "" || build == LatestTemplateBuild
 
 	allTemplates, err := c.ListTemplates(ctx, locationIdentifier, TemplateTypeTemplates)
 	if err != nil {
@@ -247,7 +248,7 @@ func (c *ProvisioningClient) FindNamedTemplate(ctx context.Context, locationIden
 			continue
 		}
 
-		if latest {
+		if useLatest {
 			currentTemplateBuildNo, err := tmpl.BuildNumber()
 			if err != nil {
 				continue
