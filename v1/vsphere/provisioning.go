@@ -3,6 +3,8 @@ package vsphere
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/anexia/go-anxsdk/internal"
@@ -156,6 +158,20 @@ type TemplateResponse struct {
 	Params       map[string]any `json:"params"`
 }
 
+// BuildNumber returns the parsed build number as int.
+func (t *TemplateResponse) BuildNumber() (int, error) {
+	if t.Build == "" || t.Build[0] != 'b' {
+		return 0, fmt.Errorf("template build does not start with 'b'")
+	}
+
+	buildNumber, err := strconv.Atoi(t.Build[1:])
+	if err != nil {
+		return 0, fmt.Errorf("template build cannot be parsed: %w", err)
+	}
+
+	return buildNumber, nil
+}
+
 // ProvisioningClient is an api client for managing vm provisioning.
 type ProvisioningClient struct {
 	transport *internal.Transport
@@ -203,11 +219,55 @@ func (c *ProvisioningClient) ListLocationPageFetcher() paging.PageFetcher[Locati
 }
 
 // ListTemplates returns a paging.PageFetcher for templates.
-func (c *ProvisioningClient) ListTemplates(ctx context.Context,
-	locationIdentifier string, templateType TemplateType) ([]TemplateResponse, error) {
+func (c *ProvisioningClient) ListTemplates(ctx context.Context, locationIdentifier string, templateType TemplateType) ([]TemplateResponse, error) {
 	var resp []TemplateResponse
 	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/vsphere/v1/provisioning/templates.json/%s/%s", locationIdentifier, templateType), &resp)
 	return resp, common.MapTransportError(err)
+}
+
+const (
+	// LatestTemplateBuild is used to find the template with the highest build number.
+	LatestTemplateBuild = "latest"
+)
+
+// FindNamedTemplate retrieves a template by name and build at a specified location.
+// Empty and LatestTemplateBuild build identifier will yield the highest available build.
+func (c *ProvisioningClient) FindNamedTemplate(ctx context.Context, locationIdentifier, name, build string) (*TemplateResponse, error) {
+	var match *TemplateResponse
+	buildNo := -1
+	latest := build == "" || build == LatestTemplateBuild
+
+	allTemplates, err := c.ListTemplates(ctx, locationIdentifier, TemplateTypeTemplates)
+	if err != nil {
+		return nil, fmt.Errorf("error listing templates: %w", err)
+	}
+
+	for _, tmpl := range allTemplates {
+		if tmpl.Name != name {
+			continue
+		}
+
+		if latest {
+			currentTemplateBuildNo, err := tmpl.BuildNumber()
+			if err != nil {
+				continue
+			}
+
+			if match == nil || currentTemplateBuildNo > buildNo {
+				match = &tmpl
+				buildNo = currentTemplateBuildNo
+			}
+		} else if tmpl.Build == build {
+			match = &tmpl
+			break
+		}
+	}
+
+	if match == nil {
+		return nil, fmt.Errorf("%w: named template not found: name=%q, build=%q, location=%q", &common.APIError{StatusCode: http.StatusNotFound}, name, build, locationIdentifier)
+	}
+
+	return match, nil
 }
 
 // ListAvailabilityZones lists a paged response of availability zones in a location.

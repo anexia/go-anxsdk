@@ -2,7 +2,7 @@
 package main
 
 func main() {
-	clusters()
-	nodepools()
+	//clusters()
+	//nodepools()
 	runVSphere()
 }

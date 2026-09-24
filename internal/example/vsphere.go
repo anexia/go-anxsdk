@@ -52,6 +52,14 @@ func runVSphere() {
 	outjson, _ = json.MarshalIndent(flatcarTemplate, "", "  ")
 	fmt.Println("flatcar template: ", string(outjson))
 
+	tmpl, err := client.V1().VSphere().Provisioning().FindNamedTemplate(ctx, anx04Location.ID, "Flatcar Linux Stable UEFI", vsphere.LatestTemplateBuild)
+	if err != nil {
+		panic(err)
+	}
+
+	outjson, _ = json.MarshalIndent(tmpl, "", "  ")
+	fmt.Println("flatcar named: ", string(outjson))
+
 	architectures, err := client.V1().VSphere().Provisioning().GetCPUArchitectures(ctx)
 	if err != nil {
 		panic(err)
