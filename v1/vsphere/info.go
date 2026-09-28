@@ -10,31 +10,31 @@ import (
 
 // InfoGetResponse represents the response of the info get endpoint.
 type InfoGetResponse struct {
-	Identifier                     string                          `json:"identifier"`
-	Name                           string                          `json:"name"`
-	CustomName                     string                          `json:"custom_name"`
-	GuestOS                        string                          `json:"guest_os"`
-	Firmware                       string                          `json:"firmware"`
-	RAM                            int                             `json:"ram"`
-	CPU                            int                             `json:"cpu"`
-	CPUClockRate                   int                             `json:"cpu_clock_rate"`
-	CPUPerformanceType             string                          `json:"cpu_performance_type"`
-	VTPMEnabled                    bool                            `json:"vtpm_enabled"`
-	Cores                          int                             `json:"cores"`
-	Disks                          int                             `json:"disks"`
-	DiskInfo                       []InfoGetResponseDiskInfo       `json:"disk_info"`
-	Network                        []InfoGetResponseNetwork        `json:"network"`
-	CDRom                          string                          `json:"cdrom"`
-	VersionTools                   string                          `json:"version_tools"`
-	GuestToolsStatus               string                          `json:"guest_tools_status"`
-	LocationCode                   string                          `json:"location_code"`
-	LocationCountry                string                          `json:"location_country"`
-	LocationIdentifier             string                          `json:"location_identifier"`
-	LocationName                   string                          `json:"location_name"`
-	ProvisioningLocationIdentifier string                          `json:"provisioning_location_identifier"`
-	TemplateID                     string                          `json:"template_id"`
-	ResourceSalesperson            string                          `json:"resource_salesperson"`
-	AvailabilityZone               InfoGetResponseAvailabilityZone `json:"availability_zone"`
+	Identifier                     string                    `json:"identifier"`
+	Name                           string                    `json:"name"`
+	CustomName                     string                    `json:"custom_name"`
+	GuestOS                        string                    `json:"guest_os"`
+	Firmware                       string                    `json:"firmware"`
+	Status                         string                    `json:"status"`
+	RAM                            int                       `json:"ram"`
+	CPU                            int                       `json:"cpu"`
+	CPUClockRate                   int                       `json:"cpu_clock_rate"`
+	CPUPerformanceType             string                    `json:"cpu_performance_type"`
+	Cores                          int                       `json:"cores"`
+	Disks                          int                       `json:"disks"`
+	DiskInfo                       []InfoGetResponseDiskInfo `json:"disk_info"`
+	Network                        []InfoGetResponseNetwork  `json:"network"`
+	CDRom                          string                    `json:"cdrom"`
+	VersionTools                   string                    `json:"version_tools"`
+	GuestToolsStatus               string                    `json:"guest_tools_status"`
+	LocationCode                   string                    `json:"location_code"`
+	LocationCountry                string                    `json:"location_country"`
+	LocationIdentifier             string                    `json:"location_identifier"`
+	LocationName                   string                    `json:"location_name"`
+	ProvisioningLocationIdentifier string                    `json:"provisioning_location_identifier"`
+	TemplateID                     string                    `json:"template_id"`
+	ResourceSalesperson            string                    `json:"resource_salesperson"`
+	AvailabilityZone               common.Resource           `json:"availability_zone"`
 }
 
 // InfoGetResponseDiskInfo represents infos about a single disk in the get response.
@@ -61,12 +61,6 @@ type InfoGetResponseNetwork struct {
 	MacAddress     string   `json:"mac_address"`
 	Mode           string   `json:"mode"`
 	Vlans          []int    `json:"vlans"`
-}
-
-// InfoGetResponseAvailabilityZone represents the info about the availability zone in the get response.
-type InfoGetResponseAvailabilityZone struct {
-	Identifier string `json:"identifier"`
-	Name       string `json:"name"`
 }
 
 // InfoClient is an api client for vm infos.

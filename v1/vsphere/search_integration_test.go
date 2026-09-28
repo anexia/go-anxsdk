@@ -40,6 +40,8 @@ var _ = Describe("SearchClient", func() {
 	})
 
 	Describe("ByTags", func() {
+		var vmID string
+
 		It("finds VMs matching a tag via the page fetcher", func() {
 			fetcher := searchClient.ByTagsPageFetcher(vsphere.SearchByTagsParams{Tags: []string{"k8s"}})
 
@@ -51,6 +53,13 @@ var _ = Describe("SearchClient", func() {
 				Expect(r.Tags).NotTo(BeEmpty())
 				Expect(r.Tags).To(ContainElement("k8s"))
 			}
+			vmID = results[0].Identifier
+		})
+
+		It("can fetch VM info", func() {
+			info, err := vsphereClient.Info().Get(ctx, vmID)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(info).NotTo(BeNil())
 		})
 	})
 })
