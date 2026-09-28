@@ -358,3 +358,25 @@ func (c *ProvisioningClient) ProvisionTemplate(
 ) (ProvisioningResponse, error) {
 	return c.Provision(ctx, locationIdentifier, TemplateTypeTemplates, templateIdentifier, request)
 }
+
+// DeprovisioningResponse represents the response of a vm deprovisioning request.
+type DeprovisioningResponse struct {
+	Identifier             string `json:"identifier"`
+	DeleteWillBeExecutedAt string `json:"delete_will_be_executed_at"`
+}
+
+// deprovisionParams defines the available query parameters for the vm deprovisioning endpoint.
+type deprovisionParams struct {
+	Delayed bool `url:"delayed"`
+}
+
+// Deprovision issues a request to deprovision an existing vm.
+//
+// identifier is the vm identifier, as returned in ProvisioningProgress.VMIdentifier once provisioning completed.
+// delayed indicates that the vm shall be removed with a delay of 24h instead of immediately.
+func (c *ProvisioningClient) Deprovision(ctx context.Context, identifier string, delayed bool) (DeprovisioningResponse, error) {
+	resp := DeprovisioningResponse{}
+	endpoint := fmt.Sprintf("/api/vsphere/v1/provisioning/vm.json/%s", identifier)
+	err := c.transport.DeleteWithResponse(ctx, endpoint, deprovisionParams{Delayed: delayed}, &resp)
+	return resp, common.MapTransportError(err)
+}

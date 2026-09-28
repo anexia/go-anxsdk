@@ -157,6 +157,43 @@ func TestTransport_Post_Success(t *testing.T) {
 	assert.Equal("123", out.Data.ID)
 }
 
+func TestTransport_DeleteWithResponse_Success(t *testing.T) {
+	// arrange
+	require := require.New(t)
+	assert := assert.New(t)
+
+	ts := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(http.MethodDelete, r.Method)
+		assert.Equal("/v1/test/123", r.URL.Path)
+		assert.Equal("true", r.URL.Query().Get("delayed"))
+
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"id": "123",
+		})
+	})
+	defer ts.Close()
+
+	tr := NewTransport(ts.URL, "test-key", ts.Client())
+
+	var out struct {
+		ID string `json:"id"`
+	}
+
+	params := struct {
+		Delayed bool `url:"delayed"`
+	}{
+		Delayed: true,
+	}
+
+	// act
+	err := tr.DeleteWithResponse(context.Background(), "/v1/test/123", params, &out)
+
+	// assert
+	require.NoError(err)
+	assert.Equal("123", out.ID)
+}
+
 func TestTransport_Do_APIError(t *testing.T) {
 	// arrange
 	require := require.New(t)

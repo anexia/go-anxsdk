@@ -181,6 +181,14 @@ func (t *Transport) Delete(ctx context.Context, endpoint string) error {
 	return t.doRequest(ctx, http.MethodDelete, endpoint, nil, nil, nil, nil)
 }
 
+// DeleteWithResponse executes a delete request against the anexia api.
+// endpoint is the relative url (to the configured base url) of the http api endpoint.
+// params will be used to extract the query parameters for the request via `url` attributes, if not nil.
+// response must be a pointer to a response struct in which the response body will be JSON deserialized if not nil.
+func (t *Transport) DeleteWithResponse(ctx context.Context, endpoint string, params any, response any) error {
+	return t.doRequest(ctx, http.MethodDelete, endpoint, nil, response, nil, params)
+}
+
 // Post executes a post request against the anexia api.
 // endpoint is the relative url (to the configured base url) of the http api endpoint.
 // request if not nil will be JSON serialized and sent as the request body.
