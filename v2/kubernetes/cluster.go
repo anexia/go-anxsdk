@@ -92,27 +92,27 @@ type ClusterGetResponse struct {
 	MaintenanceWindowStartTime     string                                `json:"maintenance_window_start_time"`
 	MaintenanceWindowDuration      string                                `json:"maintenance_window_duration"`
 	ServiceUser                    common.Resource                       `json:"service_user"`
-	ManageInternalIpv4Prefix       bool                                  `json:"manage_internal_ipv4_prefix"`
-	InternalIpv4Prefix             common.Resource                       `json:"internal_ipv4_prefix"`
+	ManageInternalIPv4Prefix       bool                                  `json:"manage_internal_ipv4_prefix"`
+	InternalIPv4Prefix             common.Resource                       `json:"internal_ipv4_prefix"`
 	NeedsServiceVms                bool                                  `json:"needs_service_vms"`
 	EnableNatGateways              bool                                  `json:"enable_nat_gateways"`
 	EnableLbaas                    bool                                  `json:"enable_lbaas"`
 	ExternalIPFamilies             common.IDTitleTuple[string]           `json:"external_ip_families"`
-	ManageExternalIpv4Prefix       bool                                  `json:"manage_external_ipv4_prefix"`
-	ExternalIpv4Prefix             common.Resource                       `json:"external_ipv4_prefix"`
+	ManageExternalIPv4Prefix       bool                                  `json:"manage_external_ipv4_prefix"`
+	ExternalIPv4Prefix             common.Resource                       `json:"external_ipv4_prefix"`
 	ManageExternalIpv6Prefix       bool                                  `json:"manage_external_ipv6_prefix"`
 	ExternalIpv6Prefix             common.Resource                       `json:"external_ipv6_prefix"`
 	ServiceVM01                    common.Resource                       `json:"service_vm_01"`
 	ServiceVM02                    common.Resource                       `json:"service_vm_02"`
-	ServiceVM01InternalIpv4Address common.Resource                       `json:"service_vm_01_internal_ipv4_address"`
-	ServiceVM02InternalIpv4Address common.Resource                       `json:"service_vm_02_internal_ipv4_address"`
-	ServiceVM01ExternalIpv4Address common.Resource                       `json:"service_vm_01_external_ipv4_address"`
-	ServiceVM02ExternalIpv4Address common.Resource                       `json:"service_vm_02_external_ipv4_address"`
+	ServiceVM01InternalIPv4Address common.Resource                       `json:"service_vm_01_internal_ipv4_address"`
+	ServiceVM02InternalIPv4Address common.Resource                       `json:"service_vm_02_internal_ipv4_address"`
+	ServiceVM01ExternalIPv4Address common.Resource                       `json:"service_vm_01_external_ipv4_address"`
+	ServiceVM02ExternalIPv4Address common.Resource                       `json:"service_vm_02_external_ipv4_address"`
 	ServiceVM01ExternalIpv6Address common.Resource                       `json:"service_vm_01_external_ipv6_address"`
 	ServiceVM02ExternalIpv6Address common.Resource                       `json:"service_vm_02_external_ipv6_address"`
 	ServiceLb01                    common.Resource                       `json:"service_lb_01"`
 	ServiceLb02                    common.Resource                       `json:"service_lb_02"`
-	ExternalIpv4Vip                common.Resource                       `json:"external_ipv4_vip"`
+	ExternalIPv4Vip                common.Resource                       `json:"external_ipv4_vip"`
 	ExternalIpv6Vip                common.Resource                       `json:"external_ipv6_vip"`
 	KkpAPILbaasBackend01           common.Resource                       `json:"kkp_api_lbaas_backend_01"`
 	KkpAPILbaasBackend02           common.Resource                       `json:"kkp_api_lbaas_backend_02"`
@@ -173,27 +173,27 @@ type ClusterUpdateResponse struct {
 	MaintenanceWindowStartTime     string                     `json:"maintenance_window_start_time"`
 	MaintenanceWindowDuration      string                     `json:"maintenance_window_duration"`
 	ServiceUser                    common.Resource            `json:"service_user"`
-	ManageInternalIpv4Prefix       bool                       `json:"manage_internal_ipv4_prefix"`
-	InternalIpv4Prefix             common.Resource            `json:"internal_ipv4_prefix"`
+	ManageInternalIPv4Prefix       bool                       `json:"manage_internal_ipv4_prefix"`
+	InternalIPv4Prefix             common.Resource            `json:"internal_ipv4_prefix"`
 	NeedsServiceVms                bool                       `json:"needs_service_vms"`
 	EnableNatGateways              bool                       `json:"enable_nat_gateways"`
 	EnableLbaas                    bool                       `json:"enable_lbaas"`
 	ExternalIPFamilies             string                     `json:"external_ip_families"`
-	ManageExternalIpv4Prefix       bool                       `json:"manage_external_ipv4_prefix"`
-	ExternalIpv4Prefix             common.Resource            `json:"external_ipv4_prefix"`
+	ManageExternalIPv4Prefix       bool                       `json:"manage_external_ipv4_prefix"`
+	ExternalIPv4Prefix             common.Resource            `json:"external_ipv4_prefix"`
 	ManageExternalIpv6Prefix       bool                       `json:"manage_external_ipv6_prefix"`
 	ExternalIpv6Prefix             common.Resource            `json:"external_ipv6_prefix"`
 	ServiceVM01                    common.Resource            `json:"service_vm_01"`
 	ServiceVM02                    common.Resource            `json:"service_vm_02"`
-	ServiceVM01InternalIpv4Address common.Resource            `json:"service_vm_01_internal_ipv4_address"`
-	ServiceVM02InternalIpv4Address common.Resource            `json:"service_vm_02_internal_ipv4_address"`
-	ServiceVM01ExternalIpv4Address common.Resource            `json:"service_vm_01_external_ipv4_address"`
-	ServiceVM02ExternalIpv4Address common.Resource            `json:"service_vm_02_external_ipv4_address"`
+	ServiceVM01InternalIPv4Address common.Resource            `json:"service_vm_01_internal_ipv4_address"`
+	ServiceVM02InternalIPv4Address common.Resource            `json:"service_vm_02_internal_ipv4_address"`
+	ServiceVM01ExternalIPv4Address common.Resource            `json:"service_vm_01_external_ipv4_address"`
+	ServiceVM02ExternalIPv4Address common.Resource            `json:"service_vm_02_external_ipv4_address"`
 	ServiceVM01ExternalIpv6Address common.Resource            `json:"service_vm_01_external_ipv6_address"`
 	ServiceVM02ExternalIpv6Address common.Resource            `json:"service_vm_02_external_ipv6_address"`
 	ServiceLb01                    common.Resource            `json:"service_lb_01"`
 	ServiceLb02                    common.Resource            `json:"service_lb_02"`
-	ExternalIpv4Vip                common.Resource            `json:"external_ipv4_vip"`
+	ExternalIPv4Vip                common.Resource            `json:"external_ipv4_vip"`
 	ExternalIpv6Vip                common.Resource            `json:"external_ipv6_vip"`
 	KKPApiLbaasBackend01           common.Resource            `json:"kkp_api_lbaas_backend_01"`
 	KKPApiLbaasBackend02           common.Resource            `json:"kkp_api_lbaas_backend_02"`

@@ -3,6 +3,7 @@ package vsphere
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/v1/common"
@@ -15,7 +16,7 @@ type InfoGetResponse struct {
 	CustomName                     string                    `json:"custom_name"`
 	GuestOS                        string                    `json:"guest_os"`
 	Firmware                       string                    `json:"firmware"`
-	Status                         string                    `json:"status"`
+	Status                         PowerState                `json:"status"`
 	RAM                            int                       `json:"ram"`
 	CPU                            int                       `json:"cpu"`
 	CPUClockRate                   int                       `json:"cpu_clock_rate"`
@@ -34,7 +35,9 @@ type InfoGetResponse struct {
 	ProvisioningLocationIdentifier string                    `json:"provisioning_location_identifier"`
 	TemplateID                     string                    `json:"template_id"`
 	ResourceSalesperson            string                    `json:"resource_salesperson"`
-	AvailabilityZone               common.Resource           `json:"availability_zone"`
+	AvailabilityZone               *common.Resource          `json:"availability_zone"`
+	UptimeInSeconds                int64                     `json:"uptime_in_seconds"`
+	CreatedAt                      time.Time                 `json:"created_at"`
 }
 
 // InfoGetResponseDiskInfo represents infos about a single disk in the get response.
@@ -56,11 +59,11 @@ type InfoGetResponseNetwork struct {
 	BandwidthLimit int      `json:"bandwidth_limit"`
 	Vlan           string   `json:"vlan"`
 	ID             int      `json:"id"`
-	IpsV4          []string `json:"ips_v4"`
-	IpsV6          []string `json:"ips_v6"`
+	IPsv4          []string `json:"ips_v4"`
+	IPsv6          []string `json:"ips_v6"`
 	MacAddress     string   `json:"mac_address"`
 	Mode           string   `json:"mode"`
-	Vlans          []int    `json:"vlans"`
+	VLANs          []int    `json:"vlans"`
 }
 
 // InfoClient is an api client for vm infos.
