@@ -61,5 +61,11 @@ var _ = Describe("SearchClient", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(info).NotTo(BeNil())
 		})
+
+		It("can fetch VM status", func() {
+			status, err := vsphereClient.Status().Get(ctx, vmID)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(status).NotTo(BeNil())
+		})
 	})
 })

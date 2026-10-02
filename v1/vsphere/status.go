@@ -14,9 +14,9 @@ type PowerState string
 
 const (
 	// PowerStatePoweredOn shows that a VM is running.
-	PowerStatePoweredOn PowerState = "PoweredOn"
+	PowerStatePoweredOn PowerState = "poweredOn"
 	// PowerStatePoweredOff shows that a VM is turned off.
-	PowerStatePoweredOff PowerState = "PoweredOff"
+	PowerStatePoweredOff PowerState = "poweredOff"
 )
 
 // StatusGetResponse represents the response of the status get endpoint.
@@ -60,8 +60,9 @@ func newStatusClient(transport *internal.Transport) *StatusClient {
 }
 
 // Get returns a status object by identifier.
+// Use the [InfoClient] when possible.
 func (c *StatusClient) Get(ctx context.Context, identifier string) (StatusGetResponse, error) {
 	resp := StatusGetResponse{}
-	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/vshpere/v1/status.json/%s/info", identifier), &resp)
+	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/vsphere/v1/status.json/%s/info", identifier), &resp)
 	return resp, common.MapTransportError(err)
 }
