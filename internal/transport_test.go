@@ -3,8 +3,10 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"sync/atomic"
 	"testing"
 
 	"github.com/anexia/go-anxsdk/paging"
@@ -253,4 +255,220 @@ func TestTransport_BuildRequestUrl_PageError(t *testing.T) {
 
 	// assert
 	require.Error(err)
+}
+
+func TestTransport_JSONMarshallingFailed(t *testing.T) {
+	// arrange
+	ts := newTestServer(t, func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	defer ts.Close()
+
+	tr := NewTransport(ts.URL, "test-key", ts.Client())
+
+	type doesNotSerializeJSON struct {
+		Fail func()
+	}
+
+	reqBody := doesNotSerializeJSON{
+		Fail: func() {},
+	}
+
+	// act
+	err := tr.Post(context.Background(), "/v1/create", reqBody, nil)
+
+	// assert
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "marshalling request")
+}
+
+//
+// PreRequestValidator
+//
+
+// validatedRequest implements PreRequestValidator with a value receiver, so that both
+// the value and a pointer to it satisfy the interface.
+type validatedRequest struct {
+	Key string `json:"key"`
+
+	err   error
+	calls *atomic.Int32
+}
+
+func (r validatedRequest) PreValidate() error {
+	r.calls.Add(1)
+	return r.err
+}
+
+// plainRequest deliberately does not implement PreRequestValidator.
+type plainRequest struct {
+	Key string `json:"key"`
+}
+
+// pointerValidatedRequest implements PreRequestValidator with a pointer receiver, mirroring
+// v1/vsphere.ProvisioningRequest.
+type pointerValidatedRequest struct {
+	Key string `json:"key"`
+
+	calls *atomic.Int32
+}
+
+func (r *pointerValidatedRequest) PreValidate() error {
+	r.calls.Add(1)
+	return nil
+}
+
+var errValidationFailed = errors.New("request is not valid")
+
+func TestTransport_PreValidate_BlocksInvalidRequest(t *testing.T) {
+	// arrange
+	var serverHits atomic.Int32
+	ts := newTestServer(t, func(w http.ResponseWriter, _ *http.Request) {
+		serverHits.Add(1)
+		w.WriteHeader(http.StatusOK)
+	})
+	defer ts.Close()
+
+	tr := NewTransport(ts.URL, "test-key", ts.Client())
+
+	var calls atomic.Int32
+	reqBody := validatedRequest{Key: "value", err: errValidationFailed, calls: &calls}
+
+	// act
+	err := tr.Post(context.Background(), "/v1/create", reqBody, nil)
+
+	// assert
+	require.Error(t, err)
+	require.ErrorIs(t, err, errValidationFailed)
+	assert.Contains(t, err.Error(), "pre-request validation failed")
+	assert.Equal(t, int32(1), calls.Load(), "PreValidate must be called exactly once")
+	assert.Equal(t, int32(0), serverHits.Load(), "invalid request must not reach the server")
+}
+
+func TestTransport_PreValidate_SendsValidRequest(t *testing.T) {
+	// arrange
+	var serverHits atomic.Int32
+	ts := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+		serverHits.Add(1)
+
+		var body map[string]any
+		_ = json.NewDecoder(r.Body).Decode(&body)
+		assert.Equal(t, "value", body["key"])
+
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(map[string]any{"id": "123"})
+	})
+	defer ts.Close()
+
+	tr := NewTransport(ts.URL, "test-key", ts.Client())
+
+	var calls atomic.Int32
+	reqBody := validatedRequest{Key: "value", calls: &calls}
+
+	var out struct {
+		ID string `json:"id"`
+	}
+
+	// act
+	err := tr.Post(context.Background(), "/v1/create", reqBody, &out)
+
+	// assert
+	require.NoError(t, err)
+	assert.Equal(t, "123", out.ID)
+	assert.Equal(t, int32(1), calls.Load(), "PreValidate must be called exactly once")
+	assert.Equal(t, int32(1), serverHits.Load())
+}
+
+// A request type that does not implement PreRequestValidator must be sent unchanged.
+// This guards the type assertion in doRequest: an inverted check would call PreValidate
+// on a nil interface here and panic.
+func TestTransport_PreValidate_SkippedForNonValidator(t *testing.T) {
+	// arrange
+	var serverHits atomic.Int32
+	ts := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
+		serverHits.Add(1)
+
+		var body map[string]any
+		_ = json.NewDecoder(r.Body).Decode(&body)
+		assert.Equal(t, "value", body["key"])
+
+		w.WriteHeader(http.StatusOK)
+	})
+	defer ts.Close()
+
+	tr := NewTransport(ts.URL, "test-key", ts.Client())
+
+	// act / assert
+	require.NotPanics(t, func() {
+		err := tr.Post(context.Background(), "/v1/create", plainRequest{Key: "value"}, nil)
+		require.NoError(t, err)
+	})
+	assert.Equal(t, int32(1), serverHits.Load())
+}
+
+func TestTransport_PreValidate_RunsForPut(t *testing.T) {
+	// arrange
+	ts := newTestServer(t, func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	defer ts.Close()
+
+	tr := NewTransport(ts.URL, "test-key", ts.Client())
+
+	var calls atomic.Int32
+	reqBody := validatedRequest{Key: "value", err: errValidationFailed, calls: &calls}
+
+	// act
+	err := tr.Put(context.Background(), "/v1/update", reqBody, nil)
+
+	// assert
+	require.ErrorIs(t, err, errValidationFailed)
+	assert.Equal(t, int32(1), calls.Load())
+}
+
+// Requests without a body (GET, plain DELETE) must not attempt validation.
+func TestTransport_PreValidate_SkippedForBodylessRequests(t *testing.T) {
+	// arrange
+	ts := newTestServer(t, func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(map[string]any{})
+	})
+	defer ts.Close()
+
+	tr := NewTransport(ts.URL, "test-key", ts.Client())
+
+	// act / assert
+	require.NotPanics(t, func() {
+		require.NoError(t, tr.GetSingle(context.Background(), "/v1/test", nil))
+		require.NoError(t, tr.Delete(context.Background(), "/v1/test/123"))
+	})
+}
+
+// doRequest asserts against the dynamic type it is handed. A type whose PreValidate has a
+// pointer receiver is only validated when a pointer is passed -- passing it by value
+// silently skips validation. Callers must therefore pass such request bodies by pointer.
+func TestTransport_PreValidate_PointerReceiverRequiresPointer(t *testing.T) {
+	// arrange
+	ts := newTestServer(t, func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	defer ts.Close()
+
+	tr := NewTransport(ts.URL, "test-key", ts.Client())
+
+	// act: passed by value -- not part of the method set, so validation is skipped
+	var valueCalls atomic.Int32
+	err := tr.Post(context.Background(), "/v1/create", pointerValidatedRequest{Key: "value", calls: &valueCalls}, nil)
+
+	// assert
+	require.NoError(t, err)
+	assert.Equal(t, int32(0), valueCalls.Load(), "value of a pointer-receiver type is not a PreRequestValidator")
+
+	// act: passed by pointer -- validation runs
+	var pointerCalls atomic.Int32
+	err = tr.Post(context.Background(), "/v1/create", &pointerValidatedRequest{Key: "value", calls: &pointerCalls}, nil)
+
+	// assert
+	require.NoError(t, err)
+	assert.Equal(t, int32(1), pointerCalls.Load(), "pointer to a pointer-receiver type is a PreRequestValidator")
 }

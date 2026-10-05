@@ -132,10 +132,22 @@ func (t *Transport) do(req *http.Request, response any) error {
 	return nil
 }
 
+// PreRequestValidator is implemented by request bodies that validate themselves before being sent.
+type PreRequestValidator interface {
+	PreValidate() error
+}
+
 func (t *Transport) doRequest(ctx context.Context, method string, endpoint string, request any, response any, pageParams *paging.Params, params any) error {
 	var body io.Reader
 
 	if request != nil {
+		if val, ok := request.(PreRequestValidator); ok {
+			err := val.PreValidate()
+			if err != nil {
+				return fmt.Errorf("pre-request validation failed: %w", err)
+			}
+		}
+
 		var reqBody bytes.Buffer
 
 		err := json.NewEncoder(&reqBody).Encode(request)
