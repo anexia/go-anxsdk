@@ -194,14 +194,14 @@ func (c *AddressClient) Create(ctx context.Context, request AddressCreateRequest
 // ReserveRandom reserves random ip addresses.
 func (c *AddressClient) ReserveRandom(ctx context.Context, request AddressReserveRandomRequest) (paging.PagedResponse[AddressReserveResponseItem], error) {
 	resp := paging.PagedResponse[AddressReserveResponseItem]{}
-	err := c.transport.Post(ctx, "/api/ipam/v1/address/ip/count.json", request, &resp)
+	err := c.transport.Post(ctx, "/api/ipam/v1/address/reserve/ip/count.json", request, &resp)
 	return resp, common.MapTransportError(err)
 }
 
 // ReserveSpecific reserves specific ip addresses.
 func (c *AddressClient) ReserveSpecific(ctx context.Context, request AddressReserveSpecificRequest) (paging.PagedResponse[AddressReserveResponseItem], error) {
 	resp := paging.PagedResponse[AddressReserveResponseItem]{}
-	err := c.transport.Post(ctx, "/api/ipam/v1/address/ip/specific.json", request, &resp)
+	err := c.transport.Post(ctx, "/api/ipam/v1/address/reserve/ip/specific.json", request, &resp)
 	return resp, common.MapTransportError(err)
 }
 
