@@ -2,8 +2,10 @@ package vsphere
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"strconv"
 	"time"
@@ -13,14 +15,23 @@ import (
 	"github.com/anexia/go-anxsdk/v1/common"
 )
 
+var (
+	// ErrNegativeValue indicates a numeric field was given a negative value.
+	ErrNegativeValue = errors.New("must not be negative")
+	// ErrMissingCredentials indicates that neither an ssh key nor a password was provided.
+	ErrMissingCredentials = errors.New("must provide either SSH or Password")
+	// ErrInvalidIP indicates that a field could not be parsed as an IP address.
+	ErrInvalidIP = errors.New("not a valid IP")
+)
+
 // CPUArchitecture represents the cpu architecture of a vm.
 type CPUArchitecture struct {
 	Identifier string `json:"identifier"`
 	Name       string `json:"name"`
 }
 
-// CPUPerformanceType represents the cpu performance characteristics.
-type CPUPerformanceType struct {
+// CPUPerformanceTypeResponse represents the cpu performance characteristics.
+type CPUPerformanceTypeResponse struct {
 	ID             string  `json:"id"`
 	Architecture   *string `json:"architecture,omitempty"`
 	Prioritization string  `json:"prioritization"`
@@ -28,8 +39,8 @@ type CPUPerformanceType struct {
 	Unit           string  `json:"unit"`
 }
 
-// DiskType represents the disk characteristics.
-type DiskType struct {
+// DiskTypeResponse represents the disk characteristics.
+type DiskTypeResponse struct {
 	ID          string `json:"id"`
 	StorageType string `json:"storage_type"`
 	Bandwidth   int    `json:"bandwidth"`
@@ -94,6 +105,67 @@ const (
 	TemplateTypeTemplates TemplateType = "templates"
 )
 
+// Firmware is the firmware interface a vm boots with.
+type Firmware string
+
+const (
+	// FirmwareBIOS indicates that a vm boots using legacy BIOS.
+	FirmwareBIOS Firmware = "BIOS"
+	// FirmwareUEFI indicates that a vm boots using UEFI.
+	FirmwareUEFI Firmware = "UEFI"
+)
+
+// CPUPerformanceType is the cpu performance class assigned to a vm.
+type CPUPerformanceType string
+
+// The available cpu performance types, per cpu vendor.
+const (
+	CPUPerformanceTypeBestEffort      CPUPerformanceType = "best-effort"
+	CPUPerformanceTypeStandard        CPUPerformanceType = "standard"
+	CPUPerformanceTypeEnterprise      CPUPerformanceType = "enterprise"
+	CPUPerformanceTypePerformance     CPUPerformanceType = "performance"
+	CPUPerformanceTypePerformancePlus CPUPerformanceType = "performance-plus"
+
+	CPUPerformanceTypeBestEffortIntel      CPUPerformanceType = "best-effort-intel"
+	CPUPerformanceTypeStandardIntel        CPUPerformanceType = "standard-intel"
+	CPUPerformanceTypeEnterpriseIntel      CPUPerformanceType = "enterprise-intel"
+	CPUPerformanceTypePerformanceIntel     CPUPerformanceType = "performance-intel"
+	CPUPerformanceTypePerformancePlusIntel CPUPerformanceType = "performance-plus-intel"
+
+	CPUPerformanceTypeBestEffortAMD  CPUPerformanceType = "best-effort-amd"
+	CPUPerformanceTypeStandardAMD    CPUPerformanceType = "standard-amd"
+	CPUPerformanceTypeEnterpriseAMD  CPUPerformanceType = "enterprise-amd"
+	CPUPerformanceTypePerformanceAMD CPUPerformanceType = "performance-amd"
+)
+
+// DiskType is the performance class of a vm disk.
+type DiskType string
+
+// The available disk types: enterprise (ENT), high performance compute (HPC), local and standard (STD).
+const (
+	DiskTypeENT1 DiskType = "ENT1"
+	DiskTypeENT2 DiskType = "ENT2"
+	DiskTypeENT3 DiskType = "ENT3"
+	DiskTypeENT4 DiskType = "ENT4"
+	DiskTypeENT5 DiskType = "ENT5"
+	DiskTypeENT6 DiskType = "ENT6"
+
+	DiskTypeHPC1 DiskType = "HPC1"
+	DiskTypeHPC2 DiskType = "HPC2"
+	DiskTypeHPC3 DiskType = "HPC3"
+	DiskTypeHPC4 DiskType = "HPC4"
+	DiskTypeHPC5 DiskType = "HPC5"
+
+	DiskTypeLocal DiskType = "LOC3"
+
+	DiskTypeSTD1 DiskType = "STD1"
+	DiskTypeSTD2 DiskType = "STD2"
+	DiskTypeSTD3 DiskType = "STD3"
+	DiskTypeSTD4 DiskType = "STD4"
+	DiskTypeSTD5 DiskType = "STD5"
+	DiskTypeSTD6 DiskType = "STD6"
+)
+
 // ProvisioningRequest represents a VM provisioning request.
 type ProvisioningRequest struct {
 	// required fields
@@ -103,12 +175,12 @@ type ProvisioningRequest struct {
 	MemoryMB           *int                                `json:"memory_mb,omitempty"`
 	CPUs               *int                                `json:"cpus,omitempty"`
 	DiskGB             *int                                `json:"disk_gb,omitempty"`
-	DiskType           *string                             `json:"disk_type,omitempty"`
-	AdditionalDisks    []ProvisioningRequestAdditionalDisk `json:"additional_disks"`
-	CPUPerformanceType *string                             `json:"cpu_performance_type,omitempty"`
+	DiskType           *DiskType                           `json:"disk_type,omitempty"`
+	AdditionalDisks    []ProvisioningRequestAdditionalDisk `json:"additional_disks,omitempty"`
+	CPUPerformanceType *CPUPerformanceType                 `json:"cpu_performance_type,omitempty"`
 	AvailabilityZone   *string                             `json:"availability_zone,omitempty"`
 	Sockets            *int                                `json:"sockets,omitempty"`
-	Network            []ProvisioningRequestNetwork        `json:"network"`
+	Network            []ProvisioningRequestNetwork        `json:"network,omitempty"`
 	VideoMemoryAuto    *bool                               `json:"video_memory_auto,omitempty"`
 	VideoMemoryMB      *int                                `json:"video_memory_mb,omitempty"`
 	DNS1               *string                             `json:"dns1,omitempty"`
@@ -118,13 +190,67 @@ type ProvisioningRequest struct {
 	Password           *string                             `json:"password,omitempty"`
 	SSH                *string                             `json:"ssh,omitempty"`
 	Script             *string                             `json:"script,omitempty"`
-	BootDelay          *int                                `json:"boot_delay,omitempty"`
+	BootDelaySeconds   *int                                `json:"boot_delay,omitempty"`
 	EnterBiosSetup     *bool                               `json:"enter_bios_setup,omitempty"`
 	Organization       *string                             `json:"organization,omitempty"`
 	CustomName         *string                             `json:"custom_name,omitempty"`
 	VTPMEnabled        *bool                               `json:"vtpm_enabled,omitempty"`
-	Firmware           *string                             `json:"firmware,omitempty"`
+	Firmware           *Firmware                           `json:"firmware,omitempty"`
 	OSHostname         *string                             `json:"os_hostname,omitempty"`
+}
+
+// validateNonNegative returns an error if value is set and negative.
+func validateNonNegative(field string, value *int) error {
+	if value != nil && *value < 0 {
+		return fmt.Errorf("%s %w: %d", field, ErrNegativeValue, *value)
+	}
+
+	return nil
+}
+
+// validateOptionalIP returns an error if value is set to a non-empty string that is not an IP address.
+func validateOptionalIP(field string, value *string) error {
+	if value != nil && *value != "" && net.ParseIP(*value) == nil {
+		return fmt.Errorf("%s is %w: %q", field, ErrInvalidIP, *value)
+	}
+
+	return nil
+}
+
+// PreValidate checks the request for obvious problems before it is sent to the api.
+// Unset optional fields are not validated. All violations are reported together via errors.Join.
+func (r *ProvisioningRequest) PreValidate() error {
+	var errs []error
+
+	if r.Script != nil && *r.Script != "" {
+		if _, err := base64.StdEncoding.DecodeString(*r.Script); err != nil {
+			errs = append(errs, fmt.Errorf("Script is not base64 encoded: %w", err)) //nolint:staticcheck
+		}
+	}
+
+	hasSSH := r.SSH != nil && *r.SSH != ""
+	hasPassword := r.Password != nil && *r.Password != ""
+	if !hasSSH && !hasPassword {
+		errs = append(errs, ErrMissingCredentials)
+	}
+
+	errs = append(errs,
+		validateNonNegative("MemoryMB", r.MemoryMB),
+		validateNonNegative("CPUs", r.CPUs),
+		validateNonNegative("DiskGB", r.DiskGB),
+		validateNonNegative("Sockets", r.Sockets),
+		validateNonNegative("BootDelaySeconds", r.BootDelaySeconds),
+		validateOptionalIP("DNS1", r.DNS1),
+		validateOptionalIP("DNS2", r.DNS2),
+		validateOptionalIP("DNS3", r.DNS3),
+		validateOptionalIP("DNS4", r.DNS4),
+	)
+
+	if err := errors.Join(errs...); err != nil {
+		return fmt.Errorf("provisioning request validation: %w", err)
+	}
+
+	return nil
 }
 
 // ProvisioningResponse represents the response of a provisioning request.
@@ -192,15 +318,15 @@ func (c *ProvisioningClient) GetCPUArchitectures(ctx context.Context) ([]CPUArch
 }
 
 // GetCPUPerformanceTypes returns all available cpu performance types.
-func (c *ProvisioningClient) GetCPUPerformanceTypes(ctx context.Context) ([]CPUPerformanceType, error) {
-	var resp []CPUPerformanceType
+func (c *ProvisioningClient) GetCPUPerformanceTypes(ctx context.Context) ([]CPUPerformanceTypeResponse, error) {
+	var resp []CPUPerformanceTypeResponse
 	err := c.transport.GetSingle(ctx, "/api/vsphere/v1/provisioning/cpu_performance_type.json", &resp)
 	return resp, common.MapTransportError(err)
 }
 
 // GetDiskTypes returns all available disk types in a location.
-func (c *ProvisioningClient) GetDiskTypes(ctx context.Context, locationIdentifier string) ([]DiskType, error) {
-	var resp []DiskType
+func (c *ProvisioningClient) GetDiskTypes(ctx context.Context, locationIdentifier string) ([]DiskTypeResponse, error) {
+	var resp []DiskTypeResponse
 	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/vsphere/v1/provisioning/disk_type.json/%s", locationIdentifier), &resp)
 	return resp, common.MapTransportError(err)
 }
