@@ -27,13 +27,11 @@ func newTestServer(t *testing.T, handler http.HandlerFunc) *httptest.Server {
 
 func TestResourceClient_GetTags_UsesIdentifier(t *testing.T) {
 	// arrange
-	require := require.New(t)
-	assert := assert.New(t)
-
 	ts := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(http.MethodGet, r.Method)
-		assert.Equal("/api/core/v1/resource.json/resource-identifier/tags", r.URL.Path)
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/api/core/v1/resource.json/resource-identifier/tags", r.URL.Path)
 
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_ = json.NewEncoder(w).Encode([]map[string]any{
 			{
@@ -50,7 +48,7 @@ func TestResourceClient_GetTags_UsesIdentifier(t *testing.T) {
 	tags, err := client.GetTags(context.Background(), "resource-identifier")
 
 	// assert
-	require.NoError(err)
-	require.Len(tags, 1)
-	assert.Equal("tag-identifier", tags[0].Identifier)
+	require.NoError(t, err)
+	require.Len(t, tags, 1)
+	assert.Equal(t, "tag-identifier", tags[0].Identifier)
 }

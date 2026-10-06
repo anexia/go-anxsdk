@@ -26,6 +26,7 @@ func TestProvisioningClient_Deprovision(t *testing.T) {
 		assert.Equal(t, "/api/vsphere/v1/provisioning/vm.json/vm-identifier", r.URL.Path)
 		assert.Equal(t, "true", r.URL.Query().Get("delayed"))
 
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_ = json.NewEncoder(w).Encode(map[string]any{
 			"identifier":                 "vm-identifier",

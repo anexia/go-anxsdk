@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/anexia/go-anxsdk/paging"
 	"github.com/google/go-querystring/query"
@@ -76,6 +77,8 @@ func (t *Transport) buildRequestURL(endpoint string, pageParams *paging.Params, 
 	return fullURL, nil
 }
 
+const jsonMediaType = "application/json"
+
 func (t *Transport) newRequest(ctx context.Context, method, endpoint string, body io.Reader, pageParams *paging.Params, filterParams any) (*http.Request, error) {
 	fullURL, err := t.buildRequestURL(endpoint, pageParams, filterParams)
 	if err != nil {
@@ -87,14 +90,14 @@ func (t *Transport) newRequest(ctx context.Context, method, endpoint string, bod
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Accept", jsonMediaType)
 
 	if t.apiKey != "" {
 		req.Header.Set("Authorization", fmt.Sprintf("Token %s", t.apiKey))
 	}
 
 	if method == http.MethodPost || method == http.MethodPut || method == http.MethodPatch {
-		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Content-Type", jsonMediaType)
 	}
 
 	return req, nil
@@ -123,6 +126,10 @@ func (t *Transport) do(req *http.Request, response any) error {
 	}
 
 	if response != nil {
+		if ct := resp.Header.Get("Content-Type"); !strings.Contains(ct, jsonMediaType) {
+			return fmt.Errorf("unsupported response Content-Type %q", ct) //nolint:err113
+		}
+
 		err = json.NewDecoder(resp.Body).Decode(response)
 		if err != nil {
 			return fmt.Errorf("decoding body: %w", err)

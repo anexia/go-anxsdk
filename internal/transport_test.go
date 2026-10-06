@@ -29,16 +29,14 @@ func newTestServer(t *testing.T, handler http.HandlerFunc) *httptest.Server {
 
 func TestTransport_Get_Success(t *testing.T) {
 	// arrange
-	require := require.New(t)
-	assert := assert.New(t)
-
 	ts := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
 		// request assertions (contract validation)
-		assert.Equal(http.MethodGet, r.Method)
-		assert.Equal("/v1/test", r.URL.Path)
-		assert.Equal("Token test-key", r.Header.Get("Authorization"))
-		assert.Equal("2", r.URL.Query().Get("foo"))
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/v1/test", r.URL.Path)
+		assert.Equal(t, "Token test-key", r.Header.Get("Authorization"))
+		assert.Equal(t, "2", r.URL.Query().Get("foo"))
 
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_ = json.NewEncoder(w).Encode(map[string]any{
 			"data": map[string]any{
@@ -66,23 +64,21 @@ func TestTransport_Get_Success(t *testing.T) {
 	err := tr.Get(context.Background(), "/v1/test", &out, paging.DefaultParams(), params)
 
 	// assert
-	require.NoError(err)
-	assert.Equal("ok", out.Data.Message)
+	require.NoError(t, err)
+	assert.Equal(t, "ok", out.Data.Message)
 }
 
 func TestTransport_Get_SuccessWithAllAttributes(t *testing.T) {
 	// arrange
-	require := require.New(t)
-	assert := assert.New(t)
-
 	ts := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
 		// request assertions (contract validation)
-		assert.Equal(http.MethodGet, r.Method)
-		assert.Equal("/v1/test", r.URL.Path)
-		assert.Equal("Token test-key", r.Header.Get("Authorization"))
-		assert.Equal("2", r.URL.Query().Get("foo"))
-		assert.Equal("all", r.URL.Query().Get("attributes"))
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/v1/test", r.URL.Path)
+		assert.Equal(t, "Token test-key", r.Header.Get("Authorization"))
+		assert.Equal(t, "2", r.URL.Query().Get("foo"))
+		assert.Equal(t, "all", r.URL.Query().Get("attributes"))
 
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_ = json.NewEncoder(w).Encode(map[string]any{
 			"data": map[string]any{
@@ -110,24 +106,22 @@ func TestTransport_Get_SuccessWithAllAttributes(t *testing.T) {
 	err := tr.Get(context.Background(), "/v1/test", &out, paging.DefaultParams(), NewAllAttributesWrapper(params))
 
 	// assert
-	require.NoError(err)
-	assert.Equal("ok", out.Data.Message)
+	require.NoError(t, err)
+	assert.Equal(t, "ok", out.Data.Message)
 }
 
 func TestTransport_Post_Success(t *testing.T) {
 	// arrange
-	require := require.New(t)
-	assert := assert.New(t)
-
 	ts := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(http.MethodPost, r.Method)
-		assert.Equal("application/json", r.Header.Get("Content-Type"))
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
 
 		var body map[string]any
 		_ = json.NewDecoder(r.Body).Decode(&body)
 
-		assert.Equal("value", body["key"])
+		assert.Equal(t, "value", body["key"])
 
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_ = json.NewEncoder(w).Encode(map[string]any{
 			"data": map[string]any{
@@ -155,20 +149,18 @@ func TestTransport_Post_Success(t *testing.T) {
 	err := tr.Post(context.Background(), "/v1/create", reqBody, &out)
 
 	// assert
-	require.NoError(err)
-	assert.Equal("123", out.Data.ID)
+	require.NoError(t, err)
+	assert.Equal(t, "123", out.Data.ID)
 }
 
 func TestTransport_DeleteWithResponse_Success(t *testing.T) {
 	// arrange
-	require := require.New(t)
-	assert := assert.New(t)
-
 	ts := newTestServer(t, func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(http.MethodDelete, r.Method)
-		assert.Equal("/v1/test/123", r.URL.Path)
-		assert.Equal("true", r.URL.Query().Get("delayed"))
+		assert.Equal(t, http.MethodDelete, r.Method)
+		assert.Equal(t, "/v1/test/123", r.URL.Path)
+		assert.Equal(t, "true", r.URL.Query().Get("delayed"))
 
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_ = json.NewEncoder(w).Encode(map[string]any{
 			"id": "123",
@@ -192,15 +184,12 @@ func TestTransport_DeleteWithResponse_Success(t *testing.T) {
 	err := tr.DeleteWithResponse(context.Background(), "/v1/test/123", params, &out)
 
 	// assert
-	require.NoError(err)
-	assert.Equal("123", out.ID)
+	require.NoError(t, err)
+	assert.Equal(t, "123", out.ID)
 }
 
 func TestTransport_Do_APIError(t *testing.T) {
 	// arrange
-	require := require.New(t)
-	assert := assert.New(t)
-
 	ts := newTestServer(t, func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		_, _ = w.Write([]byte("bad request"))
@@ -215,19 +204,37 @@ func TestTransport_Do_APIError(t *testing.T) {
 	err := tr.Get(context.Background(), "/v1/error", &out, paging.DefaultParams(), nil)
 
 	// assert
-	require.Error(err)
+	require.Error(t, err)
 
 	var apiErr *TransportError
-	require.ErrorAs(err, &apiErr)
+	require.ErrorAs(t, err, &apiErr)
 
-	assert.Equal(400, apiErr.StatusCode)
-	assert.Equal("bad request", apiErr.Body)
+	assert.Equal(t, 400, apiErr.StatusCode)
+	assert.Equal(t, "bad request", apiErr.Body)
+}
+
+func TestTransport_Do_WrongContentType(t *testing.T) {
+	// arrange
+	ts := newTestServer(t, func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "text/plain")
+		_, _ = w.Write([]byte(`{"text": "json but still wrong content type"}`))
+	})
+	defer ts.Close()
+
+	tr := NewTransport(ts.URL, "", ts.Client())
+
+	var out map[string]any
+
+	// act
+	err := tr.Get(context.Background(), "/v1/error", &out, paging.DefaultParams(), nil)
+
+	// assert
+	require.Error(t, err)
+	assert.ErrorContains(t, err, "sending request: unsupported response Content-Type")
 }
 
 func TestTransport_BuildRequestUrlWithPaging(t *testing.T) {
 	// arrange
-	require := require.New(t)
-
 	tr := NewTransport("https://api.example.com", "", nil)
 
 	// act
@@ -237,14 +244,12 @@ func TestTransport_BuildRequestUrlWithPaging(t *testing.T) {
 	}, nil)
 
 	// assert
-	require.NoError(err)
+	require.NoError(t, err)
 	assert.Equal(t, "https://api.example.com/v1/test?limit=77&page=3", url)
 }
 
 func TestTransport_BuildRequestUrl_PageError(t *testing.T) {
 	// arrange
-	require := require.New(t)
-
 	tr := NewTransport("https://api.example.com", "", nil)
 
 	// act
@@ -254,7 +259,7 @@ func TestTransport_BuildRequestUrl_PageError(t *testing.T) {
 	}, nil)
 
 	// assert
-	require.Error(err)
+	require.Error(t, err)
 }
 
 func TestTransport_JSONMarshallingFailed(t *testing.T) {
@@ -355,6 +360,7 @@ func TestTransport_PreValidate_SendsValidRequest(t *testing.T) {
 		_ = json.NewDecoder(r.Body).Decode(&body)
 		assert.Equal(t, "value", body["key"])
 
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_ = json.NewEncoder(w).Encode(map[string]any{"id": "123"})
 	})
