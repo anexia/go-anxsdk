@@ -112,7 +112,7 @@ func TestProvisioningRequest_PreValidate(t *testing.T) {
 			mutate: func(r *ProvisioningRequest) {
 				r.Script = new("not base64 !!!")
 			},
-			wantMsg: "script is not base64 encoded",
+			wantMsg: "Script is not base64 encoded",
 		},
 		{
 			name: "empty script is not validated",
@@ -259,7 +259,7 @@ func TestProvisioningRequest_PreValidate_ReportsAllViolations(t *testing.T) {
 
 	msg := err.Error()
 	assert.Contains(t, msg, "provisioning request validation")
-	for _, want := range []string{"script is not base64 encoded", "MemoryMB", "CPUs", "DNS1", "DNS3"} {
+	for _, want := range []string{"Script is not base64 encoded", "MemoryMB", "CPUs", "DNS1", "DNS3"} {
 		assert.Contains(t, msg, want)
 	}
 
