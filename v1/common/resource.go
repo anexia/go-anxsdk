@@ -14,12 +14,14 @@ func (r Resource) GetID() string {
 // IsEngineIdentifier checks if the given string s looks like an Anexia Engine Identifier.
 // Does not very if it is a valid resource.
 func IsEngineIdentifier(s string) bool {
-	if len(s) != 32 {
+	const identifierLength = 32
+
+	if len(s) != identifierLength {
 		return false
 	}
 
 	for _, char := range s {
-		if !((char >= '0' && char <= '9') || (char >= 'a' && char <= 'f') || (char >= 'A' && char <= 'F')) {
+		if (char < '0' || char > '9') && (char < 'a' || char > 'f') && (char < 'A' || char > 'F') {
 			return false
 		}
 	}
