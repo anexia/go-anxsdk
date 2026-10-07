@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/anexia/go-anxsdk/internal"
 	"github.com/anexia/go-anxsdk/paging"
@@ -12,17 +11,12 @@ import (
 
 // ResourceListParams defines the available parameters for the resource list endpoint.
 type ResourceListParams struct {
+	Query                  *string `url:"query"`
 	IncludeSoftDelete      *bool   `url:"include_soft_delete"`
 	ResellerIdentifier     *string `url:"reseller_identifier"`
 	CustomerIdentifier     *string `url:"customer_identifier"`
 	TagName                *string `url:"tag_name"`
 	ResourcePoolIdentifier *string `url:"resource_pool_identifier"`
-}
-
-// ResourceListItem is an item in the resource list response.
-type ResourceListItem struct {
-	Identifier string `json:"identifier"`
-	Name       string `json:"name"`
 }
 
 // ResourceGetResponse represents the details of a core resource.
@@ -31,9 +25,9 @@ type ResourceGetResponse struct {
 	Identifier      string            `json:"identifier"`
 	ResourceType    common.Resource   `json:"resource_type"`
 	ServiceName     string            `json:"service_name"`
-	CreatedAt       time.Time         `json:"created_at"`
-	DeletedAt       *time.Time        `json:"deleted_at"`
-	UpdatedAt       time.Time         `json:"updated_at"`
+	CreatedAt       string            `json:"created_at"`
+	DeletedAt       *string           `json:"deleted_at"`
+	UpdatedAt       string            `json:"updated_at"`
 	Reseller        Reseller          `json:"reseller"`
 	Customer        Customer          `json:"customer"`
 	BillingContract *string           `json:"billing_contract"`
@@ -77,8 +71,8 @@ func newResourceClient(transport *internal.Transport) *ResourceClient {
 }
 
 // List returns a list of paged resources.
-func (v *ResourceClient) List(ctx context.Context, pagingParams paging.Params, params ResourceListParams) (paging.PagedResponse[ResourceListItem], error) {
-	resp := paging.PagedResponse[ResourceListItem]{}
+func (v *ResourceClient) List(ctx context.Context, pagingParams paging.Params, params ResourceListParams) (paging.PagedResponse[common.Resource], error) {
+	resp := paging.PagedResponse[common.Resource]{}
 	err := v.transport.Get(ctx, "api/core/v1/resource.json", &resp, pagingParams, params)
 	return resp, common.MapTransportError(err)
 }
@@ -97,14 +91,15 @@ func (v *ResourceClient) GetTags(ctx context.Context, identifier string) ([]comm
 	return resp, common.MapTransportError(err)
 }
 
-// Tag tags a resource with the provided tag name.
-func (v *ResourceClient) Tag(ctx context.Context, identifier string, tagName string) error {
+// AssignTag tags a resource with the provided tag name.
+// If the tag does not exist, it will be created.
+func (v *ResourceClient) AssignTag(ctx context.Context, identifier string, tagName string) error {
 	err := v.transport.Post(ctx, fmt.Sprintf("api/core/v1/resource.json/%s/tags/%s", identifier, tagName), nil, nil)
 	return common.MapTransportError(err)
 }
 
-// Untag removes a tag from a resource.
-func (v *ResourceClient) Untag(ctx context.Context, identifier string, tagName string) error {
+// RemovesTag removes a tag from a resource.
+func (v *ResourceClient) RemovesTag(ctx context.Context, identifier string, tagName string) error {
 	err := v.transport.Delete(ctx, fmt.Sprintf("api/core/v1/resource.json/%s/tags/%s", identifier, tagName))
 	return common.MapTransportError(err)
 }

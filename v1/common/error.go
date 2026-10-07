@@ -22,10 +22,11 @@ func (a *APIError) Error() string {
 
 // IsNotFoundError checks if the provided err is a NotFound error returned from the Anexia Engine.
 func IsNotFoundError(err error) bool {
-	return isStatusCode(err, http.StatusNotFound)
+	return IsErrorWithStatusCode(err, http.StatusNotFound)
 }
 
-func isStatusCode(err error, status int) bool {
+// IsErrorWithStatusCode checks if the provided err represents the specified StatusCode as received from the Anexia Engine.
+func IsErrorWithStatusCode(err error, status int) bool {
 	if unwrapped, ok := errors.AsType[*APIError](err); ok {
 		return unwrapped.StatusCode == status
 	}
