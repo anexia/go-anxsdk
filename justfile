@@ -3,3 +3,6 @@ test:
 
 lint:
     golangci-lint run --fix
+
+vulncheck:
+    go tool govulncheck ./...

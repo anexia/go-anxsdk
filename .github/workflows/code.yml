@@ -33,6 +33,9 @@ jobs:
       - name: run lint
         run: just lint
 
+      - name: run vulncheck
+        run: just vulncheck
+
   test:
     name: Test
     runs-on: ubuntu-latest
