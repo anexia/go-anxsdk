@@ -38,10 +38,25 @@ type TagCreateRequest struct {
 	ServiceIdentifier string `json:"service_identifier"`
 }
 
+// TagAPI is the interface implemented by [TagClient].
+type TagAPI interface {
+	// List returns a list of paged tags.
+	List(ctx context.Context, pagingParams paging.Params, params TagListParams) (paging.PagedResponse[TagListItem], error)
+	// Get returns a single tag by its identifier.
+	Get(ctx context.Context, identifier string) (TagGetResponse, error)
+	// Create creates a new tag.
+	Create(ctx context.Context, request TagCreateRequest) error
+	// Delete deletes a tag.
+	Delete(ctx context.Context, identifier string, serviceIdentifier string) error
+}
+
 // TagClient is an api client for managing tags.
 type TagClient struct {
 	transport *internal.Transport
 }
+
+// Check that TagClient implements the TagAPI interface.
+var _ TagAPI = (*TagClient)(nil)
 
 // newTagClient creates a new tag client.
 func newTagClient(transport *internal.Transport) *TagClient {

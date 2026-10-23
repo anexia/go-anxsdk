@@ -55,10 +55,31 @@ type PermissionGroupCreateResponse struct {
 	Identifier string `json:"identifier"`
 }
 
+// PermissionGroupAPI is the interface implemented by [PermissionGroupClient].
+type PermissionGroupAPI interface {
+	// List returns a paged list of permission groups.
+	List(ctx context.Context, pageParams paging.Params, params PermissionGroupListParams) (paging.PagedResponse[PermissionGroup], error)
+	// ListPageFetcher returns a paging.PageFetcher for permission groups.
+	ListPageFetcher(params PermissionGroupListParams) paging.PageFetcher[PermissionGroup]
+	// Get returns a permission group by identifier.
+	Get(ctx context.Context, identifier string) (PermissionGroup, error)
+	// Create creates a new permission group.
+	Create(ctx context.Context, group PermissionGroupCreateRequest) (PermissionGroupCreateResponse, error)
+	// Update updates a permission group.
+	Update(ctx context.Context, identifier string, request PermissionGroupUpdateRequest) (PermissionGroupUpdateResponse, error)
+	// Delete deletes a permission group.
+	Delete(ctx context.Context, identifier string) error
+	// ListPermissions lists all permissions.
+	ListPermissions(ctx context.Context, params PermissionListParams) ([]common.Resource, error)
+}
+
 // PermissionGroupClient is an api client for managing permission groups.
 type PermissionGroupClient struct {
 	transport *internal.Transport
 }
+
+// Check that PermissionGroupClient implements the PermissionGroupAPI interface.
+var _ PermissionGroupAPI = (*PermissionGroupClient)(nil)
 
 func newPermissionGroupClient(transport *internal.Transport) *PermissionGroupClient {
 	return &PermissionGroupClient{

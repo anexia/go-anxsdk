@@ -63,10 +63,23 @@ type BackendGetResponse struct {
 	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
 
+// BackendAPI is the interface implemented by [BackendClient].
+type BackendAPI interface {
+	// List returns a list of paged backends.
+	List(ctx context.Context, pagingParams paging.Params, params BackendListParams) (paging.PagedResponse[BackendListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for backends.
+	ListPageFetcher(params BackendListParams) paging.PageFetcher[BackendListItem]
+	// Get returns a backend by identifier.
+	Get(ctx context.Context, identifier string) (BackendGetResponse, error)
+}
+
 // BackendClient is an api client for managing load balancer backends.
 type BackendClient struct {
 	transport *internal.Transport
 }
+
+// Check that BackendClient implements the BackendAPI interface.
+var _ BackendAPI = (*BackendClient)(nil)
 
 // NewBackendClient creates a new backend client.
 func NewBackendClient(transport *internal.Transport) *BackendClient {

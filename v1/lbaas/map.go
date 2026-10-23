@@ -30,10 +30,23 @@ type MapGetResponse struct {
 	Identifier string `json:"identifier"`
 }
 
+// MapAPI is the interface implemented by [MapClient].
+type MapAPI interface {
+	// List returns a list of paged maps.
+	List(ctx context.Context, pagingParams paging.Params, params MapListParams) (paging.PagedResponse[MapListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for maps.
+	ListPageFetcher(params MapListParams) paging.PageFetcher[MapListItem]
+	// Get returns a map by identifier.
+	Get(ctx context.Context, identifier string) (MapGetResponse, error)
+}
+
 // MapClient is an api client for managing load balancer maps.
 type MapClient struct {
 	transport *internal.Transport
 }
+
+// Check that MapClient implements the MapAPI interface.
+var _ MapAPI = (*MapClient)(nil)
 
 // NewMapClient creates a new map client.
 func NewMapClient(transport *internal.Transport) *MapClient {

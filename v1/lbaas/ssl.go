@@ -30,10 +30,23 @@ type SslGetResponse struct {
 	Identifier string `json:"identifier"`
 }
 
+// SslAPI is the interface implemented by [SslClient].
+type SslAPI interface {
+	// List returns a list of paged ssls.
+	List(ctx context.Context, pagingParams paging.Params, params SslListParams) (paging.PagedResponse[SslListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for ssls.
+	ListPageFetcher(params SslListParams) paging.PageFetcher[SslListItem]
+	// Get returns an ssl by identifier.
+	Get(ctx context.Context, identifier string) (SslGetResponse, error)
+}
+
 // SslClient is an api client for managing load balancer ssls.
 type SslClient struct {
 	transport *internal.Transport
 }
+
+// Check that SslClient implements the SslAPI interface.
+var _ SslAPI = (*SslClient)(nil)
 
 // NewSslClient creates a new ssl client.
 func NewSslClient(transport *internal.Transport) *SslClient {

@@ -56,11 +56,30 @@ type NodepoolNetworkListParams struct {
 // NodepoolNetworkListItem is an item in the network list response.
 type NodepoolNetworkListItem common.Resource
 
+// NodepoolNetworksAPI is the interface implemented by [NodepoolNetworksClient].
+type NodepoolNetworksAPI interface {
+	// Get returns a single network by its id.
+	Get(ctx context.Context, identifier string) (NodepoolNetworkGetResponse, error)
+	// Update updates a network.
+	Update(ctx context.Context, identifier string, request NodepoolNetworkUpdateRequest) (NodepoolNetworkGetResponse, error)
+	// List returns a list of paged Networks.
+	List(ctx context.Context, pageParams paging.Params, params NodepoolNetworkListParams) (paging.PagedResponse[NodepoolNetworkListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for Networks.
+	ListPageFetcher(params NodepoolNetworkListParams) paging.PageFetcher[NodepoolNetworkListItem]
+	// ListFull returns a list of paged Networks with all attributes included.
+	ListFull(ctx context.Context, pageParams paging.Params, params NodepoolNetworkListParams) (paging.PagedResponse[NodepoolNetworkGetResponse], error)
+	// ListFullPageFetcher returns a paging.PageFetcher for Networks with all attributes included.
+	ListFullPageFetcher(params NodepoolNetworkListParams) paging.PageFetcher[NodepoolNetworkGetResponse]
+}
+
 // NodepoolNetworksClient is an api client for managing NodepoolNetworks.
 type NodepoolNetworksClient struct {
 	environment Env
 	transport   *internal.Transport
 }
+
+// Check that NodepoolNetworksClient implements the NodepoolNetworksAPI interface.
+var _ NodepoolNetworksAPI = (*NodepoolNetworksClient)(nil)
 
 func newNodepoolNetworksClient(transport *internal.Transport, environment Env) *NodepoolNetworksClient {
 	return &NodepoolNetworksClient{

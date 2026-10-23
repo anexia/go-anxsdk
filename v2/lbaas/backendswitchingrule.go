@@ -26,10 +26,27 @@ type BackendSwitchingRuleGetResponse struct {
 	Name       string `json:"name"`
 }
 
+// BackendSwitchingRuleAPI is the interface implemented by [BackendSwitchingRuleClient].
+type BackendSwitchingRuleAPI interface {
+	// List returns a list of paged backendSwitchingRules.
+	List(ctx context.Context, pagingParams paging.Params, params BackendSwitchingRuleListParams) (paging.PagedResponse[BackendSwitchingRuleListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for backendSwitchingRules.
+	ListPageFetcher(params BackendSwitchingRuleListParams) paging.PageFetcher[BackendSwitchingRuleListItem]
+	// ListFull returns a list of paged backendSwitchingRules with all attributes included.
+	ListFull(ctx context.Context, pagingParams paging.Params, params BackendSwitchingRuleListParams) (paging.PagedResponse[BackendSwitchingRuleGetResponse], error)
+	// ListFullPageFetcher returns a paging.PageFetcher for backendSwitchingRules with all attributes included.
+	ListFullPageFetcher(params BackendSwitchingRuleListParams) paging.PageFetcher[BackendSwitchingRuleGetResponse]
+	// Get returns a backendSwitchingRule by identifier.
+	Get(ctx context.Context, identifier string) (BackendSwitchingRuleGetResponse, error)
+}
+
 // BackendSwitchingRuleClient is an api client for managing load balancer backendSwitchingRules.
 type BackendSwitchingRuleClient struct {
 	transport *internal.Transport
 }
+
+// Check that BackendSwitchingRuleClient implements the BackendSwitchingRuleAPI interface.
+var _ BackendSwitchingRuleAPI = (*BackendSwitchingRuleClient)(nil)
 
 // NewBackendSwitchingRuleClient creates a new backendSwitchingRule client.
 func NewBackendSwitchingRuleClient(transport *internal.Transport) *BackendSwitchingRuleClient {

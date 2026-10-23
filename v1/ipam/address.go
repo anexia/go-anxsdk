@@ -137,10 +137,37 @@ type AddressUpdateResponse struct {
 	Identifier string `json:"identifier"`
 }
 
+// AddressAPI is the interface implemented by [AddressClient].
+type AddressAPI interface {
+	// List returns a list of paged addresses.
+	List(ctx context.Context, pagingParams paging.Params, params AddressListParams) (paging.PagedResponse[AddressListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for addresses.
+	ListPageFetcher(params AddressListParams) paging.PageFetcher[AddressListItem]
+	// ListFiltered returns a paged list of addresses filtered by the provided parameters.
+	ListFiltered(ctx context.Context, pagingParams paging.Params, params AddressFilteredParams) (paging.PagedResponse[AddressListItem], error)
+	// ListFilteredPageFetcher returns a paging.PageFetcher for filtered addresses.
+	ListFilteredPageFetcher(params AddressFilteredParams) paging.PageFetcher[AddressListItem]
+	// Get returns an address by identifier.
+	Get(ctx context.Context, identifier string) (AddressGetResponse, error)
+	// Create creates a new address.
+	Create(ctx context.Context, request AddressCreateRequest) (AddressCreateResponse, error)
+	// ReserveRandom reserves random ip addresses.
+	ReserveRandom(ctx context.Context, request AddressReserveRandomRequest) (paging.PagedResponse[AddressReserveResponseItem], error)
+	// ReserveSpecific reserves specific ip addresses.
+	ReserveSpecific(ctx context.Context, request AddressReserveSpecificRequest) (paging.PagedResponse[AddressReserveResponseItem], error)
+	// Update updates an address by identifier.
+	Update(ctx context.Context, identifier string, request AddressUpdateRequest) (AddressUpdateResponse, error)
+	// Delete deletes an address by identifier.
+	Delete(ctx context.Context, identifier string) error
+}
+
 // AddressClient is an api client for managing addresses.
 type AddressClient struct {
 	transport *internal.Transport
 }
+
+// Check that AddressClient implements the AddressAPI interface.
+var _ AddressAPI = (*AddressClient)(nil)
 
 // NewAddressClient creates a new address client.
 func NewAddressClient(transport *internal.Transport) *AddressClient {

@@ -20,7 +20,7 @@ func TestVSphere(t *testing.T) {
 }
 
 var (
-	vsphereClient *vsphere.Client
+	vsphereClient vsphere.API
 )
 
 var _ = BeforeSuite(func() {

@@ -207,11 +207,26 @@ type ClusterUpdateResponse struct {
 	AutomationRules                []common.Resource          `json:"automation_rules"`
 }
 
+// ClustersAPI is the interface implemented by [ClustersClient].
+type ClustersAPI interface {
+	// Get returns a single cluster by its id.
+	Get(ctx context.Context, identifier string) (ClusterGetResponse, error)
+	// Update updates a cluster.
+	Update(ctx context.Context, identifier string, request ClusterUpdateRequest) (ClusterUpdateResponse, error)
+	// List returns a list of paged clusters.
+	List(ctx context.Context, pageParams paging.Params, params ClusterListParams) (paging.PagedResponse[ClusterListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for clusters.
+	ListPageFetcher(params ClusterListParams) paging.PageFetcher[ClusterListItem]
+}
+
 // ClustersClient is an api client for managing clusters.
 type ClustersClient struct {
 	environment kubernetesEnvironment
 	transport   *internal.Transport
 }
+
+// Check that ClustersClient implements the ClustersAPI interface.
+var _ ClustersAPI = (*ClustersClient)(nil)
 
 func newClustersClient(
 	transport *internal.Transport,

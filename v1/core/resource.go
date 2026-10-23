@@ -58,10 +58,28 @@ type Customer struct {
 	Reseller   *string `json:"reseller"`
 }
 
+// ResourceAPI is the interface implemented by [ResourceClient].
+type ResourceAPI interface {
+	// List returns a list of paged resources.
+	List(ctx context.Context, pagingParams paging.Params, params ResourceListParams) (paging.PagedResponse[common.Resource], error)
+	// Get returns a single resource by its identifier.
+	Get(ctx context.Context, identifier string) (ResourceGetResponse, error)
+	// GetTags returns a list of all tags on a resource.
+	GetTags(ctx context.Context, identifier string) ([]common.Resource, error)
+	// AssignTag tags a resource with the provided tag name.
+	// If the tag does not exist, it will be created.
+	AssignTag(ctx context.Context, identifier string, tagName string) error
+	// RemovesTag removes a tag from a resource.
+	RemovesTag(ctx context.Context, identifier string, tagName string) error
+}
+
 // ResourceClient is an api client for managing resources.
 type ResourceClient struct {
 	transport *internal.Transport
 }
+
+// Check that ResourceClient implements the ResourceAPI interface.
+var _ ResourceAPI = (*ResourceClient)(nil)
 
 // newResourceClient creates a new resource client.
 func newResourceClient(transport *internal.Transport) *ResourceClient {

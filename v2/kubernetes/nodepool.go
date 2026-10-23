@@ -153,11 +153,30 @@ type NodepoolUpdateRequest struct {
 	SSHPubKeys  *string `json:"sshpubkeys,omitempty"`
 }
 
+// NodepoolsAPI is the interface implemented by [NodepoolsClient].
+type NodepoolsAPI interface {
+	// Get returns a single nodepool by its id.
+	Get(ctx context.Context, identifier string) (NodepoolGetResponse, error)
+	// Update updates a nodepool.
+	Update(ctx context.Context, identifier string, request NodepoolUpdateRequest) (NodepoolGetResponse, error)
+	// List returns a list of paged Nodepools.
+	List(ctx context.Context, pageParams paging.Params, params NodepoolListParams) (paging.PagedResponse[NodepoolListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for Nodepools.
+	ListPageFetcher(params NodepoolListParams) paging.PageFetcher[NodepoolListItem]
+	// ListFull returns a list of paged Nodepools with all attributes included.
+	ListFull(ctx context.Context, pageParams paging.Params, params NodepoolListParams) (paging.PagedResponse[NodepoolGetResponse], error)
+	// ListFullPageFetcher returns a paging.PageFetcher for Nodepools with all attributes included.
+	ListFullPageFetcher(params NodepoolListParams) paging.PageFetcher[NodepoolGetResponse]
+}
+
 // NodepoolsClient is an api client for managing Nodepools.
 type NodepoolsClient struct {
 	environment Env
 	transport   *internal.Transport
 }
+
+// Check that NodepoolsClient implements the NodepoolsAPI interface.
+var _ NodepoolsAPI = (*NodepoolsClient)(nil)
 
 func newNodepoolsClient(transport *internal.Transport, environment Env) *NodepoolsClient {
 	return &NodepoolsClient{

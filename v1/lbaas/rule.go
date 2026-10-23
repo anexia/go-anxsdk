@@ -50,10 +50,23 @@ type RuleGetResponse struct {
 	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
 
+// RuleAPI is the interface implemented by [RuleClient].
+type RuleAPI interface {
+	// List returns a list of paged rules.
+	List(ctx context.Context, pagingParams paging.Params, params RuleListParams) (paging.PagedResponse[RuleListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for rules.
+	ListPageFetcher(params RuleListParams) paging.PageFetcher[RuleListItem]
+	// Get returns a rule by identifier.
+	Get(ctx context.Context, identifier string) (RuleGetResponse, error)
+}
+
 // RuleClient is an api client for managing load balancer rules.
 type RuleClient struct {
 	transport *internal.Transport
 }
+
+// Check that RuleClient implements the RuleAPI interface.
+var _ RuleAPI = (*RuleClient)(nil)
 
 // NewRuleClient creates a new rule client.
 func NewRuleClient(transport *internal.Transport) *RuleClient {

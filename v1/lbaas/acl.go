@@ -44,10 +44,23 @@ type ACLGetResponse struct {
 	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
 
+// ACLAPI is the interface implemented by [ACLClient].
+type ACLAPI interface {
+	// List returns a list of paged acls.
+	List(ctx context.Context, pagingParams paging.Params, params ACLListParams) (paging.PagedResponse[ACLListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for acls.
+	ListPageFetcher(params ACLListParams) paging.PageFetcher[ACLListItem]
+	// Get returns a acl by identifier.
+	Get(ctx context.Context, identifier string) (ACLGetResponse, error)
+}
+
 // ACLClient is an api client for managing load balancer acls.
 type ACLClient struct {
 	transport *internal.Transport
 }
+
+// Check that ACLClient implements the ACLAPI interface.
+var _ ACLAPI = (*ACLClient)(nil)
 
 // NewACLClient creates a new acl client.
 func NewACLClient(transport *internal.Transport) *ACLClient {

@@ -86,10 +86,27 @@ type PrefixGetResponseLocationItem struct {
 	CityCode   string `json:"city_code"`
 }
 
+// PrefixAPI is the interface implemented by [PrefixClient].
+type PrefixAPI interface {
+	// List returns a list of paged aggregates.
+	List(ctx context.Context, pagingParams paging.Params, params PrefixListParams) (paging.PagedResponse[PrefixListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for aggregates.
+	ListPageFetcher(params PrefixListParams) paging.PageFetcher[PrefixListItem]
+	// ListFiltered returns a paged list of aggregates filtered by the provided parameters.
+	ListFiltered(ctx context.Context, pagingParams paging.Params, params PrefixFilteredParams) (paging.PagedResponse[PrefixListItem], error)
+	// ListFilteredPageFetcher returns a paging.PageFetcher for filtered aggregates.
+	ListFilteredPageFetcher(params PrefixFilteredParams) paging.PageFetcher[PrefixListItem]
+	// Get returns an aggregate by identifier.
+	Get(ctx context.Context, identifier string) (PrefixGetResponse, error)
+}
+
 // PrefixClient is an api client for managing prefixes.
 type PrefixClient struct {
 	transport *internal.Transport
 }
+
+// Check that PrefixClient implements the PrefixAPI interface.
+var _ PrefixAPI = (*PrefixClient)(nil)
 
 // NewPrefixClient creates a new prefix client.
 func NewPrefixClient(transport *internal.Transport) *PrefixClient {
