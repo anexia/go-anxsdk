@@ -30,6 +30,8 @@ type MapGetResponse struct {
 	Identifier string `json:"identifier"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/lbaas . MapAPI
+
 // MapAPI is the interface implemented by [MapClient].
 type MapAPI interface {
 	// List returns a list of paged maps.

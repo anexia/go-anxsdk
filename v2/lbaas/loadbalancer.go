@@ -33,6 +33,8 @@ type LoadBalancerGetResponse struct {
 	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
 
+//counterfeiter:generate -o ../../fake/v2/lbaas . LoadBalancerAPI
+
 // LoadBalancerAPI is the interface implemented by [LoadBalancerClient].
 type LoadBalancerAPI interface {
 	// Get returns a load balancer by identifier.

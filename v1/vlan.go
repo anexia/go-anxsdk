@@ -85,6 +85,8 @@ func (v VlanListItem) GetID() string {
 	return v.Identifier
 }
 
+//counterfeiter:generate -o ../fake/v1 . VlansAPI
+
 // VlansAPI is the interface implemented by [VlansClient].
 type VlansAPI interface {
 	// Create creates a new vlan.

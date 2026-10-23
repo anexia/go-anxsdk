@@ -6,3 +6,6 @@ lint:
 
 vulncheck:
     go tool govulncheck ./...
+
+generate:
+    go generate ./...

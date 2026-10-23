@@ -39,6 +39,8 @@ type BackendGetResponse struct {
 	AutomationRules            []common.Resource           `json:"automation_rules"`
 }
 
+//counterfeiter:generate -o ../../fake/v2/lbaas . BackendAPI
+
 // BackendAPI is the interface implemented by [BackendClient].
 type BackendAPI interface {
 	// List returns a list of paged backends.

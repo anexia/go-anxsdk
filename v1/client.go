@@ -8,6 +8,10 @@ import (
 	"github.com/anexia/go-anxsdk/v1/vsphere"
 )
 
+//go:generate go tool counterfeiter -generate
+
+//counterfeiter:generate -o ../fake/v1 . API
+
 // API is the interface implemented by [Client].
 type API interface {
 	// Vlans returns a vlans client.

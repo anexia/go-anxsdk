@@ -66,6 +66,8 @@ type InfoGetResponseNetwork struct {
 	VLANs          []int    `json:"vlans"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/vsphere . InfoAPI
+
 // InfoAPI is the interface implemented by [InfoClient].
 type InfoAPI interface {
 	// Get returns an info object by identifier.

@@ -2,6 +2,10 @@ package ipam
 
 import "github.com/anexia/go-anxsdk/internal"
 
+//go:generate go tool counterfeiter -generate
+
+//counterfeiter:generate -o ../../fake/v1/ipam . API
+
 // API is the interface implemented by [Client].
 type API interface {
 	// Addresses returns an address client.

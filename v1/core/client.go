@@ -2,6 +2,10 @@ package core
 
 import "github.com/anexia/go-anxsdk/internal"
 
+//go:generate go tool counterfeiter -generate
+
+//counterfeiter:generate -o ../../fake/v1/core . API
+
 // API is the interface implemented by [Client].
 type API interface {
 	// User returns a user api client.

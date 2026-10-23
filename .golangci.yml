@@ -76,6 +76,10 @@ linters:
         linters:
           - revive
         text: "max-public-structs"
+      - path: fake/.+\.go
+        linters:
+          - revive
+          - godoclint
 
 
 formatters:

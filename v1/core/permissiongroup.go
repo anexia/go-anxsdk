@@ -55,6 +55,8 @@ type PermissionGroupCreateResponse struct {
 	Identifier string `json:"identifier"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/core . PermissionGroupAPI
+
 // PermissionGroupAPI is the interface implemented by [PermissionGroupClient].
 type PermissionGroupAPI interface {
 	// List returns a paged list of permission groups.

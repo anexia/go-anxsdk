@@ -44,6 +44,8 @@ type ACLGetResponse struct {
 	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/lbaas . ACLAPI
+
 // ACLAPI is the interface implemented by [ACLClient].
 type ACLAPI interface {
 	// List returns a list of paged acls.

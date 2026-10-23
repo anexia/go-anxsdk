@@ -6,6 +6,10 @@ import (
 	"github.com/anexia/go-anxsdk/v2/lbaas"
 )
 
+//go:generate go tool counterfeiter -generate
+
+//counterfeiter:generate -o ../fake/v2 . API
+
 // API is the interface implemented by [Client].
 type API interface {
 	// KubernetesByEnv returns a clusters client based on the provided env.

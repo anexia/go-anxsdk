@@ -62,6 +62,8 @@ type ServerGetResponse struct {
 	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/lbaas . ServerAPI
+
 // ServerAPI is the interface implemented by [ServerClient].
 type ServerAPI interface {
 	// List returns a list of paged servers.

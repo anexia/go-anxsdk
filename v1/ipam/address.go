@@ -137,6 +137,8 @@ type AddressUpdateResponse struct {
 	Identifier string `json:"identifier"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/ipam . AddressAPI
+
 // AddressAPI is the interface implemented by [AddressClient].
 type AddressAPI interface {
 	// List returns a list of paged addresses.

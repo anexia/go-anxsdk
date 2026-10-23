@@ -63,6 +63,8 @@ type FrontendGetResponse struct {
 	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/lbaas . FrontendAPI
+
 // FrontendAPI is the interface implemented by [FrontendClient].
 type FrontendAPI interface {
 	// List returns a list of paged frontends.

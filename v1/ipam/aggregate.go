@@ -55,6 +55,8 @@ type AggregateGetResponse struct {
 	Version     AddressVersion `json:"version"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/ipam . AggregateAPI
+
 // AggregateAPI is the interface implemented by [AggregateClient].
 type AggregateAPI interface {
 	// List returns a list of paged aggregates.

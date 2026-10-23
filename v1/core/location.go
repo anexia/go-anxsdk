@@ -29,6 +29,8 @@ func (l LocationListItem) GetID() string {
 	return l.Identifier
 }
 
+//counterfeiter:generate -o ../../fake/v1/core . LocationsAPI
+
 // LocationsAPI is the interface implemented by [LocationsClient].
 type LocationsAPI interface {
 	// List returns a list of paged locations.

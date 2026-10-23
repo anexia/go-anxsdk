@@ -58,6 +58,8 @@ type SearchByTagsParams struct {
 	Tags []string `url:"tags,comma,omitempty"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/vsphere . SearchAPI
+
 // SearchAPI is the interface implemented by [SearchClient].
 type SearchAPI interface {
 	// ByName returns a paged response of vms matching the given name parameters.

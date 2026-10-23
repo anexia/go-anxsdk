@@ -58,6 +58,8 @@ type Customer struct {
 	Reseller   *string `json:"reseller"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/core . ResourceAPI
+
 // ResourceAPI is the interface implemented by [ResourceClient].
 type ResourceAPI interface {
 	// List returns a list of paged resources.
