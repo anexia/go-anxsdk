@@ -151,25 +151,37 @@ The client is configured using functional options:
 
 ## Pagination
 
-Pagination is achieved by leveraging go's new standard library iter.Seq2 type.
+Pagination is achieved by leveraging go's new standard library `iter.Seq2` type.
 The `paging.Paginate` function accepts any `paging.PageFetcher` which is provided by any client that returns paged data.
 
-Example of iterating over all dev clusters:
+Example of iterating over all clusters:
 ```go
-clusters := paging.Paginate(ctx, client.V1().Clusters().ListPageFetcher(v1.ClusterListParams{}))
-for cluster, err := range clusters {
-    if err != nil {
-        panic(err)
-    }
+clusterList := paging.Paginate(ctx, client.V2().Kubernetes().Clusters().ListPageFetcher(kubernetes.ClusterListParams{}))
+for cluster, err := range clusterList {
+	if err != nil {
+		panic(err)
+	}
 
-    fmt.Printf("%+v\n", cluster)
+	fmt.Printf("%+v\n", cluster)
 }
 ```
 
-To iterate over all items and fetch the details (in case the list response item is not enough) it is possible to use the `paging.PaginateAndLoad` function.
+In some `v2` APIs, a `ListFull` is available with all fields already filled. Use as following:
+
+```go
+clusterList, err := client.V2().Kubernetes().Clusters().ListFull(ctx, paging.DefaultParams(), kubernetes.ClusterListParams{})
+if err != nil {
+	panic(err)
+}
+for _, cluster := range clusterList.Data {
+	fmt.Printf("%+v\n", cluster)
+}
+```
+
+For older API endpoints, iterating over all items and fetching the details (in case the list response item is not enough), the `paging.PaginateAndLoad` function can be used.
 This function internally uses the `paging.Paginate` function and a provided `paginate.ItemFetcher` to load each item.
 
-Example of iterating over all dev clusters and fetching each clusters details:
+Example of iterating over all clusters and fetching each clusters details:
 
 ```go
 clusterClient := client.V1().Clusters()
