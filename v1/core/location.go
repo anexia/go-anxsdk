@@ -29,10 +29,21 @@ func (l LocationListItem) GetID() string {
 	return l.Identifier
 }
 
+// LocationsAPI is the interface implemented by [LocationsClient].
+type LocationsAPI interface {
+	// List returns a list of paged locations.
+	List(ctx context.Context, pagingParams paging.Params, params LocationListParams) (paging.PagedResponse[LocationListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for locations.
+	ListPageFetcher(params LocationListParams) paging.PageFetcher[LocationListItem]
+}
+
 // LocationsClient is an api client for managing locations.
 type LocationsClient struct {
 	transport *internal.Transport
 }
+
+// Check that LocationsClient implements the LocationsAPI interface.
+var _ LocationsAPI = (*LocationsClient)(nil)
 
 // newLocationsClient creates a new location client.
 func newLocationsClient(transport *internal.Transport) *LocationsClient {

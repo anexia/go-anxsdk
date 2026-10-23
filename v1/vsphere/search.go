@@ -58,10 +58,25 @@ type SearchByTagsParams struct {
 	Tags []string `url:"tags,comma,omitempty"`
 }
 
+// SearchAPI is the interface implemented by [SearchClient].
+type SearchAPI interface {
+	// ByName returns a paged response of vms matching the given name parameters.
+	ByName(ctx context.Context, pageParams paging.Params, params SearchByNameParams) (paging.PagedResponse[SearchResult], error)
+	// ByNamePageFetcher returns a paging.PageFetcher for vms matching the given name parameters.
+	ByNamePageFetcher(params SearchByNameParams) paging.PageFetcher[SearchResult]
+	// ByTags returns a paged response of vms matching the given tags parameters.
+	ByTags(ctx context.Context, pageParams paging.Params, params SearchByTagsParams) (paging.PagedResponse[SearchResult], error)
+	// ByTagsPageFetcher returns a paging.PageFetcher for vms matching the given tags parameters.
+	ByTagsPageFetcher(params SearchByTagsParams) paging.PageFetcher[SearchResult]
+}
+
 // SearchClient is an api client for searching vms.
 type SearchClient struct {
 	transport *internal.Transport
 }
+
+// Check that SearchClient implements the SearchAPI interface.
+var _ SearchAPI = (*SearchClient)(nil)
 
 func newSearchClient(transport *internal.Transport) *SearchClient {
 	return &SearchClient{

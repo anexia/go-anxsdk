@@ -15,7 +15,7 @@ var _ = Describe("SearchClient", func() {
 	var (
 		ctx          context.Context
 		cancel       context.CancelFunc
-		searchClient *vsphere.SearchClient
+		searchClient vsphere.SearchAPI
 	)
 
 	BeforeEach(func() {

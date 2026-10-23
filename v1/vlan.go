@@ -85,10 +85,33 @@ func (v VlanListItem) GetID() string {
 	return v.Identifier
 }
 
+// VlansAPI is the interface implemented by [VlansClient].
+type VlansAPI interface {
+	// Create creates a new vlan.
+	Create(ctx context.Context, request VlanCreateRequest) (VlanCreateResponse, error)
+	// Get returns a vlan by identifier.
+	Get(ctx context.Context, identifier string) (VlanGetResponse, error)
+	// Update updates a vlan by identifier.
+	Update(ctx context.Context, identifier string, request VlanUpdateRequest) (VlanUpdateResponse, error)
+	// List returns a paged list of vlans.
+	List(ctx context.Context, pageParams paging.Params, params VlanListParams) (paging.PagedResponse[VlanListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for vlans.
+	ListPageFetcher(params VlanListParams) paging.PageFetcher[VlanListItem]
+	// ListFiltered returns a paged list of vlans filtered by the provided parameters.
+	ListFiltered(ctx context.Context, pageParams paging.Params, params VlanFilteredParams) (paging.PagedResponse[VlanListItem], error)
+	// ListFilteredPageFetcher returns a paging.PageFetcher for filtered vlans.
+	ListFilteredPageFetcher(params VlanFilteredParams) paging.PageFetcher[VlanListItem]
+	// Delete deletes a vlan by identifier.
+	Delete(ctx context.Context, identifier string) error
+}
+
 // VlansClient is an api client for managing vlans.
 type VlansClient struct {
 	transport *internal.Transport
 }
+
+// Check that VlansClient implements the VlansAPI interface.
+var _ VlansAPI = (*VlansClient)(nil)
 
 // NewVlansClient creates a new vlans client.
 func NewVlansClient(transport *internal.Transport) *VlansClient {

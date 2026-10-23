@@ -65,11 +65,30 @@ type NodepoolDiskListParams struct {
 // NodepoolDiskListItem is an item in the disk list response.
 type NodepoolDiskListItem common.Resource
 
+// NodepoolDisksAPI is the interface implemented by [NodepoolDisksClient].
+type NodepoolDisksAPI interface {
+	// Get returns a single disk by its id.
+	Get(ctx context.Context, identifier string) (NodepoolDiskGetResponse, error)
+	// Update updates a disk.
+	Update(ctx context.Context, identifier string, request NodepoolDiskUpdateRequest) (NodepoolDiskGetResponse, error)
+	// List returns a list of paged Disks.
+	List(ctx context.Context, pageParams paging.Params, params NodepoolDiskListParams) (paging.PagedResponse[NodepoolDiskListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for Disks.
+	ListPageFetcher(params NodepoolDiskListParams) paging.PageFetcher[NodepoolDiskListItem]
+	// ListFull returns a list of paged Disks with all attributes included.
+	ListFull(ctx context.Context, pageParams paging.Params, params NodepoolDiskListParams) (paging.PagedResponse[NodepoolDiskGetResponse], error)
+	// ListFullPageFetcher returns a paging.PageFetcher for Disks with all attributes included.
+	ListFullPageFetcher(params NodepoolDiskListParams) paging.PageFetcher[NodepoolDiskGetResponse]
+}
+
 // NodepoolDisksClient is an api client for managing NodepoolDisks.
 type NodepoolDisksClient struct {
 	environment Env
 	transport   *internal.Transport
 }
+
+// Check that NodepoolDisksClient implements the NodepoolDisksAPI interface.
+var _ NodepoolDisksAPI = (*NodepoolDisksClient)(nil)
 
 func newNodepoolDisksClient(transport *internal.Transport, environment Env) *NodepoolDisksClient {
 	return &NodepoolDisksClient{

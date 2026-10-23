@@ -43,10 +43,23 @@ type BindGetResponse struct {
 	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
 
+// BindAPI is the interface implemented by [BindClient].
+type BindAPI interface {
+	// List returns a list of paged binds.
+	List(ctx context.Context, pagingParams paging.Params, params BindListParams) (paging.PagedResponse[BindListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for binds.
+	ListPageFetcher(params BindListParams) paging.PageFetcher[BindListItem]
+	// Get returns a bind by identifier.
+	Get(ctx context.Context, identifier string) (BindGetResponse, error)
+}
+
 // BindClient is an api client for managing load balancer binds.
 type BindClient struct {
 	transport *internal.Transport
 }
+
+// Check that BindClient implements the BindAPI interface.
+var _ BindAPI = (*BindClient)(nil)
 
 // NewBindClient creates a new bind client.
 func NewBindClient(transport *internal.Transport) *BindClient {

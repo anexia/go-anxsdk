@@ -299,10 +299,56 @@ func (t *TemplateResponse) BuildNumber() (int, error) {
 	return buildNumber, nil
 }
 
+// ProvisioningAPI is the interface implemented by [ProvisioningClient].
+type ProvisioningAPI interface {
+	// GetCPUArchitectures returns all available cpu architectures.
+	GetCPUArchitectures(ctx context.Context) ([]CPUArchitecture, error)
+	// GetCPUPerformanceTypes returns all available cpu performance types.
+	GetCPUPerformanceTypes(ctx context.Context) ([]CPUPerformanceTypeResponse, error)
+	// GetDiskTypes returns all available disk types in a location.
+	GetDiskTypes(ctx context.Context, locationIdentifier string) ([]DiskTypeResponse, error)
+	// ListLocations lists a paged response of locations.
+	ListLocations(ctx context.Context, pageParams paging.Params) (paging.PagedResponse[Location], error)
+	// ListLocationPageFetcher returns a paging.PageFetcher for locations.
+	ListLocationPageFetcher() paging.PageFetcher[Location]
+	// ListTemplates returns a paging.PageFetcher for templates.
+	ListTemplates(ctx context.Context, locationIdentifier string, templateType TemplateType) ([]TemplateResponse, error)
+	// FindNamedTemplate retrieves a template by name and build at a specified location.
+	// Empty and LatestTemplateBuild build identifier will yield the highest available build.
+	FindNamedTemplate(ctx context.Context, locationIdentifier, name, build string) (*TemplateResponse, error)
+	// ListAvailabilityZones lists a paged response of availability zones in a location.
+	ListAvailabilityZones(ctx context.Context, locationIdentifier string) ([]AvailabilityZone, error)
+	// GetNicTypes returns all available nic types.
+	GetNicTypes(ctx context.Context) ([]NicType, error)
+	// GetProvisioningProgress returns the progress for the specified vm provisioning.
+	GetProvisioningProgress(ctx context.Context, taskIdentifier string) (ProvisioningProgress, error)
+	// AwaitCompletion polls the status of a started provisioning request and blocks until it is done.
+	//
+	// ctx will be checked for cancellation and the method returns immediately if so.
+	// taskIdentifier is the running provisioning task and is contained within ProvisioningResponse.
+	//
+	// Returned will be the VM identifier and an error if polling or provision failed.
+	AwaitCompletion(ctx context.Context, taskIdentifier string) (string, error)
+	// Provision provisions a new vm.
+	Provision(ctx context.Context, locationIdentifier string, templateType TemplateType, templateIdentifier string, request ProvisioningRequest) (ProvisioningResponse, error)
+	// ProvisionFromScratch provisions a new vm from scratch.
+	ProvisionFromScratch(ctx context.Context, locationIdentifier string, templateIdentifier string, request ProvisioningRequest) (ProvisioningResponse, error)
+	// ProvisionTemplate provisions a new vm using a template.
+	ProvisionTemplate(ctx context.Context, locationIdentifier string, templateIdentifier string, request ProvisioningRequest) (ProvisioningResponse, error)
+	// Deprovision issues a request to deprovision an existing vm.
+	//
+	// identifier is the vm identifier, as returned in ProvisioningProgress.VMIdentifier once provisioning completed.
+	// delayed indicates that the vm shall be removed with a delay of 24h instead of immediately.
+	Deprovision(ctx context.Context, identifier string, delayed bool) (DeprovisioningResponse, error)
+}
+
 // ProvisioningClient is an api client for managing vm provisioning.
 type ProvisioningClient struct {
 	transport *internal.Transport
 }
+
+// Check that ProvisioningClient implements the ProvisioningAPI interface.
+var _ ProvisioningAPI = (*ProvisioningClient)(nil)
 
 func newProvisioningClient(transport *internal.Transport) *ProvisioningClient {
 	return &ProvisioningClient{

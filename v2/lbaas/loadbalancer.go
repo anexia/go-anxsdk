@@ -33,10 +33,27 @@ type LoadBalancerGetResponse struct {
 	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
 
+// LoadBalancerAPI is the interface implemented by [LoadBalancerClient].
+type LoadBalancerAPI interface {
+	// Get returns a load balancer by identifier.
+	Get(ctx context.Context, identifier string) (LoadBalancerGetResponse, error)
+	// List returns a list of paged load balancers.
+	List(ctx context.Context, pagingParams paging.Params, params LoadBalancerListParams) (paging.PagedResponse[LoadBalancerListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for load balancers.
+	ListPageFetcher(params LoadBalancerListParams) paging.PageFetcher[LoadBalancerListItem]
+	// ListFull returns a list of paged load balancers with all attributes included.
+	ListFull(ctx context.Context, pageParams paging.Params, params LoadBalancerListParams) (paging.PagedResponse[LoadBalancerGetResponse], error)
+	// ListFullPageFetcher returns a paging.PageFetcher for load balancers with all attributes included.
+	ListFullPageFetcher(params LoadBalancerListParams) paging.PageFetcher[LoadBalancerGetResponse]
+}
+
 // LoadBalancerClient is an api client for managing load balancers.
 type LoadBalancerClient struct {
 	transport *internal.Transport
 }
+
+// Check that LoadBalancerClient implements the LoadBalancerAPI interface.
+var _ LoadBalancerAPI = (*LoadBalancerClient)(nil)
 
 // NewLoadBalancerClient creates a new load balancer client.
 func NewLoadBalancerClient(transport *internal.Transport) *LoadBalancerClient {

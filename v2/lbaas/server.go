@@ -38,10 +38,27 @@ type ServerGetResponse struct {
 	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
 
+// ServerAPI is the interface implemented by [ServerClient].
+type ServerAPI interface {
+	// List returns a list of paged servers.
+	List(ctx context.Context, pagingParams paging.Params, params ServerListParams) (paging.PagedResponse[ServerListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for servers.
+	ListPageFetcher(params ServerListParams) paging.PageFetcher[ServerListItem]
+	// ListFull returns a list of paged servers with all attributes included.
+	ListFull(ctx context.Context, pagingParams paging.Params, params ServerListParams) (paging.PagedResponse[ServerGetResponse], error)
+	// ListFullPageFetcher returns a paging.PageFetcher for servers with all attributes included.
+	ListFullPageFetcher(params ServerListParams) paging.PageFetcher[ServerGetResponse]
+	// Get returns a server by identifier.
+	Get(ctx context.Context, identifier string) (ServerGetResponse, error)
+}
+
 // ServerClient is an api client for managing load balancer servers.
 type ServerClient struct {
 	transport *internal.Transport
 }
+
+// Check that ServerClient implements the ServerAPI interface.
+var _ ServerAPI = (*ServerClient)(nil)
 
 // NewServerClient creates a new server client.
 func NewServerClient(transport *internal.Transport) *ServerClient {

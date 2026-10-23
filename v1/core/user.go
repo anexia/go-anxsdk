@@ -124,10 +124,33 @@ type UserUpdateRequest struct {
 type UserUpdateResponse struct {
 }
 
+// UserAPI is the interface implemented by [UserClient].
+type UserAPI interface {
+	// List returns a list of paged users.
+	List(ctx context.Context, pageParams paging.Params, params UserListParams) (paging.PagedResponse[UserListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for users.
+	ListPageFetcher(params UserListParams) paging.PageFetcher[UserListItem]
+	// Search returns a paged list of filtered users.
+	Search(ctx context.Context, pageParams paging.Params, params UserSearchParams) (paging.PagedResponse[UserListItem], error)
+	// SearchPageFetcher returns a paging.PageFetcher for users.
+	SearchPageFetcher(params UserSearchParams) paging.PageFetcher[UserListItem]
+	// Get returns a user by identifier.
+	Get(ctx context.Context, identifier string) (UserGetResponse, error)
+	// Create creates a new user.
+	Create(ctx context.Context, request UserCreateRequest) (UserCreateResponse, error)
+	// Update updates a user.
+	Update(ctx context.Context, identifier string, request UserUpdateRequest) (UserUpdateResponse, error)
+	// Delete deletes a user.
+	Delete(ctx context.Context, identifier string) error
+}
+
 // UserClient is an api client for managing users.
 type UserClient struct {
 	transport *internal.Transport
 }
+
+// Check that UserClient implements the UserAPI interface.
+var _ UserAPI = (*UserClient)(nil)
 
 func newUserClient(transport *internal.Transport) *UserClient {
 	return &UserClient{

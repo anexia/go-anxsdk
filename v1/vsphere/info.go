@@ -66,10 +66,19 @@ type InfoGetResponseNetwork struct {
 	VLANs          []int    `json:"vlans"`
 }
 
+// InfoAPI is the interface implemented by [InfoClient].
+type InfoAPI interface {
+	// Get returns an info object by identifier.
+	Get(ctx context.Context, identifier string) (*InfoGetResponse, error)
+}
+
 // InfoClient is an api client for vm infos.
 type InfoClient struct {
 	transport *internal.Transport
 }
+
+// Check that InfoClient implements the InfoAPI interface.
+var _ InfoAPI = (*InfoClient)(nil)
 
 func newInfoClient(transport *internal.Transport) *InfoClient {
 	return &InfoClient{

@@ -20,7 +20,7 @@ func TestCore(t *testing.T) {
 }
 
 var (
-	coreClient *core.Client
+	coreClient core.API
 )
 
 var _ = BeforeSuite(func() {

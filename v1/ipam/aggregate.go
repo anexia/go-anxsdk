@@ -55,10 +55,27 @@ type AggregateGetResponse struct {
 	Version     AddressVersion `json:"version"`
 }
 
+// AggregateAPI is the interface implemented by [AggregateClient].
+type AggregateAPI interface {
+	// List returns a list of paged aggregates.
+	List(ctx context.Context, pagingParams paging.Params, params AggregateListParams) (paging.PagedResponse[AggregateListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for aggregates.
+	ListPageFetcher(params AggregateListParams) paging.PageFetcher[AggregateListItem]
+	// ListFiltered returns a paged list of aggregates filtered by the provided parameters.
+	ListFiltered(ctx context.Context, pagingParams paging.Params, params AggregateFilteredParams) (paging.PagedResponse[AggregateListItem], error)
+	// ListFilteredPageFetcher returns a paging.PageFetcher for filtered aggregates.
+	ListFilteredPageFetcher(params AggregateFilteredParams) paging.PageFetcher[AggregateListItem]
+	// Get returns an aggregate by identifier.
+	Get(ctx context.Context, identifier string) (AggregateGetResponse, error)
+}
+
 // AggregateClient is an api client for managing aggregates.
 type AggregateClient struct {
 	transport *internal.Transport
 }
+
+// Check that AggregateClient implements the AggregateAPI interface.
+var _ AggregateAPI = (*AggregateClient)(nil)
 
 // NewAggregateClient creates a new aggregate client.
 func NewAggregateClient(transport *internal.Transport) *AggregateClient {

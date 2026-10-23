@@ -39,10 +39,27 @@ type FrontendGetResponse struct {
 	AutomationRules            []common.Resource           `json:"automation_rules"`
 }
 
+// FrontendAPI is the interface implemented by [FrontendClient].
+type FrontendAPI interface {
+	// List returns a list of paged frontends.
+	List(ctx context.Context, pagingParams paging.Params, params FrontendListParams) (paging.PagedResponse[FrontendListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for frontends.
+	ListPageFetcher(params FrontendListParams) paging.PageFetcher[FrontendListItem]
+	// ListFull returns a list of paged frontends with all attributes included.
+	ListFull(ctx context.Context, pagingParams paging.Params, params FrontendListParams) (paging.PagedResponse[FrontendGetResponse], error)
+	// ListFullPageFetcher returns a paging.PageFetcher for frontends with all attributes included.
+	ListFullPageFetcher(params FrontendListParams) paging.PageFetcher[FrontendGetResponse]
+	// Get returns a frontend by identifier.
+	Get(ctx context.Context, identifier string) (FrontendGetResponse, error)
+}
+
 // FrontendClient is an api client for managing load balancer frontends.
 type FrontendClient struct {
 	transport *internal.Transport
 }
+
+// Check that FrontendClient implements the FrontendAPI interface.
+var _ FrontendAPI = (*FrontendClient)(nil)
 
 // NewFrontendClient creates a new frontend client.
 func NewFrontendClient(transport *internal.Transport) *FrontendClient {

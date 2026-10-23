@@ -37,10 +37,27 @@ type ZoneGetResponse struct {
 	Location    Location `json:"location"`
 }
 
+// ZoneAPI is the interface implemented by [ZoneClient].
+type ZoneAPI interface {
+	// List returns a list of paged zones.
+	List(ctx context.Context, pagingParams paging.Params, params ZoneListParams) (paging.PagedResponse[ZoneListItem], error)
+	// ListPageFetcher returns a paging.PageFetcher for zones.
+	ListPageFetcher(params ZoneListParams) paging.PageFetcher[ZoneListItem]
+	// ListFiltered returns a paged list of zones filtered by the provided parameters.
+	ListFiltered(ctx context.Context, pagingParams paging.Params, params ZoneFilteredParams) (paging.PagedResponse[ZoneListItem], error)
+	// ListFilteredPageFetcher returns a paging.PageFetcher for filtered zones.
+	ListFilteredPageFetcher(params ZoneFilteredParams) paging.PageFetcher[ZoneListItem]
+	// Get returns a zone by identifier.
+	Get(ctx context.Context, identifier string) (ZoneGetResponse, error)
+}
+
 // ZoneClient is an api client for managing zones.
 type ZoneClient struct {
 	transport *internal.Transport
 }
+
+// Check that ZoneClient implements the ZoneAPI interface.
+var _ ZoneAPI = (*ZoneClient)(nil)
 
 // NewZoneClient creates a new zone client.
 func NewZoneClient(transport *internal.Transport) *ZoneClient {

@@ -48,10 +48,20 @@ type StatusGetResponseLastRefresh struct {
 	Time string    `json:"time"`
 }
 
+// StatusAPI is the interface implemented by [StatusClient].
+type StatusAPI interface {
+	// Get returns a status object by identifier.
+	// Use the [InfoClient] when possible.
+	Get(ctx context.Context, identifier string) (StatusGetResponse, error)
+}
+
 // StatusClient is an api client for getting vm status.
 type StatusClient struct {
 	transport *internal.Transport
 }
+
+// Check that StatusClient implements the StatusAPI interface.
+var _ StatusAPI = (*StatusClient)(nil)
 
 func newStatusClient(transport *internal.Transport) *StatusClient {
 	return &StatusClient{

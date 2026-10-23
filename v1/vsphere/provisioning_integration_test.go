@@ -20,7 +20,7 @@ var _ = Describe("ProvisioningClient", func() {
 		cancel             context.CancelFunc
 		anx04Location      vsphere.Location
 		template           vsphere.TemplateResponse
-		provisioningClient *vsphere.ProvisioningClient
+		provisioningClient vsphere.ProvisioningAPI
 	)
 
 	BeforeEach(func() {
