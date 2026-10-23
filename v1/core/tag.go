@@ -38,6 +38,8 @@ type TagCreateRequest struct {
 	ServiceIdentifier string `json:"service_identifier"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/core . TagAPI
+
 // TagAPI is the interface implemented by [TagClient].
 type TagAPI interface {
 	// List returns a list of paged tags.

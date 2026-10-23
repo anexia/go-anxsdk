@@ -2,6 +2,8 @@ package vsphere
 
 import "github.com/anexia/go-anxsdk/internal"
 
+//counterfeiter:generate -o ../../fake/v1/vsphere . PowerControlAPI
+
 // PowerControlAPI is the interface implemented by [PowerControlClient].
 // It is intentionally empty as power control is not implemented yet.
 type PowerControlAPI any

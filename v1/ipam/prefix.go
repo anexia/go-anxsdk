@@ -86,6 +86,8 @@ type PrefixGetResponseLocationItem struct {
 	CityCode   string `json:"city_code"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/ipam . PrefixAPI
+
 // PrefixAPI is the interface implemented by [PrefixClient].
 type PrefixAPI interface {
 	// List returns a list of paged aggregates.

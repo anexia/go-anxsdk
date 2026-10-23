@@ -43,6 +43,8 @@ type BindGetResponse struct {
 	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/lbaas . BindAPI
+
 // BindAPI is the interface implemented by [BindClient].
 type BindAPI interface {
 	// List returns a list of paged binds.

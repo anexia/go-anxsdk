@@ -153,6 +153,8 @@ type NodepoolUpdateRequest struct {
 	SSHPubKeys  *string `json:"sshpubkeys,omitempty"`
 }
 
+//counterfeiter:generate -o ../../fake/v2/kubernetes . NodepoolsAPI
+
 // NodepoolsAPI is the interface implemented by [NodepoolsClient].
 type NodepoolsAPI interface {
 	// Get returns a single nodepool by its id.

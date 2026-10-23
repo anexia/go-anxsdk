@@ -26,6 +26,8 @@ type BackendSwitchingRuleGetResponse struct {
 	Name       string `json:"name"`
 }
 
+//counterfeiter:generate -o ../../fake/v2/lbaas . BackendSwitchingRuleAPI
+
 // BackendSwitchingRuleAPI is the interface implemented by [BackendSwitchingRuleClient].
 type BackendSwitchingRuleAPI interface {
 	// List returns a list of paged backendSwitchingRules.

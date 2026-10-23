@@ -48,6 +48,8 @@ type StatusGetResponseLastRefresh struct {
 	Time string    `json:"time"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/vsphere . StatusAPI
+
 // StatusAPI is the interface implemented by [StatusClient].
 type StatusAPI interface {
 	// Get returns a status object by identifier.

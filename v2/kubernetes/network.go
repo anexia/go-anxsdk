@@ -56,6 +56,8 @@ type NodepoolNetworkListParams struct {
 // NodepoolNetworkListItem is an item in the network list response.
 type NodepoolNetworkListItem common.Resource
 
+//counterfeiter:generate -o ../../fake/v2/kubernetes . NodepoolNetworksAPI
+
 // NodepoolNetworksAPI is the interface implemented by [NodepoolNetworksClient].
 type NodepoolNetworksAPI interface {
 	// Get returns a single network by its id.

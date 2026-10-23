@@ -15,6 +15,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/pprof v0.0.0-20260402051712-545e8a4df936 // indirect
+	github.com/maxbrunsfeld/counterfeiter/v6 v6.14.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/mod v0.42.0 // indirect
 	golang.org/x/net v0.61.0 // indirect
@@ -26,4 +27,7 @@ require (
 	golang.org/x/vuln v1.9.0 // indirect
 )
 
-tool golang.org/x/vuln/cmd/govulncheck
+tool (
+	github.com/maxbrunsfeld/counterfeiter/v6
+	golang.org/x/vuln/cmd/govulncheck
+)

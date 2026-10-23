@@ -207,6 +207,8 @@ type ClusterUpdateResponse struct {
 	AutomationRules                []common.Resource          `json:"automation_rules"`
 }
 
+//counterfeiter:generate -o ../fake/v1 . ClustersAPI
+
 // ClustersAPI is the interface implemented by [ClustersClient].
 type ClustersAPI interface {
 	// Get returns a single cluster by its id.

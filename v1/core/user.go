@@ -124,6 +124,8 @@ type UserUpdateRequest struct {
 type UserUpdateResponse struct {
 }
 
+//counterfeiter:generate -o ../../fake/v1/core . UserAPI
+
 // UserAPI is the interface implemented by [UserClient].
 type UserAPI interface {
 	// List returns a list of paged users.

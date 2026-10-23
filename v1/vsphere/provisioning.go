@@ -299,6 +299,8 @@ func (t *TemplateResponse) BuildNumber() (int, error) {
 	return buildNumber, nil
 }
 
+//counterfeiter:generate -o ../../fake/v1/vsphere . ProvisioningAPI
+
 // ProvisioningAPI is the interface implemented by [ProvisioningClient].
 type ProvisioningAPI interface {
 	// GetCPUArchitectures returns all available cpu architectures.

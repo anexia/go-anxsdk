@@ -65,6 +65,8 @@ type NodepoolDiskListParams struct {
 // NodepoolDiskListItem is an item in the disk list response.
 type NodepoolDiskListItem common.Resource
 
+//counterfeiter:generate -o ../../fake/v2/kubernetes . NodepoolDisksAPI
+
 // NodepoolDisksAPI is the interface implemented by [NodepoolDisksClient].
 type NodepoolDisksAPI interface {
 	// Get returns a single disk by its id.

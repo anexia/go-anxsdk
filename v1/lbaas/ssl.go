@@ -30,6 +30,8 @@ type SslGetResponse struct {
 	Identifier string `json:"identifier"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/lbaas . SslAPI
+
 // SslAPI is the interface implemented by [SslClient].
 type SslAPI interface {
 	// List returns a list of paged ssls.

@@ -2,6 +2,10 @@ package kubernetes
 
 import "github.com/anexia/go-anxsdk/internal"
 
+//go:generate go tool counterfeiter -generate
+
+//counterfeiter:generate -o ../../fake/v2/kubernetes . API
+
 // API is the interface implemented by [Client].
 type API interface {
 	// Clusters returns a clusters client.

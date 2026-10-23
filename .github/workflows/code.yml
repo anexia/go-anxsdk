@@ -57,6 +57,11 @@ jobs:
       - name: run tests
         run: just test
 
+      - name: check generate is up-to-date
+        run: |
+          just generate
+          git diff --exit-code
+
       - name: upload coverage
         uses: actions/upload-artifact@v7
         with:

@@ -37,6 +37,8 @@ type ZoneGetResponse struct {
 	Location    Location `json:"location"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/ipam . ZoneAPI
+
 // ZoneAPI is the interface implemented by [ZoneClient].
 type ZoneAPI interface {
 	// List returns a list of paged zones.

@@ -50,6 +50,8 @@ type RuleGetResponse struct {
 	AutomationRules            []common.Resource    `json:"automation_rules"`
 }
 
+//counterfeiter:generate -o ../../fake/v1/lbaas . RuleAPI
+
 // RuleAPI is the interface implemented by [RuleClient].
 type RuleAPI interface {
 	// List returns a list of paged rules.
