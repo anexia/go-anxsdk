@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"slices"
 	"strconv"
 	"time"
 
@@ -22,6 +23,10 @@ var (
 	ErrMissingCredentials = errors.New("must provide either SSH or Password")
 	// ErrInvalidIP indicates that a field could not be parsed as an IP address.
 	ErrInvalidIP = errors.New("not a valid IP")
+	// ErrInvalidCPUPerformanceType indicates that a cpu performance type is unknown.
+	ErrInvalidCPUPerformanceType = errors.New("not a valid CPU performance type")
+	// ErrInvalidDiskType indicates that a disk type is unknown.
+	ErrInvalidDiskType = errors.New("not a valid disk type")
 )
 
 // CPUArchitecture represents the cpu architecture of a vm.
@@ -138,6 +143,34 @@ const (
 	CPUPerformanceTypePerformanceAMD CPUPerformanceType = "performance-amd"
 )
 
+// AllCPUPerformanceTypes are the all available CPU performance types.
+var AllCPUPerformanceTypes = []CPUPerformanceType{
+	CPUPerformanceTypeBestEffort,
+	CPUPerformanceTypeStandard,
+	CPUPerformanceTypeEnterprise,
+	CPUPerformanceTypePerformance,
+	CPUPerformanceTypePerformancePlus,
+	CPUPerformanceTypeBestEffortIntel,
+	CPUPerformanceTypeStandardIntel,
+	CPUPerformanceTypeEnterpriseIntel,
+	CPUPerformanceTypePerformanceIntel,
+	CPUPerformanceTypePerformancePlusIntel,
+	CPUPerformanceTypeBestEffortAMD,
+	CPUPerformanceTypeStandardAMD,
+	CPUPerformanceTypeEnterpriseAMD,
+	CPUPerformanceTypePerformanceAMD,
+}
+
+// ParseCPUPerformanceType parses a string into a CPUPerformanceType, validating it against AllCPUPerformanceTypes.
+func ParseCPUPerformanceType(value string) (CPUPerformanceType, error) {
+	cpuPerformanceType := CPUPerformanceType(value)
+	if !slices.Contains(AllCPUPerformanceTypes, cpuPerformanceType) {
+		return "", fmt.Errorf("CPUPerformanceType is %w: %q", ErrInvalidCPUPerformanceType, value)
+	}
+
+	return cpuPerformanceType, nil
+}
+
 // DiskType is the performance class of a vm disk.
 type DiskType string
 
@@ -156,7 +189,7 @@ const (
 	DiskTypeHPC4 DiskType = "HPC4"
 	DiskTypeHPC5 DiskType = "HPC5"
 
-	DiskTypeLocal DiskType = "LOC3"
+	DiskTypeLOC3 DiskType = "LOC3"
 
 	DiskTypeSTD1 DiskType = "STD1"
 	DiskTypeSTD2 DiskType = "STD2"
@@ -165,6 +198,38 @@ const (
 	DiskTypeSTD5 DiskType = "STD5"
 	DiskTypeSTD6 DiskType = "STD6"
 )
+
+// AllDiskTypes are the all available disk types.
+var AllDiskTypes = []DiskType{
+	DiskTypeENT1,
+	DiskTypeENT2,
+	DiskTypeENT3,
+	DiskTypeENT4,
+	DiskTypeENT5,
+	DiskTypeENT6,
+	DiskTypeHPC1,
+	DiskTypeHPC2,
+	DiskTypeHPC3,
+	DiskTypeHPC4,
+	DiskTypeHPC5,
+	DiskTypeLOC3,
+	DiskTypeSTD1,
+	DiskTypeSTD2,
+	DiskTypeSTD3,
+	DiskTypeSTD4,
+	DiskTypeSTD5,
+	DiskTypeSTD6,
+}
+
+// ParseDiskType parses a string into a DiskType, validating it against AllDiskTypes.
+func ParseDiskType(value string) (DiskType, error) {
+	diskType := DiskType(value)
+	if !slices.Contains(AllDiskTypes, diskType) {
+		return "", fmt.Errorf("DiskType is %w: %q", ErrInvalidDiskType, value)
+	}
+
+	return diskType, nil
+}
 
 // ProvisioningRequest represents a VM provisioning request.
 type ProvisioningRequest struct {
@@ -217,6 +282,16 @@ func validateOptionalIP(field string, value *string) error {
 	return nil
 }
 
+// validateEnum returns an error if value is set and cannot be parsed into a valid value.
+func validateEnum[T ~string](value *T, parse func(string) (T, error)) error {
+	if value == nil {
+		return nil
+	}
+
+	_, err := parse(string(*value))
+	return err
+}
+
 // PreValidate checks the request for obvious problems before it is sent to the api.
 // Unset optional fields are not validated. All violations are reported together via errors.Join.
 func (r *ProvisioningRequest) PreValidate() error {
@@ -244,6 +319,8 @@ func (r *ProvisioningRequest) PreValidate() error {
 		validateOptionalIP("DNS2", r.DNS2),
 		validateOptionalIP("DNS3", r.DNS3),
 		validateOptionalIP("DNS4", r.DNS4),
+		validateEnum(r.DiskType, ParseDiskType),
+		validateEnum(r.CPUPerformanceType, ParseCPUPerformanceType),
 	)
 
 	if err := errors.Join(errs...); err != nil {
