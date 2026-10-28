@@ -205,6 +205,34 @@ func TestProvisioningRequest_PreValidate(t *testing.T) {
 			wantErr: ErrInvalidIP,
 			wantMsg: "DNS4",
 		},
+		{
+			name: "valid disk type",
+			mutate: func(r *ProvisioningRequest) {
+				r.DiskType = new(DiskTypeENT6)
+			},
+		},
+		{
+			name: "invalid disk type",
+			mutate: func(r *ProvisioningRequest) {
+				r.DiskType = new(DiskType("NOPE"))
+			},
+			wantErr: ErrInvalidDiskType,
+			wantMsg: `DiskType is not a valid disk type: "NOPE"`,
+		},
+		{
+			name: "valid cpu performance type",
+			mutate: func(r *ProvisioningRequest) {
+				r.CPUPerformanceType = new(CPUPerformanceTypePerformanceIntel)
+			},
+		},
+		{
+			name: "invalid cpu performance type",
+			mutate: func(r *ProvisioningRequest) {
+				r.CPUPerformanceType = new(CPUPerformanceType("turbo"))
+			},
+			wantErr: ErrInvalidCPUPerformanceType,
+			wantMsg: `CPUPerformanceType is not a valid CPU performance type: "turbo"`,
+		},
 	}
 
 	for _, tt := range tests {
@@ -243,12 +271,14 @@ func TestProvisioningRequest_PreValidate_ZeroValueDoesNotPanic(t *testing.T) {
 
 func TestProvisioningRequest_PreValidate_ReportsAllViolations(t *testing.T) {
 	req := ProvisioningRequest{
-		Hostname: "test-vm",
-		Script:   new("not base64 !!!"),
-		MemoryMB: new(-1),
-		CPUs:     new(-1),
-		DNS1:     new("not-an-ip"),
-		DNS3:     new("also-not-an-ip"),
+		Hostname:           "test-vm",
+		Script:             new("not base64 !!!"),
+		MemoryMB:           new(-1),
+		CPUs:               new(-1),
+		DNS1:               new("not-an-ip"),
+		DNS3:               new("also-not-an-ip"),
+		DiskType:           new(DiskType("NOPE")),
+		CPUPerformanceType: new(CPUPerformanceType("turbo")),
 	}
 
 	err := req.PreValidate()
@@ -257,10 +287,12 @@ func TestProvisioningRequest_PreValidate_ReportsAllViolations(t *testing.T) {
 	require.ErrorIs(t, err, ErrMissingCredentials)
 	require.ErrorIs(t, err, ErrNegativeValue)
 	require.ErrorIs(t, err, ErrInvalidIP)
+	require.ErrorIs(t, err, ErrInvalidDiskType)
+	require.ErrorIs(t, err, ErrInvalidCPUPerformanceType)
 
 	msg := err.Error()
 	assert.Contains(t, msg, "provisioning request validation")
-	for _, want := range []string{"Script is not base64 encoded", "MemoryMB", "CPUs", "DNS1", "DNS3"} {
+	for _, want := range []string{"Script is not base64 encoded", "MemoryMB", "CPUs", "DNS1", "DNS3", "DiskType", "CPUPerformanceType"} {
 		assert.Contains(t, msg, want)
 	}
 
@@ -289,4 +321,67 @@ func TestProvisioningRequest_PreValidate_WrappedErrorsAreUnwrappable(t *testing.
 	require.Error(t, err)
 	require.True(t, errors.Is(err, ErrNegativeValue))
 	require.False(t, errors.Is(err, ErrInvalidIP))
+}
+
+func TestParseDiskType(t *testing.T) {
+	tests := []struct {
+		name    string
+		value   string
+		want    DiskType
+		wantErr error
+	}{
+		{name: "valid ENT1", value: "ENT1", want: DiskTypeENT1},
+		{name: "valid LOC3", value: "LOC3", want: DiskTypeLOC3},
+		{name: "valid STD6", value: "STD6", want: DiskTypeSTD6},
+		{name: "invalid value", value: "NOPE", wantErr: ErrInvalidDiskType},
+		{name: "lowercase not accepted", value: "ent1", wantErr: ErrInvalidDiskType},
+		{name: "empty value", value: "", wantErr: ErrInvalidDiskType},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ParseDiskType(tt.value)
+
+			if tt.wantErr == nil {
+				require.NoError(t, err)
+				assert.Equal(t, tt.want, got)
+				return
+			}
+
+			require.Error(t, err)
+			require.ErrorIs(t, err, tt.wantErr)
+			assert.Contains(t, err.Error(), tt.value)
+		})
+	}
+}
+
+func TestParseCPUPerformanceType(t *testing.T) {
+	tests := []struct {
+		name    string
+		value   string
+		want    CPUPerformanceType
+		wantErr error
+	}{
+		{name: "valid best-effort", value: "best-effort", want: CPUPerformanceTypeBestEffort},
+		{name: "valid performance-intel", value: "performance-intel", want: CPUPerformanceTypePerformanceIntel},
+		{name: "valid enterprise-amd", value: "enterprise-amd", want: CPUPerformanceTypeEnterpriseAMD},
+		{name: "invalid value", value: "turbo", wantErr: ErrInvalidCPUPerformanceType},
+		{name: "empty value", value: "", wantErr: ErrInvalidCPUPerformanceType},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ParseCPUPerformanceType(tt.value)
+
+			if tt.wantErr == nil {
+				require.NoError(t, err)
+				assert.Equal(t, tt.want, got)
+				return
+			}
+
+			require.Error(t, err)
+			require.ErrorIs(t, err, tt.wantErr)
+			assert.Contains(t, err.Error(), tt.value)
+		})
+	}
 }
