@@ -137,10 +137,11 @@ const (
 	CPUPerformanceTypePerformanceIntel     CPUPerformanceType = "performance-intel"
 	CPUPerformanceTypePerformancePlusIntel CPUPerformanceType = "performance-plus-intel"
 
-	CPUPerformanceTypeBestEffortAMD  CPUPerformanceType = "best-effort-amd"
-	CPUPerformanceTypeStandardAMD    CPUPerformanceType = "standard-amd"
-	CPUPerformanceTypeEnterpriseAMD  CPUPerformanceType = "enterprise-amd"
-	CPUPerformanceTypePerformanceAMD CPUPerformanceType = "performance-amd"
+	CPUPerformanceTypeBestEffortAMD      CPUPerformanceType = "best-effort-amd"
+	CPUPerformanceTypeStandardAMD        CPUPerformanceType = "standard-amd"
+	CPUPerformanceTypeEnterpriseAMD      CPUPerformanceType = "enterprise-amd"
+	CPUPerformanceTypePerformanceAMD     CPUPerformanceType = "performance-amd"
+	CPUPerformanceTypePerformancePlusAMD CPUPerformanceType = "performance-plus-amd"
 )
 
 // AllCPUPerformanceTypes are the all available CPU performance types.
@@ -159,6 +160,7 @@ var AllCPUPerformanceTypes = []CPUPerformanceType{
 	CPUPerformanceTypeStandardAMD,
 	CPUPerformanceTypeEnterpriseAMD,
 	CPUPerformanceTypePerformanceAMD,
+	CPUPerformanceTypePerformancePlusAMD,
 }
 
 // ParseCPUPerformanceType parses a string into a CPUPerformanceType, validating it against AllCPUPerformanceTypes.

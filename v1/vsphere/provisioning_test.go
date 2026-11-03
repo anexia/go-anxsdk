@@ -365,6 +365,7 @@ func TestParseCPUPerformanceType(t *testing.T) {
 		{name: "valid best-effort", value: "best-effort", want: CPUPerformanceTypeBestEffort},
 		{name: "valid performance-intel", value: "performance-intel", want: CPUPerformanceTypePerformanceIntel},
 		{name: "valid enterprise-amd", value: "enterprise-amd", want: CPUPerformanceTypeEnterpriseAMD},
+		{name: "valid performance-plus-amd", value: "performance-plus-amd", want: CPUPerformanceTypePerformancePlusAMD},
 		{name: "invalid value", value: "turbo", wantErr: ErrInvalidCPUPerformanceType},
 		{name: "empty value", value: "", wantErr: ErrInvalidCPUPerformanceType},
 	}
