@@ -2,9 +2,9 @@
 
 A Go client for the Anexia Engine API.
 
-This SDK provides a simple, versioned interface for interacting with Anexia resources such as locations and VLANs.
+This SDK provides a simple, versioned interface for interacting with Anexia resources such as locations, VLANs, prefixes and kubernetes clusters and nodepools.
 
-The project is still in early development.
+The project aims to replace [anexia-it/go-anxcloud](https://github.com/anexia-it/go-anxcloud)
 
 ## Installation
 
@@ -22,7 +22,7 @@ func main() {
 
     apiKey := os.Getenv("API_KEY")
 
-    client := go_anx_sdk.NewClient(
+    client := anxsdk.NewClient(
         config.WithAPIKey(apiKey),
         config.WithHttpClient(&http.Client{
             Transport: utils.NewLoggingRoundTripper(http.DefaultTransport),
@@ -195,10 +195,6 @@ for cluster, err := range clusters {
 }
 ```
 
-## Error handling
-
-TBD
-
 ## Testing
 Tests can be executed by running
 
@@ -268,4 +264,4 @@ affect downstream projects.
 
 ## License
 
-TBD
+[Apache-2.0](LICENSE)
