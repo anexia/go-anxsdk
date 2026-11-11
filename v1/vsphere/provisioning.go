@@ -326,6 +326,7 @@ func (r *ProvisioningRequest) PreValidate() error {
 	)
 
 	if len(r.Network) < 1 {
+		//nolint:err113
 		errs = append(errs, errors.New("Network is required, none specified")) //nolint:staticcheck
 	}
 
@@ -358,6 +359,7 @@ type ProvisioningRequestNetwork struct {
 	IPs            []string `json:"ips"`
 }
 
+// NicTypeVirtIO specifies the network interface card type VirtIO.
 const NicTypeVirtIO = "virtio"
 
 // TemplateResponse represents the templates from a location.
