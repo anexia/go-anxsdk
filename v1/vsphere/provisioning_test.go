@@ -66,6 +66,12 @@ func validRequest() ProvisioningRequest {
 	return ProvisioningRequest{
 		Hostname: "test-vm",
 		SSH:      new("ssh-ed25519 AAAA"),
+		Network: []ProvisioningRequestNetwork{
+			{
+				NicType: NicTypeVirtIO,
+				VLan:    "dummy vlan",
+			},
+		},
 	}
 }
 

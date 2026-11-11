@@ -325,6 +325,10 @@ func (r *ProvisioningRequest) PreValidate() error {
 		validateEnum(r.CPUPerformanceType, ParseCPUPerformanceType),
 	)
 
+	if len(r.Network) < 1 {
+		errs = append(errs, errors.New("Network is required, none specified")) //nolint:staticcheck
+	}
+
 	if err := errors.Join(errs...); err != nil {
 		return fmt.Errorf("provisioning request validation: %w", err)
 	}
@@ -353,6 +357,8 @@ type ProvisioningRequestNetwork struct {
 	VLan           string   `json:"vlan"`
 	IPs            []string `json:"ips"`
 }
+
+const NicTypeVirtIO = "virtio"
 
 // TemplateResponse represents the templates from a location.
 type TemplateResponse struct {
