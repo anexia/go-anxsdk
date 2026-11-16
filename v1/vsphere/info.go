@@ -71,7 +71,7 @@ type InfoGetResponseNetwork struct {
 // InfoAPI is the interface implemented by [InfoClient].
 type InfoAPI interface {
 	// Get returns an info object by identifier.
-	Get(ctx context.Context, identifier string) (*InfoGetResponse, error)
+	Get(ctx context.Context, identifier string) (InfoGetResponse, error)
 }
 
 // InfoClient is an api client for vm infos.
@@ -89,8 +89,8 @@ func newInfoClient(transport *internal.Transport) *InfoClient {
 }
 
 // Get returns an info object by identifier.
-func (c *InfoClient) Get(ctx context.Context, identifier string) (*InfoGetResponse, error) {
+func (c *InfoClient) Get(ctx context.Context, identifier string) (InfoGetResponse, error) {
 	resp := InfoGetResponse{}
 	err := c.transport.GetSingle(ctx, fmt.Sprintf("/api/vsphere/v1/info.json/%s/info", identifier), &resp)
-	return &resp, common.MapTransportError(err)
+	return resp, common.MapTransportError(err)
 }

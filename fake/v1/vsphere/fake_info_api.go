@@ -9,15 +9,15 @@ import (
 )
 
 type FakeInfoAPI struct {
-	GetStub        func(context.Context, string) (*vsphere.InfoGetResponse, error)
+	GetStub        func(context.Context, string) (vsphere.InfoGetResponse, error)
 	getMutex       sync.RWMutex
 	getArgsForCall []FakeInfoAPIGetArgs
 	getReturns     struct {
-		result1 *vsphere.InfoGetResponse
+		result1 vsphere.InfoGetResponse
 		result2 error
 	}
 	getReturnsOnCall map[int]struct {
-		result1 *vsphere.InfoGetResponse
+		result1 vsphere.InfoGetResponse
 		result2 error
 	}
 	invocations      map[string][][]interface{}
@@ -31,7 +31,7 @@ type FakeInfoAPIGetArgs struct {
 	Arg2 string
 }
 
-func (fake *FakeInfoAPI) Get(arg1 context.Context, arg2 string) (*vsphere.InfoGetResponse, error) {
+func (fake *FakeInfoAPI) Get(arg1 context.Context, arg2 string) (vsphere.InfoGetResponse, error) {
 	fake.getMutex.Lock()
 	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, FakeInfoAPIGetArgs{arg1, arg2})
@@ -54,7 +54,7 @@ func (fake *FakeInfoAPI) GetCallCount() int {
 	return len(fake.getArgsForCall)
 }
 
-func (fake *FakeInfoAPI) GetCalls(stub func(context.Context, string) (*vsphere.InfoGetResponse, error)) {
+func (fake *FakeInfoAPI) GetCalls(stub func(context.Context, string) (vsphere.InfoGetResponse, error)) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = stub
@@ -75,28 +75,28 @@ func (fake *FakeInfoAPI) GetArgs() []FakeInfoAPIGetArgs {
 	return args
 }
 
-func (fake *FakeInfoAPI) GetReturns(result1 *vsphere.InfoGetResponse, result2 error) {
+func (fake *FakeInfoAPI) GetReturns(result1 vsphere.InfoGetResponse, result2 error) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = nil
 	fake.getReturns = struct {
-		result1 *vsphere.InfoGetResponse
+		result1 vsphere.InfoGetResponse
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeInfoAPI) GetReturnsOnCall(i int, result1 *vsphere.InfoGetResponse, result2 error) {
+func (fake *FakeInfoAPI) GetReturnsOnCall(i int, result1 vsphere.InfoGetResponse, result2 error) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = nil
 	if fake.getReturnsOnCall == nil {
 		fake.getReturnsOnCall = make(map[int]struct {
-			result1 *vsphere.InfoGetResponse
+			result1 vsphere.InfoGetResponse
 			result2 error
 		})
 	}
 	fake.getReturnsOnCall[i] = struct {
-		result1 *vsphere.InfoGetResponse
+		result1 vsphere.InfoGetResponse
 		result2 error
 	}{result1, result2}
 }
