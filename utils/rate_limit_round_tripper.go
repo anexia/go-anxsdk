@@ -61,10 +61,7 @@ func (t *RateLimitRoundTripper) RoundTrip(req *http.Request) (*http.Response, er
 			if secs, err := strconv.Atoi(h); err == nil {
 				retryAfter = time.Duration(secs) * time.Second
 			} else if when, err := http.ParseTime(h); err == nil {
-				retryAfter = time.Until(when)
-				if retryAfter < 0 {
-					retryAfter = 0
-				}
+				retryAfter = max(time.Until(when), 0)
 			}
 		}
 
