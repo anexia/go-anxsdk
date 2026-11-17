@@ -1,6 +1,11 @@
 package lbaas
 
-import "github.com/anexia/go-anxsdk/internal"
+import (
+	"context"
+
+	"github.com/anexia/go-anxsdk/internal"
+	"github.com/anexia/go-anxsdk/paging"
+)
 
 //go:generate go tool counterfeiter -generate
 
@@ -28,6 +33,8 @@ type API interface {
 	Servers() ServerAPI
 	// Ssls returns an ssl client.
 	Ssls() SslAPI
+	// ListByReference lists one page of an LBaaS resource filtered by frontend, backend or default_backend.
+	ListByReference(ctx context.Context, page paging.Params, params ReferenceListParams) (paging.PagedResponse[ReferenceListItem], error)
 }
 
 // Client is a struct that holds access method to lbaas related resource clients.
