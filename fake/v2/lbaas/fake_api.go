@@ -2,8 +2,10 @@
 package lbaasfake
 
 import (
+	"context"
 	"sync"
 
+	"github.com/anexia/go-anxsdk/paging"
 	"github.com/anexia/go-anxsdk/v2/lbaas"
 )
 
@@ -53,6 +55,17 @@ type FakeAPI struct {
 	frontendsReturnsOnCall map[int]struct {
 		result1 lbaas.FrontendAPI
 	}
+	ListByReferenceStub        func(context.Context, paging.Params, lbaas.ReferenceListParams) (paging.PagedResponse[lbaas.ReferenceListItem], error)
+	listByReferenceMutex       sync.RWMutex
+	listByReferenceArgsForCall []FakeAPIListByReferenceArgs
+	listByReferenceReturns     struct {
+		result1 paging.PagedResponse[lbaas.ReferenceListItem]
+		result2 error
+	}
+	listByReferenceReturnsOnCall map[int]struct {
+		result1 paging.PagedResponse[lbaas.ReferenceListItem]
+		result2 error
+	}
 	LoadBalancersStub        func() lbaas.LoadBalancerAPI
 	loadBalancersMutex       sync.RWMutex
 	loadBalancersArgsForCall []struct{}
@@ -101,6 +114,13 @@ type FakeAPI struct {
 	invocations      map[string][][]interface{}
 	callOrder        []string
 	invocationsMutex sync.RWMutex
+}
+
+// FakeAPIListByReferenceArgs holds the arguments of one call to ListByReference.
+type FakeAPIListByReferenceArgs struct {
+	Arg1 context.Context
+	Arg2 paging.Params
+	Arg3 lbaas.ReferenceListParams
 }
 
 func (fake *FakeAPI) Acls() lbaas.ACLAPI {
@@ -361,6 +381,76 @@ func (fake *FakeAPI) FrontendsReturnsOnCall(i int, result1 lbaas.FrontendAPI) {
 	fake.frontendsReturnsOnCall[i] = struct {
 		result1 lbaas.FrontendAPI
 	}{result1}
+}
+
+func (fake *FakeAPI) ListByReference(arg1 context.Context, arg2 paging.Params, arg3 lbaas.ReferenceListParams) (paging.PagedResponse[lbaas.ReferenceListItem], error) {
+	fake.listByReferenceMutex.Lock()
+	ret, specificReturn := fake.listByReferenceReturnsOnCall[len(fake.listByReferenceArgsForCall)]
+	fake.listByReferenceArgsForCall = append(fake.listByReferenceArgsForCall, FakeAPIListByReferenceArgs{arg1, arg2, arg3})
+	stub := fake.ListByReferenceStub
+	fakeReturns := fake.listByReferenceReturns
+	fake.recordInvocation("ListByReference", []interface{}{arg1, arg2, arg3})
+	fake.listByReferenceMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) ListByReferenceCallCount() int {
+	fake.listByReferenceMutex.RLock()
+	defer fake.listByReferenceMutex.RUnlock()
+	return len(fake.listByReferenceArgsForCall)
+}
+
+func (fake *FakeAPI) ListByReferenceCalls(stub func(context.Context, paging.Params, lbaas.ReferenceListParams) (paging.PagedResponse[lbaas.ReferenceListItem], error)) {
+	fake.listByReferenceMutex.Lock()
+	defer fake.listByReferenceMutex.Unlock()
+	fake.ListByReferenceStub = stub
+}
+
+func (fake *FakeAPI) ListByReferenceArgsForCall(i int) (context.Context, paging.Params, lbaas.ReferenceListParams) {
+	fake.listByReferenceMutex.RLock()
+	defer fake.listByReferenceMutex.RUnlock()
+	argsForCall := fake.listByReferenceArgsForCall[i]
+	return argsForCall.Arg1, argsForCall.Arg2, argsForCall.Arg3
+}
+
+func (fake *FakeAPI) ListByReferenceArgs() []FakeAPIListByReferenceArgs {
+	fake.listByReferenceMutex.RLock()
+	defer fake.listByReferenceMutex.RUnlock()
+	args := make([]FakeAPIListByReferenceArgs, len(fake.listByReferenceArgsForCall))
+	copy(args, fake.listByReferenceArgsForCall)
+	return args
+}
+
+func (fake *FakeAPI) ListByReferenceReturns(result1 paging.PagedResponse[lbaas.ReferenceListItem], result2 error) {
+	fake.listByReferenceMutex.Lock()
+	defer fake.listByReferenceMutex.Unlock()
+	fake.ListByReferenceStub = nil
+	fake.listByReferenceReturns = struct {
+		result1 paging.PagedResponse[lbaas.ReferenceListItem]
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) ListByReferenceReturnsOnCall(i int, result1 paging.PagedResponse[lbaas.ReferenceListItem], result2 error) {
+	fake.listByReferenceMutex.Lock()
+	defer fake.listByReferenceMutex.Unlock()
+	fake.ListByReferenceStub = nil
+	if fake.listByReferenceReturnsOnCall == nil {
+		fake.listByReferenceReturnsOnCall = make(map[int]struct {
+			result1 paging.PagedResponse[lbaas.ReferenceListItem]
+			result2 error
+		})
+	}
+	fake.listByReferenceReturnsOnCall[i] = struct {
+		result1 paging.PagedResponse[lbaas.ReferenceListItem]
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeAPI) LoadBalancers() lbaas.LoadBalancerAPI {
