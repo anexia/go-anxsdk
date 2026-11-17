@@ -2,10 +2,16 @@ package lbaas
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/anexia/go-anxsdk/paging"
 	"github.com/anexia/go-anxsdk/v2/common"
+)
+
+var (
+	errEmptyReferenceFilter      = errors.New("lbaas reference filter is empty")
+	errUnsupportedReferenceField = errors.New("unsupported lbaas reference field")
 )
 
 // ReferenceListParams selects one page of an LBaaS collection by a single relation.
@@ -49,7 +55,7 @@ type referenceListQuery struct {
 
 func (p ReferenceListParams) query() (referenceListQuery, error) {
 	if p.RefID == "" {
-		return referenceListQuery{}, fmt.Errorf("lbaas %s %s filter is empty", p.Resource, p.RefField)
+		return referenceListQuery{}, fmt.Errorf("%w: %s %s", errEmptyReferenceFilter, p.Resource, p.RefField)
 	}
 	q := referenceListQuery{Attributes: p.Attributes}
 	switch p.RefField {
@@ -60,7 +66,7 @@ func (p ReferenceListParams) query() (referenceListQuery, error) {
 	case "default_backend":
 		q.DefaultBackend = p.RefID
 	default:
-		return referenceListQuery{}, fmt.Errorf("unsupported lbaas reference field %q", p.RefField)
+		return referenceListQuery{}, fmt.Errorf("%w: %q", errUnsupportedReferenceField, p.RefField)
 	}
 	return q, nil
 }
