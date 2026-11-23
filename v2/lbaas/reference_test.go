@@ -42,3 +42,26 @@ func TestListByReference(t *testing.T) {
 	_, err = c.ListByReference(t.Context(), paging.NewParams(1, 1000), ReferenceListParams{Resource: "rule", RefField: "name", RefID: "x"})
 	require.ErrorContains(t, err, "unsupported lbaas reference field")
 }
+
+func TestListByReferenceWrappedPageAndStringRelation(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"data":{"total_pages":1,"data":[{"identifier":"rule-1","name":"use backend","backend":"be","frontend":{"identifier":"fe"}}]}}`))
+	}))
+	t.Cleanup(srv.Close)
+
+	c := NewClient(internal.NewTransport(srv.URL, "token", srv.Client()))
+	resp, err := c.ListByReference(t.Context(), paging.NewParams(1, 100), ReferenceListParams{
+		Resource:   "rule",
+		RefField:   "backend",
+		RefID:      "be",
+		Attributes: "identifier,name,backend,frontend",
+	})
+	require.NoError(t, err)
+	require.Equal(t, []ReferenceListItem{{
+		Identifier: "rule-1",
+		Name:       "use backend",
+		Frontend:   common.Resource{Identifier: "fe"},
+		Backend:    common.Resource{Identifier: "be"},
+	}}, resp.Data)
+}

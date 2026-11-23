@@ -217,6 +217,8 @@ type ClustersAPI interface {
 	Get(ctx context.Context, identifier string) (ClusterGetResponse, error)
 	// Update updates a cluster.
 	Update(ctx context.Context, identifier string, request ClusterUpdateRequest) (ClusterUpdateResponse, error)
+	// Delete deletes a cluster by its id.
+	Delete(ctx context.Context, identifier string) error
 	// List returns a list of paged clusters.
 	List(ctx context.Context, pageParams paging.Params, params ClusterListParams) (paging.PagedResponse[ClusterListItem], error)
 	// ListPageFetcher returns a paging.PageFetcher for clusters.
@@ -277,6 +279,22 @@ func (c *ClustersClient) Update(ctx context.Context, identifier string, request 
 	resp := ClusterUpdateResponse{}
 	err := c.transport.Put(ctx, fmt.Sprintf("%s/v2/cluster/%s", c.endpointRoot(), identifier), request, &resp)
 	return resp, common.MapTransportError(err)
+}
+
+// clusterDeleteParams removes the object. Without the query the engine queues the delete webhook again.
+type clusterDeleteParams struct {
+	SkipQueuedAutomationRules bool `url:"skip_queued_automation_rules"`
+}
+
+// Delete deletes a cluster by its id.
+func (c *ClustersClient) Delete(ctx context.Context, identifier string) error {
+	err := c.transport.DeleteWithResponse(
+		ctx,
+		fmt.Sprintf("%s/v2/cluster/%s", c.endpointRoot(), identifier),
+		clusterDeleteParams{SkipQueuedAutomationRules: true},
+		nil,
+	)
+	return common.MapTransportError(err)
 }
 
 // List returns a list of paged clusters.

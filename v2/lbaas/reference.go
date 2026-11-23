@@ -2,6 +2,7 @@ package lbaas
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -71,13 +72,81 @@ func (p ReferenceListParams) query() (referenceListQuery, error) {
 	return q, nil
 }
 
+// referenceListPage accepts the bare page and the {data: page} envelope the engine uses for other list calls.
+type referenceListPage struct {
+	paging.PagedResponse[ReferenceListItem]
+}
+
+func (p *referenceListPage) UnmarshalJSON(data []byte) error {
+	var probe struct {
+		Data json.RawMessage `json:"data"`
+	}
+	if err := json.Unmarshal(data, &probe); err != nil {
+		return err
+	}
+	if len(probe.Data) > 0 && probe.Data[0] == '{' {
+		var wrapped struct {
+			Data paging.PagedResponse[ReferenceListItem] `json:"data"`
+		}
+		if err := json.Unmarshal(data, &wrapped); err != nil {
+			return err
+		}
+		p.PagedResponse = wrapped.Data
+		return nil
+	}
+	return json.Unmarshal(data, &p.PagedResponse)
+}
+
+func (item *ReferenceListItem) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		Identifier     string          `json:"identifier"`
+		Name           string          `json:"name"`
+		Frontend       json.RawMessage `json:"frontend"`
+		Backend        json.RawMessage `json:"backend"`
+		DefaultBackend json.RawMessage `json:"default_backend"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+	item.Identifier = raw.Identifier
+	item.Name = raw.Name
+	var err error
+	if item.Frontend, err = decodeRelation(raw.Frontend); err != nil {
+		return err
+	}
+	if item.Backend, err = decodeRelation(raw.Backend); err != nil {
+		return err
+	}
+	item.DefaultBackend, err = decodeRelation(raw.DefaultBackend)
+	return err
+}
+
+// decodeRelation accepts a relation object or a bare identifier string.
+func decodeRelation(raw json.RawMessage) (common.Resource, error) {
+	if len(raw) == 0 || string(raw) == "null" {
+		return common.Resource{}, nil
+	}
+	if raw[0] == '"' {
+		var id string
+		if err := json.Unmarshal(raw, &id); err != nil {
+			return common.Resource{}, err
+		}
+		return common.Resource{Identifier: id}, nil
+	}
+	var rel common.Resource
+	if err := json.Unmarshal(raw, &rel); err != nil {
+		return common.Resource{}, err
+	}
+	return rel, nil
+}
+
 // ListByReference lists one page of an LBaaS resource filtered by frontend, backend or default_backend.
 func (c *Client) ListByReference(ctx context.Context, page paging.Params, params ReferenceListParams) (paging.PagedResponse[ReferenceListItem], error) {
 	query, err := params.query()
 	if err != nil {
 		return paging.PagedResponse[ReferenceListItem]{}, err
 	}
-	resp := paging.PagedResponse[ReferenceListItem]{}
+	resp := referenceListPage{}
 	err = c.transport.Get(ctx, fmt.Sprintf("/api/LBaaS/v2/%s", params.Resource), &resp, page, query)
-	return resp, common.MapTransportError(err)
+	return resp.PagedResponse, common.MapTransportError(err)
 }

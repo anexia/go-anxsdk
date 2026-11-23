@@ -10,6 +10,15 @@ import (
 )
 
 type FakeClustersAPI struct {
+	DeleteStub        func(context.Context, string) error
+	deleteMutex       sync.RWMutex
+	deleteArgsForCall []FakeClustersAPIDeleteArgs
+	deleteReturns     struct {
+		result1 error
+	}
+	deleteReturnsOnCall map[int]struct {
+		result1 error
+	}
 	GetStub        func(context.Context, string) (kubernetes.ClusterGetResponse, error)
 	getMutex       sync.RWMutex
 	getArgsForCall []FakeClustersAPIGetArgs
@@ -104,6 +113,12 @@ type FakeClustersAPI struct {
 	invocationsMutex sync.RWMutex
 }
 
+// FakeClustersAPIDeleteArgs holds the arguments of one call to Delete.
+type FakeClustersAPIDeleteArgs struct {
+	Arg1 context.Context
+	Arg2 string
+}
+
 // FakeClustersAPIGetArgs holds the arguments of one call to Get.
 type FakeClustersAPIGetArgs struct {
 	Arg1 context.Context
@@ -157,6 +172,73 @@ type FakeClustersAPIUpdateArgs struct {
 	Arg1 context.Context
 	Arg2 string
 	Arg3 kubernetes.ClusterUpdateRequest
+}
+
+func (fake *FakeClustersAPI) Delete(arg1 context.Context, arg2 string) error {
+	fake.deleteMutex.Lock()
+	ret, specificReturn := fake.deleteReturnsOnCall[len(fake.deleteArgsForCall)]
+	fake.deleteArgsForCall = append(fake.deleteArgsForCall, FakeClustersAPIDeleteArgs{arg1, arg2})
+	stub := fake.DeleteStub
+	fakeReturns := fake.deleteReturns
+	fake.recordInvocation("Delete", []interface{}{arg1, arg2})
+	fake.deleteMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fakeReturns.result1
+}
+
+func (fake *FakeClustersAPI) DeleteCallCount() int {
+	fake.deleteMutex.RLock()
+	defer fake.deleteMutex.RUnlock()
+	return len(fake.deleteArgsForCall)
+}
+
+func (fake *FakeClustersAPI) DeleteCalls(stub func(context.Context, string) error) {
+	fake.deleteMutex.Lock()
+	defer fake.deleteMutex.Unlock()
+	fake.DeleteStub = stub
+}
+
+func (fake *FakeClustersAPI) DeleteArgsForCall(i int) (context.Context, string) {
+	fake.deleteMutex.RLock()
+	defer fake.deleteMutex.RUnlock()
+	argsForCall := fake.deleteArgsForCall[i]
+	return argsForCall.Arg1, argsForCall.Arg2
+}
+
+func (fake *FakeClustersAPI) DeleteArgs() []FakeClustersAPIDeleteArgs {
+	fake.deleteMutex.RLock()
+	defer fake.deleteMutex.RUnlock()
+	args := make([]FakeClustersAPIDeleteArgs, len(fake.deleteArgsForCall))
+	copy(args, fake.deleteArgsForCall)
+	return args
+}
+
+func (fake *FakeClustersAPI) DeleteReturns(result1 error) {
+	fake.deleteMutex.Lock()
+	defer fake.deleteMutex.Unlock()
+	fake.DeleteStub = nil
+	fake.deleteReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeClustersAPI) DeleteReturnsOnCall(i int, result1 error) {
+	fake.deleteMutex.Lock()
+	defer fake.deleteMutex.Unlock()
+	fake.DeleteStub = nil
+	if fake.deleteReturnsOnCall == nil {
+		fake.deleteReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.deleteReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeClustersAPI) Get(arg1 context.Context, arg2 string) (kubernetes.ClusterGetResponse, error) {
